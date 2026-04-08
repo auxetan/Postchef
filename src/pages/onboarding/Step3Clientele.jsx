@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import Button from '../../components/ui/Button.jsx'
-import ChefAvatar from '../../components/ui/ChefAvatar.jsx'
 import ScaleSelector from '../../components/ui/ScaleSelector.jsx'
-import MotifCard from '../../components/ui/MotifCard.jsx'
 import useAppStore from '../../store/useAppStore.js'
 
 const COUVERTS = [
@@ -13,56 +11,22 @@ const COUVERTS = [
 ]
 
 const PROFILS = [
-  'Familles et locaux',
-  'Touristes et visiteurs',
-  'Professionnels midi',
-  'Étudiants et jeunes',
+  { id: 'familles', label: 'Familles et locaux', emoji: '👨‍👩‍👧' },
+  { id: 'touristes', label: 'Touristes et visiteurs', emoji: '🌍' },
+  { id: 'pros', label: 'Professionnels midi', emoji: '💼' },
+  { id: 'etudiants', label: 'Étudiants et jeunes', emoji: '🎓' },
 ]
 
 const MOTIFS = [
-  {
-    value: 'nouveaux-clients',
-    name: 'Nouveaux clients',
-    desc: 'Attirer des inconnus',
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-        <path d="M11 2L3 8v12h6v-6h4v6h6V8L11 2z" stroke="#1D9E75" strokeWidth="1.8" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    value: 'fideliser',
-    name: 'Fidéliser',
-    desc: 'Garder les habitués',
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-        <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z" stroke="#1D9E75" strokeWidth="1.8" />
-      </svg>
-    ),
-  },
-  {
-    value: 'evenements',
-    name: 'Événements',
-    desc: 'Soirées, menus spéciaux',
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-        <path d="M8 12l3 3 7-7" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" />
-        <circle cx="11" cy="11" r="9" stroke="#1D9E75" strokeWidth="1.8" />
-      </svg>
-    ),
-  },
-  {
-    value: 'coulisses',
-    name: 'Coulisses',
-    desc: "Montrer l'équipe",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-        <circle cx="11" cy="8" r="4" stroke="#1D9E75" strokeWidth="1.8" />
-        <path d="M5 20c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-    ),
-  },
+  { value: 'nouveaux-clients', name: 'Nouveaux clients', desc: 'Attirer des inconnus', emoji: '🏠' },
+  { value: 'fideliser',        name: 'Fidéliser',        desc: 'Garder les habitués',  emoji: '❤️' },
+  { value: 'evenements',       name: 'Événements',       desc: 'Soirées spéciales',    emoji: '✅' },
+  { value: 'coulisses',        name: 'Coulisses',        desc: "Montrer l'équipe",     emoji: '👤' },
 ]
+
+function SectionLabel({ children }) {
+  return <p className="pc-section-label mb-3">{children}</p>
+}
 
 export default function Step3Clientele({ onNext }) {
   const updateRestaurant = useAppStore((s) => s.updateRestaurant)
@@ -84,43 +48,46 @@ export default function Step3Clientele({ onNext }) {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 px-5 pt-3 pb-[90px] space-y-4 overflow-y-auto">
+    <div className="flex flex-col h-full min-h-screen">
+      <div className="flex-1 px-6 pt-7 pb-[100px] space-y-7 overflow-y-auto">
+
+        {/* Step title */}
+        <div>
+          <h2 className="text-[26px] font-black tracking-[-0.04em] text-pc-ink leading-none mb-1">
+            Ta clientèle
+          </h2>
+          <p className="text-[13px] text-pc-ink-4">Pour des idées vraiment adaptées à ton public.</p>
+        </div>
+
         {/* Couverts */}
         <div>
-          <div className="flex items-start gap-[10px] mb-3">
-            <ChefAvatar size={32} />
-            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
-              Combien de couverts par service ?
-            </div>
-          </div>
+          <SectionLabel>Couverts par service</SectionLabel>
           <ScaleSelector options={COUVERTS} value={couverts} onChange={setCouverts} />
         </div>
 
-        {/* Profils clients */}
+        {/* Profils */}
         <div>
-          <div className="flex items-start gap-[10px] mb-3">
-            <ChefAvatar size={32} />
-            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
-              Qui sont tes clients ?
-            </div>
-          </div>
+          <SectionLabel>Qui sont tes clients ?</SectionLabel>
           <div className="space-y-2">
             {PROFILS.map((p) => {
-              const sel = profils.includes(p)
+              const sel = profils.includes(p.label)
               return (
                 <button
-                  key={p}
+                  key={p.id}
                   type="button"
-                  onClick={() => toggleProfil(p)}
-                  className={`w-full flex items-center justify-between px-4 py-[11px] rounded-elem border-[1.5px] text-[14px] font-medium transition-all duration-150 cursor-pointer
-                    ${sel ? 'border-pc-green bg-pc-green-light text-pc-green-dark' : 'border-pc-border bg-white text-[#111]'}`}
+                  onClick={() => toggleProfil(p.label)}
+                  className={`w-full flex items-center gap-3 px-4 py-[13px] rounded-elem border-[1.5px] text-[14px] font-medium transition-all duration-150
+                    ${sel
+                      ? 'border-pc-green bg-pc-green-light text-pc-green-dark'
+                      : 'border-pc-border bg-pc-surface text-pc-ink hover:border-pc-green/40'}`}
                 >
-                  {p}
-                  <div className={`w-[22px] h-[22px] rounded-full border-[1.5px] flex items-center justify-center flex-shrink-0 ${sel ? 'bg-pc-green border-pc-green' : 'border-[#d1d5db]'}`}>
+                  <span className="text-[18px] leading-none flex-shrink-0">{p.emoji}</span>
+                  <span className="flex-1 text-left">{p.label}</span>
+                  <div className={`w-5 h-5 rounded-full border-[1.5px] flex items-center justify-center flex-shrink-0 transition-all
+                    ${sel ? 'bg-pc-green border-pc-green' : 'border-pc-border'}`}>
                     {sel && (
-                      <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-                        <path d="M2 5.5l2.5 2.5 4.5-4.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M2 5l2.5 2.5 3.5-4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/>
                       </svg>
                     )}
                   </div>
@@ -132,28 +99,29 @@ export default function Step3Clientele({ onNext }) {
 
         {/* Objectif */}
         <div>
-          <div className="flex items-start gap-[10px] mb-3">
-            <ChefAvatar size={32} />
-            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
-              Ton objectif sur les réseaux ?
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-[10px]">
-            {MOTIFS.map((m) => (
-              <MotifCard
-                key={m.value}
-                icon={m.icon}
-                name={m.name}
-                desc={m.desc}
-                selected={objectif === m.value}
-                onClick={() => setObjectif(m.value)}
-              />
-            ))}
+          <SectionLabel>Objectif sur les réseaux</SectionLabel>
+          <div className="grid grid-cols-2 gap-3">
+            {MOTIFS.map((m) => {
+              const sel = objectif === m.value
+              return (
+                <button
+                  key={m.value}
+                  type="button"
+                  onClick={() => setObjectif(m.value)}
+                  className={`rounded-card border-[1.5px] p-4 text-left transition-all duration-150 bg-pc-surface
+                    ${sel ? 'border-pc-green bg-pc-green-light' : 'border-pc-border hover:border-pc-green/40'}`}
+                >
+                  <div className="text-[24px] leading-none mb-2">{m.emoji}</div>
+                  <div className={`text-[13px] font-bold mb-[2px] ${sel ? 'text-pc-green-dark' : 'text-pc-ink'}`}>{m.name}</div>
+                  <div className="text-[11px] text-pc-ink-4">{m.desc}</div>
+                </button>
+              )
+            })}
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 px-5 pb-8 pt-3 bg-white border-t border-pc-rule">
+      <div className="fixed bottom-0 left-0 right-0 md:absolute px-6 pb-8 pt-4 bg-white border-t border-pc-rule max-w-[360px] md:mx-auto w-full">
         <Button fullWidth onClick={handleNext}>
           Continuer
         </Button>

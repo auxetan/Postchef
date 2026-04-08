@@ -12,7 +12,7 @@ export default function MotifCard({ icon, name, desc, selected = false, onClick 
       <div className={`text-[13px] font-semibold mb-[2px] ${selected ? 'text-pc-green-dark' : 'text-[#111]'}`}>
         {name}
       </div>
-      <div className="text-[11px] text-pc-muted">{desc}</div>
+      <div className="text-[11px] text-pc-ink-4">{desc}</div>
     </button>
   )
 }
