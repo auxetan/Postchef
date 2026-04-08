@@ -85,12 +85,12 @@ export default function Step3Clientele({ onNext }) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 px-5 pt-4 pb-[110px] space-y-5">
+      <div className="flex-1 px-5 pt-3 pb-[90px] space-y-4 overflow-y-auto">
         {/* Couverts */}
         <div>
           <div className="flex items-start gap-[10px] mb-3">
-            <ChefAvatar size={36} />
-            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[14px] text-[14px] leading-[1.6] text-[#111] flex-1">
+            <ChefAvatar size={32} />
+            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
               Combien de couverts par service ?
             </div>
           </div>
@@ -100,8 +100,8 @@ export default function Step3Clientele({ onNext }) {
         {/* Profils clients */}
         <div>
           <div className="flex items-start gap-[10px] mb-3">
-            <ChefAvatar size={36} />
-            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[14px] text-[14px] leading-[1.6] text-[#111] flex-1">
+            <ChefAvatar size={32} />
+            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
               Qui sont tes clients ?
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function Step3Clientele({ onNext }) {
                   key={p}
                   type="button"
                   onClick={() => toggleProfil(p)}
-                  className={`w-full flex items-center justify-between px-4 py-[14px] rounded-elem border-[1.5px] text-[14px] font-medium transition-all duration-150 cursor-pointer
+                  className={`w-full flex items-center justify-between px-4 py-[11px] rounded-elem border-[1.5px] text-[14px] font-medium transition-all duration-150 cursor-pointer
                     ${sel ? 'border-pc-green bg-pc-green-light text-pc-green-dark' : 'border-pc-border bg-white text-[#111]'}`}
                 >
                   {p}
@@ -133,8 +133,8 @@ export default function Step3Clientele({ onNext }) {
         {/* Objectif */}
         <div>
           <div className="flex items-start gap-[10px] mb-3">
-            <ChefAvatar size={36} />
-            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[14px] text-[14px] leading-[1.6] text-[#111] flex-1">
+            <ChefAvatar size={32} />
+            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
               Ton objectif sur les réseaux ?
             </div>
           </div>
@@ -153,7 +153,7 @@ export default function Step3Clientele({ onNext }) {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 px-5 pb-7 pt-[14px] bg-white">
+      <div className="absolute bottom-0 left-0 right-0 px-5 pb-8 pt-3 bg-white border-t border-pc-rule">
         <Button fullWidth onClick={handleNext}>
           Continuer
         </Button>

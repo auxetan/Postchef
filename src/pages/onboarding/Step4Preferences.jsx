@@ -39,12 +39,12 @@ export default function Step4Preferences({ onNext }) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 px-5 pt-4 pb-[110px] space-y-5">
+      <div className="flex-1 px-5 pt-3 pb-[90px] space-y-4 overflow-y-auto">
         {/* Plateformes */}
         <div>
           <div className="flex items-start gap-[10px] mb-3">
-            <ChefAvatar size={36} />
-            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[14px] text-[14px] leading-[1.6] text-[#111] flex-1">
+            <ChefAvatar size={32} />
+            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
               Sur quelles plateformes tu postes ?
             </div>
           </div>
@@ -63,8 +63,8 @@ export default function Step4Preferences({ onNext }) {
         {/* Fréquence */}
         <div>
           <div className="flex items-start gap-[10px] mb-3">
-            <ChefAvatar size={36} />
-            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[14px] text-[14px] leading-[1.6] text-[#111] flex-1">
+            <ChefAvatar size={32} />
+            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
               À quelle fréquence veux-tu poster ?
             </div>
           </div>
@@ -74,8 +74,8 @@ export default function Step4Preferences({ onNext }) {
         {/* Style de contenu */}
         <div>
           <div className="flex items-start gap-[10px] mb-3">
-            <ChefAvatar size={36} />
-            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[14px] text-[14px] leading-[1.6] text-[#111] flex-1">
+            <ChefAvatar size={32} />
+            <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
               Quel style de contenu te parle le plus ?
             </div>
           </div>
@@ -92,7 +92,7 @@ export default function Step4Preferences({ onNext }) {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 px-5 pb-7 pt-[14px] bg-white">
+      <div className="absolute bottom-0 left-0 right-0 px-5 pb-8 pt-3 bg-white border-t border-pc-rule">
         <Button fullWidth onClick={handleNext}>
           Continuer
         </Button>

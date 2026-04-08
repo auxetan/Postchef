@@ -11,11 +11,11 @@ export default function Step7Notifications({ onNext }) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 px-5 pt-4 pb-[110px]">
+      <div className="flex-1 px-5 pt-4 pb-[90px]">
         {/* Chef bubble */}
         <div className="flex items-start gap-[10px] mb-5">
-          <ChefAvatar size={36} />
-          <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[14px] text-[14px] leading-[1.6] text-[#111] flex-1">
+          <ChefAvatar size={32} />
+          <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
             Active les notifications — je te rappelle tes posts chaque lundi matin.
           </div>
         </div>
@@ -44,7 +44,7 @@ export default function Step7Notifications({ onNext }) {
         </p>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 px-5 pb-7 pt-[14px] bg-white space-y-2">
+      <div className="absolute bottom-0 left-0 right-0 px-5 pb-8 pt-3 bg-white border-t border-pc-rule space-y-2">
         <Button fullWidth onClick={requestNotifications}>
           Activer les notifications
         </Button>

@@ -3,7 +3,7 @@ import Button from '../../components/ui/Button.jsx'
 export default function Step1Welcome({ onNext }) {
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 px-5 pt-4 pb-[110px]">
+      <div className="flex-1 px-5 pt-4 pb-[90px]">
         {/* Avatar Chef */}
         <div className="w-20 h-20 rounded-full bg-pc-green-light mx-auto mt-4 flex items-center justify-center">
           <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
@@ -17,7 +17,7 @@ export default function Step1Welcome({ onNext }) {
         <div className="h-[14px]" />
 
         {/* Bubble */}
-        <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[14px] text-[14px] leading-[1.6] text-[#111] mb-5">
+        <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] mb-5">
           Bonjour ! Je suis <strong>Chef</strong>, ton expert contenu restaurant.
           <br /><br />
           En 5 questions rapides, je construis ton calendrier de posts sur mesure.

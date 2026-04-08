@@ -47,13 +47,13 @@ export default function Step2Restaurant({ onNext }) {
   return (
     <>
       <div className="flex flex-col h-full">
-        <div className="flex-1 px-5 pt-4 pb-[110px] space-y-5 overflow-y-auto">
+        <div className="flex-1 px-5 pt-3 pb-[90px] space-y-4 overflow-y-auto">
 
           {/* Nom */}
           <div>
             <div className="flex items-start gap-[10px] mb-3">
               <ChefAvatar size={36} />
-              <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[14px] text-[14px] leading-[1.6] text-[#111] flex-1">
+              <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
                 Quel est le nom de ton restaurant ?
               </div>
             </div>
@@ -69,7 +69,7 @@ export default function Step2Restaurant({ onNext }) {
           <div>
             <div className="flex items-start gap-[10px] mb-3">
               <ChefAvatar size={36} />
-              <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[14px] text-[14px] leading-[1.6] text-[#111] flex-1">
+              <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
                 Dans quelle ville es-tu ?
               </div>
             </div>
@@ -85,7 +85,7 @@ export default function Step2Restaurant({ onNext }) {
           <div>
             <div className="flex items-start gap-[10px] mb-3">
               <ChefAvatar size={36} />
-              <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[14px] text-[14px] leading-[1.6] text-[#111] flex-1">
+              <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
                 Quel type de cuisine proposes-tu ?
               </div>
             </div>
@@ -137,7 +137,7 @@ export default function Step2Restaurant({ onNext }) {
           <div>
             <div className="flex items-start gap-[10px] mb-3">
               <ChefAvatar size={36} />
-              <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[14px] text-[14px] leading-[1.6] text-[#111] flex-1">
+              <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
                 Une spécialité signature ?
                 <span className="text-pc-hint text-[12px]"> (recommandé)</span>
               </div>
@@ -173,7 +173,7 @@ export default function Step2Restaurant({ onNext }) {
           <div>
             <div className="flex items-start gap-[10px] mb-3">
               <ChefAvatar size={36} />
-              <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[14px] text-[14px] leading-[1.6] text-[#111] flex-1">
+              <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
                 Tu as une photo de ta carte ?{' '}
                 {can('menuPhotoImport') ? (
                   <span>Je l'analyse pour des idées encore plus personnalisées. <span className="text-pc-hint text-[12px]">(optionnel)</span></span>
@@ -195,7 +195,7 @@ export default function Step2Restaurant({ onNext }) {
 
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 px-5 pb-7 pt-[14px] bg-white">
+        <div className="absolute bottom-0 left-0 right-0 px-5 pb-8 pt-3 bg-white border-t border-pc-rule">
           <Button fullWidth onClick={handleNext}>
             Continuer
           </Button>

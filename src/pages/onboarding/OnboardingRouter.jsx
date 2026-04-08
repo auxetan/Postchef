@@ -49,8 +49,9 @@ export default function OnboardingRouter() {
   const StepComponent = STEPS[step - 1]
 
   return (
-    <div className="min-h-screen bg-[#f1f3f5] flex items-start justify-center py-6 px-4">
-      <div className="w-[340px] bg-white rounded-[40px] border-2 border-pc-border overflow-hidden min-h-[680px] relative">
+    /* Mobile : plein écran blanc. Desktop : card centrée sur fond gris */
+    <div className="min-h-screen bg-white md:bg-[#f1f3f5] flex items-start md:items-start md:justify-center md:py-6 md:px-4">
+      <div className="w-full md:w-[360px] bg-white md:rounded-[40px] md:border-2 md:border-pc-border overflow-hidden min-h-screen md:min-h-[680px] relative">
         <ProgressBar step={step} total={8} />
         <AnimatePresence mode="wait">
           <motion.div

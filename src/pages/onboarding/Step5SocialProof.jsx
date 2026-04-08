@@ -11,11 +11,11 @@ const BARS = [
 export default function Step5SocialProof({ onNext }) {
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 px-5 pt-4 pb-[110px]">
+      <div className="flex-1 px-5 pt-4 pb-[90px]">
         {/* Chef bubble */}
         <div className="flex items-start gap-[10px] mb-4">
-          <ChefAvatar size={36} />
-          <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[14px] text-[14px] leading-[1.6] text-[#111] flex-1">
+          <ChefAvatar size={32} />
+          <div className="bg-pc-divider rounded-[20px_20px_20px_4px] px-4 py-[11px] text-[13px] leading-[1.55] text-[#111] flex-1">
             Les données parlent d'elles-mêmes.
           </div>
         </div>
