@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PostChef — Mockup v2</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --g:#1D9E75;--gd:#0F6E56;--gm:#5DCAA5;--gl:#E1F5EE;
+  --t:#0a0a0a;--mu:#6b7280;--hi:#9ca3af;
+  --br:#e5e7eb;--di:#f3f4f6;--bg:#f9fafb;--wh:#ffffff;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;background:#f1f3f5;min-height:100vh;}
+.nav{display:flex;gap:6px;flex-wrap:wrap;padding:1.5rem 1rem 0;justify-content:center;}
+.nb{padding:8px 14px;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--br);background:var(--wh);color:var(--mu);transition:all .15s;}
+.nb.active{background:var(--g);color:#fff;border-color:var(--g);}
+.screens{padding:1.5rem 1rem 3rem;}
+.screen{display:none;}.screen.active{display:block;}
+.phone{width:340px;margin:0 auto;background:#fff;border-radius:40px;border:2px solid var(--br);overflow:hidden;min-height:680px;position:relative;}
+.pb{height:4px;background:var(--gl);margin:12px 20px;}
+.pf{height:4px;background:var(--g);border-radius:2px;transition:width .4s;}
+.obs{padding:24px 20px 110px;}
+.bubble{background:#f3f4f6;border-radius:20px 20px 20px 4px;padding:14px 16px;font-size:14px;line-height:1.6;color:#111;}
+.h1{font-size:24px;font-weight:800;color:var(--t);line-height:1.25;margin-bottom:8px;letter-spacing:-.5px;}
+.sub{font-size:14px;color:var(--mu);line-height:1.6;margin-bottom:20px;}
+.chef-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;}
+.chef-av{width:36px;height:36px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.chip-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+.chip{padding:9px 15px;border-radius:100px;border:1.5px solid var(--br);font-size:13px;font-weight:500;cursor:pointer;color:#374151;background:#fff;transition:all .15s;}
+.chip.sel{background:var(--g);color:#fff;border-color:var(--g);}
+.choice{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:16px;border:1.5px solid var(--br);background:#fff;cursor:pointer;font-size:14px;font-weight:500;color:#111;margin-bottom:8px;transition:all .15s;}
+.choice.sel{border-color:var(--g);background:var(--gl);color:var(--gd);}
+.ck{width:22px;height:22px;border-radius:50%;border:1.5px solid #d1d5db;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.choice.sel .ck{background:var(--g);border-color:var(--g);}
+.btm{position:absolute;bottom:0;left:0;right:0;padding:14px 20px 28px;background:#fff;}
+.btn{width:100%;padding:15px;border-radius:16px;background:var(--g);color:#fff;font-size:15px;font-weight:700;border:none;cursor:pointer;}
+.btn:active{transform:scale(.98);}
+.btn.ghost{background:#fff;color:#374151;border:1.5px solid var(--br);margin-top:8px;}
+.sec-label{font-size:11px;font-weight:600;color:var(--hi);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+.met-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.met{background:#fff;border-radius:16px;padding:13px 15px;border:1px solid var(--di);}
+.met-n{font-size:26px;font-weight:800;color:var(--t);letter-spacing:-1px;}
+.met-l{font-size:11px;color:var(--hi);margin-top:1px;}
+.met-d{font-size:11px;font-weight:600;color:var(--g);margin-top:3px;}
+.post-item{background:#fff;border-radius:16px;padding:13px 15px;border:1px solid var(--di);display:flex;gap:11px;align-items:flex-start;margin-bottom:8px;}
+.p-day{font-size:10px;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.05em;min-width:28px;padding-top:2px;}
+.p-type{font-size:13px;font-weight:600;color:#111;margin-bottom:2px;}
+.p-desc{font-size:12px;color:var(--mu);line-height:1.5;}
+.pill{font-size:10px;font-weight:600;padding:2px 7px;border-radius:100px;}
+.pig{background:var(--gl);color:var(--gd);}
+.ptk{background:#f3f4f6;color:#374151;}
+.idea{background:var(--g);border-radius:16px;padding:13px 15px;color:#fff;margin-bottom:8px;}
+.idea-h{font-size:13px;font-weight:700;line-height:1.4;margin-bottom:3px;}
+.idea-f{font-size:11px;opacity:.8;}
+.scale-wrap{margin-bottom:18px;}
+.scale-row{display:flex;gap:6px;}
+.scale-btn{flex:1;padding:10px 4px;border-radius:12px;border:1.5px solid var(--br);background:#fff;font-size:12px;font-weight:600;color:var(--mu);cursor:pointer;text-align:center;transition:all .15s;line-height:1.3;}
+.scale-btn.sel{background:var(--g);color:#fff;border-color:var(--g);}
+.scale-btn span{display:block;font-size:10px;font-weight:400;opacity:.8;margin-top:1px;}
+.motif-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.motif-card{border-radius:16px;border:1.5px solid var(--br);padding:14px 12px;cursor:pointer;text-align:center;background:#fff;transition:all .15s;}
+.motif-card.sel{border-color:var(--g);background:var(--gl);}
+.motif-icon{width:44px;height:44px;border-radius:12px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;}
+.motif-name{font-size:13px;font-weight:600;color:#111;margin-bottom:2px;}
+.motif-desc{font-size:11px;color:var(--mu);}
+.motif-card.sel .motif-name{color:var(--gd);}
+.chart-wrap{background:#f9fafb;border-radius:16px;padding:16px;margin-bottom:16px;}
+.loader-ring{width:72px;height:72px;border:4px solid var(--gl);border-top-color:var(--g);border-radius:50%;margin:0 auto 20px;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ck-item{display:flex;align-items:center;gap:10px;font-size:13px;color:#374151;padding:11px 14px;background:#fff;border-radius:12px;border:1px solid var(--di);margin-bottom:8px;}
+.ck-icon{width:20px;height:20px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.plan{border:1.5px solid var(--br);border-radius:20px;padding:15px 17px;background:#fff;position:relative;margin-bottom:10px;cursor:pointer;}
+.plan.feat{border-color:var(--g);border-width:2px;}
+.plan-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--g);color:#fff;font-size:11px;font-weight:700;padding:3px 12px;border-radius:100px;white-space:nowrap;}
+.plan-name{font-size:15px;font-weight:700;color:#111;margin-bottom:2px;}
+.plan-price{font-size:28px;font-weight:800;color:var(--g);letter-spacing:-1px;}
+.plan-per{font-size:13px;color:var(--hi);font-weight:400;}
+.feat-row{font-size:12px;color:#374151;display:flex;align-items:center;gap:6px;margin-top:5px;}
+.fd{width:5px;height:5px;border-radius:50%;background:var(--g);flex-shrink:0;}
+.notif-frame{background:#f3f4f6;border-radius:20px;padding:16px;margin:12px 0;}
+.notif-card{background:#fff;border-radius:14px;padding:13px;display:flex;gap:11px;align-items:flex-start;border:2px solid var(--g);}
+.notif-icon{width:42px;height:42px;border-radius:11px;background:var(--g);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.notif-t{font-size:13px;font-weight:700;color:#111;margin-bottom:2px;}
+.notif-b{font-size:12px;color:var(--mu);line-height:1.4;}
+.site-nav-bar{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;border-bottom:1px solid var(--di);}
+.logo{font-size:17px;font-weight:800;color:var(--t);letter-spacing:-.3px;}
+.logo span{color:var(--g);}
+.site-btn{padding:9px 18px;border-radius:100px;background:var(--g);color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;}
+.site-hero{padding:40px 22px 32px;text-align:center;}
+.sh1{font-size:32px;font-weight:900;color:var(--t);line-height:1.15;letter-spacing:-1.2px;margin-bottom:14px;}
+.sh1 em{color:var(--g);font-style:normal;}
+.sp{font-size:14px;color:var(--mu);line-height:1.7;margin-bottom:24px;}
+.badge-row{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:20px;}
+.sbadge{font-size:11px;font-weight:500;color:var(--gd);background:var(--gl);padding:5px 12px;border-radius:100px;}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 22px 28px;}
+.fc{background:#f9fafb;border-radius:18px;padding:16px 14px;}
+.fi{width:34px;height:34px;border-radius:10px;background:var(--gl);display:flex;align-items:center;justify-content:center;margin-bottom:9px;}
+.ft{font-size:13px;font-weight:700;color:#111;margin-bottom:3px;}
+.fd2{font-size:11px;color:var(--hi);line-height:1.5;}
+.testi{background:#fff;border-radius:18px;padding:15px;border:1px solid var(--di);margin-bottom:9px;}
+.ta{width:34px;height:34px;border-radius:50%;background:var(--g);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.tn{font-size:13px;font-weight:700;color:#111;}
+.tr{font-size:11px;color:var(--hi);}
+.stars{color:#f59e0b;font-size:11px;letter-spacing:1px;margin-bottom:4px;}
+.tt{font-size:12px;color:#374151;line-height:1.6;}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <button class="nb active" onclick="show('welcome')">Accueil</button>
+  <button class="nb" onclick="show('questions')">Questions</button>
+  <button class="nb" onclick="show('social')">Social proof</button>
+  <button class="nb" onclick="show('loading')">Génération</button>
+  <button class="nb" onclick="show('notif')">Notifs</button>
+  <button class="nb" onclick="show('paywall')">Paywall</button>
+  <button class="nb" onclick="show('dashboard')">Dashboard</button>
+  <button class="nb" onclick="show('site')">Site web</button>
+</div>
+
+<div class="screens">
+
+<!-- WELCOME -->
+<div class="screen active" id="s-welcome">
+<div class="phone"><div>
+  <div class="pb"><div class="pf" style="width:8%"></div></div>
+  <div class="obs">
+    <div style="width:80px;height:80px;border-radius:50%;background:var(--gl);margin:16px auto 0;display:flex;align-items:center;justify-content:center;">
+      <svg width="42" height="42" viewBox="0 0 42 42" fill="none"><path d="M21 8c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z" fill="#1D9E75"/><path d="M14 28c0-3.87 3.13-7 7-7s7 3.13 7 7" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"/><path d="M10 21h4M28 21h4" stroke="#5DCAA5" stroke-width="2" stroke-linecap="round"/><circle cx="21" cy="21" r="18" stroke="#1D9E75" stroke-width="1.5"/></svg>
+    </div>
+    <div style="height:14px"></div>
+    <div class="bubble" style="margin-bottom:20px;">Bonjour ! Je suis <strong>Chef</strong>, ton expert contenu restaurant.<br><br>En 5 questions rapides, je construis ton calendrier de posts sur mesure.</div>
+    <div class="h1">Ton resto mérite<br>d'être vu.</div>
+    <div class="sub">Des idées fraîches chaque semaine, adaptées à ta cuisine et ta clientèle.</div>
+  </div>
+  <div class="btm"><button class="btn" onclick="show('questions')">Commencer — c'est gratuit</button></div>
+</div></div>
+</div>
+
+<!-- QUESTIONS -->
+<div class="screen" id="s-questions">
+<div class="phone"><div>
+  <div class="pb"><div class="pf" style="width:30%"></div></div>
+  <div class="obs">
+    <div class="chef-row">
+      <div class="chef-av"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" fill="#1D9E75"/><path d="M3 16c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="bubble" style="flex:1;margin:0;">Quel type de cuisine proposes-tu ?</div>
+    </div>
+    <div class="chip-wrap">
+      <div class="chip sel" onclick="this.classList.toggle('sel')">Française</div>
+      <div class="chip" onclick="this.classList.toggle('sel')">Italienne</div>
+      <div class="chip" onclick="this.classList.toggle('sel')">Japonaise</div>
+      <div class="chip" onclick="this.classList.toggle('sel')">Méditerranéenne</div>
+      <div class="chip" onclick="this.classList.toggle('sel')">Burger</div>
+      <div class="chip" onclick="this.classList.toggle('sel')">Végétarien</div>
+      <div class="chip" onclick="this.classList.toggle('sel')">Pizza</div>
+      <div class="chip" onclick="this.classList.toggle('sel')">Autre</div>
+    </div>
+    <div class="chef-row">
+      <div class="chef-av"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" fill="#1D9E75"/><path d="M3 16c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="bubble" style="flex:1;margin:0;">Combien de couverts par service ?</div>
+    </div>
+    <div class="scale-wrap">
+      <div class="scale-row" id="scale-couverts">
+        <div class="scale-btn" onclick="selScale('scale-couverts',this)">-20<span>petit</span></div>
+        <div class="scale-btn sel" onclick="selScale('scale-couverts',this)">20–50<span>moyen</span></div>
+        <div class="scale-btn" onclick="selScale('scale-couverts',this)">50–100<span>grand</span></div>
+        <div class="scale-btn" onclick="selScale('scale-couverts',this)">100+<span>très grand</span></div>
+      </div>
+    </div>
+    <div class="chef-row">
+      <div class="chef-av"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" fill="#1D9E75"/><path d="M3 16c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="bubble" style="flex:1;margin:0;">Qui sont tes clients ?</div>
+    </div>
+    <div class="choice sel" onclick="this.classList.toggle('sel')">Familles et locaux <div class="ck"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 5.5l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></div></div>
+    <div class="choice" onclick="this.classList.toggle('sel')">Touristes et visiteurs <div class="ck"></div></div>
+    <div class="choice" onclick="this.classList.toggle('sel')">Professionnels midi <div class="ck"></div></div>
+    <div class="choice" onclick="this.classList.toggle('sel')">Étudiants et jeunes <div class="ck"></div></div>
+    <div style="height:10px"></div>
+    <div class="chef-row">
+      <div class="chef-av"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" fill="#1D9E75"/><path d="M3 16c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="bubble" style="flex:1;margin:0;">Ton objectif sur les réseaux ?</div>
+    </div>
+    <div class="motif-grid">
+      <div class="motif-card sel" onclick="selMotif(this)">
+        <div class="motif-icon" style="background:var(--gl);"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L3 8v12h6v-6h4v6h6V8L11 2z" stroke="#1D9E75" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+        <div class="motif-name">Nouveaux clients</div><div class="motif-desc">Attirer des inconnus</div>
+      </div>
+      <div class="motif-card" onclick="selMotif(this)">
+        <div class="motif-icon" style="background:var(--gl);"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z" stroke="#1D9E75" stroke-width="1.8"/></svg></div>
+        <div class="motif-name">Fidéliser</div><div class="motif-desc">Garder les habitués</div>
+      </div>
+      <div class="motif-card" onclick="selMotif(this)">
+        <div class="motif-icon" style="background:var(--gl);"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M8 12l3 3 7-7" stroke="#1D9E75" stroke-width="1.8" stroke-linecap="round"/><circle cx="11" cy="11" r="9" stroke="#1D9E75" stroke-width="1.8"/></svg></div>
+        <div class="motif-name">Événements</div><div class="motif-desc">Soirées, menus spéciaux</div>
+      </div>
+      <div class="motif-card" onclick="selMotif(this)">
+        <div class="motif-icon" style="background:var(--gl);"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="4" stroke="#1D9E75" stroke-width="1.8"/><path d="M5 20c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#1D9E75" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <div class="motif-name">Coulisses</div><div class="motif-desc">Montrer l'équipe</div>
+      </div>
+    </div>
+  </div>
+  <div class="btm"><button class="btn" onclick="show('social')">Continuer</button></div>
+</div></div>
+</div>
+
+<!-- SOCIAL PROOF -->
+<div class="screen" id="s-social">
+<div class="phone"><div>
+  <div class="pb"><div class="pf" style="width:60%"></div></div>
+  <div class="obs">
+    <div class="chef-row">
+      <div class="chef-av"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" fill="#1D9E75"/><path d="M3 16c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="bubble" style="flex:1;margin:0;">Les données parlent d'elles-mêmes.</div>
+    </div>
+    <div class="chart-wrap">
+      <div style="font-size:12px;font-weight:600;color:var(--mu);margin-bottom:12px;text-align:center;">Fréquence de posts vs chiffre d'affaires mensuel</div>
+      <div style="position:relative;height:150px;display:flex;align-items:flex-end;gap:4px;padding-bottom:22px;padding-left:28px;">
+        <div style="position:absolute;left:0;top:0;bottom:22px;display:flex;flex-direction:column;justify-content:space-between;width:26px;">
+          <span style="font-size:9px;color:var(--hi);text-align:right;">+80%</span>
+          <span style="font-size:9px;color:var(--hi);text-align:right;">+40%</span>
+          <span style="font-size:9px;color:var(--hi);text-align:right;">0%</span>
+        </div>
+        <div style="flex:1;display:flex;gap:6px;align-items:flex-end;">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="display:flex;gap:2px;align-items:flex-end;width:100%;"><div style="flex:1;height:34px;background:#e5e7eb;border-radius:5px 5px 0 0;"></div><div style="flex:1;height:40px;background:var(--g);border-radius:5px 5px 0 0;"></div></div><span style="font-size:9px;color:var(--hi);">0–1/sem</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="display:flex;gap:2px;align-items:flex-end;width:100%;"><div style="flex:1;height:34px;background:#e5e7eb;border-radius:5px 5px 0 0;"></div><div style="flex:1;height:62px;background:var(--g);border-radius:5px 5px 0 0;"></div></div><span style="font-size:9px;color:var(--hi);">2–3/sem</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="display:flex;gap:2px;align-items:flex-end;width:100%;"><div style="flex:1;height:34px;background:#e5e7eb;border-radius:5px 5px 0 0;"></div><div style="flex:1;height:88px;background:var(--g);border-radius:5px 5px 0 0;"></div></div><span style="font-size:9px;color:var(--hi);">4–5/sem</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="display:flex;gap:2px;align-items:flex-end;width:100%;"><div style="flex:1;height:34px;background:#e5e7eb;border-radius:5px 5px 0 0;"></div><div style="flex:1;height:110px;background:var(--gd);border-radius:5px 5px 0 0;"></div></div><span style="font-size:9px;color:var(--hi);">6–7/sem</span></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:6px;">
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--mu);"><div style="width:10px;height:10px;border-radius:2px;background:#e5e7eb;"></div>Avant PostChef</div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--mu);"><div style="width:10px;height:10px;border-radius:2px;background:var(--g);"></div>Avec PostChef</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;">
+      <div style="background:var(--gl);border-radius:14px;padding:12px 8px;text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--gd);">+3h</div><div style="font-size:10px;color:var(--gm);margin-top:2px;line-height:1.3;">gagnées par semaine</div></div>
+      <div style="background:var(--gl);border-radius:14px;padding:12px 8px;text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--gd);">×4</div><div style="font-size:10px;color:var(--gm);margin-top:2px;line-height:1.3;">portée organique</div></div>
+      <div style="background:var(--gl);border-radius:14px;padding:12px 8px;text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--gd);">850+</div><div style="font-size:10px;color:var(--gm);margin-top:2px;line-height:1.3;">restos actifs</div></div>
+    </div>
+    <div style="background:#fff;border-radius:16px;padding:14px;border:1px solid var(--di);">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"><div style="width:32px;height:32px;border-radius:50%;background:var(--g);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">SR</div><div><div style="font-size:13px;font-weight:700;color:#111;">Sophie R.</div><div style="font-size:11px;color:var(--hi);">Chez Sophie · Aix-en-Provence</div></div></div>
+      <div class="stars">★★★★★</div>
+      <div style="font-size:12px;color:#374151;line-height:1.6;">"En 3 semaines, mes Reels ont doublé ma file d'attente le vendredi soir."</div>
+    </div>
+  </div>
+  <div class="btm"><button class="btn" onclick="show('loading')">Je veux mon plan</button></div>
+</div></div>
+</div>
+
+<!-- LOADING -->
+<div class="screen" id="s-loading">
+<div class="phone"><div>
+  <div class="pb"><div class="pf" style="width:78%"></div></div>
+  <div class="obs" style="text-align:center;padding-top:40px;">
+    <div class="loader-ring"></div>
+    <div style="font-size:20px;font-weight:800;color:var(--t);margin-bottom:6px;letter-spacing:-.5px;">Chef prépare ton plan...</div>
+    <div style="font-size:13px;color:var(--mu);margin-bottom:28px;">Analyse de ta niche et de ta clientèle</div>
+    <div style="text-align:left;">
+      <div class="ck-item"><div class="ck-icon"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 5.5l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>Profil restaurant analysé</div>
+      <div class="ck-item"><div class="ck-icon"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 5.5l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>Tendances locales détectées</div>
+      <div class="ck-item"><div class="ck-icon"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 5.5l2.5 2.5 4.5-4.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>Formats optimaux sélectionnés</div>
+      <div class="ck-item" style="opacity:.4;"><div class="ck-icon" style="background:#e5e7eb;"></div>Calendrier en cours...</div>
+      <div class="ck-item" style="opacity:.4;"><div class="ck-icon" style="background:#e5e7eb;"></div>Hooks IA générés...</div>
+    </div>
+  </div>
+  <div class="btm"><button class="btn" onclick="show('notif')">Voir le résultat</button></div>
+</div></div>
+</div>
+
+<!-- NOTIF -->
+<div class="screen" id="s-notif">
+<div class="phone"><div>
+  <div class="pb"><div class="pf" style="width:90%"></div></div>
+  <div class="obs">
+    <div class="chef-row">
+      <div class="chef-av"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" fill="#1D9E75"/><path d="M3 16c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="bubble" style="flex:1;margin:0;">Active les notifications — je te rappelle tes posts chaque lundi matin.</div>
+    </div>
+    <div class="notif-frame">
+      <div style="font-size:10px;color:var(--hi);text-align:center;margin-bottom:10px;">Aperçu notification</div>
+      <div class="notif-card">
+        <div class="notif-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2C6.48 2 2 6.48 2 11s4.48 9 9 9 9-4.48 9-9-4.48-9-9-9zm-1 13.5v-8l6 4-6 4z" fill="#fff"/></svg></div>
+        <div><div class="notif-t">Tes posts de la semaine sont prêts</div><div class="notif-b">3 idées fraîches t'attendent — 5 min et c'est réglé.</div></div>
+      </div>
+    </div>
+    <div style="font-size:20px;font-weight:800;color:var(--t);margin:14px 0 6px;letter-spacing:-.5px;">Ne rate jamais un bon moment.</div>
+    <div style="font-size:13px;color:var(--mu);line-height:1.6;">Rappels intelligents selon ton rythme. Facile à désactiver à tout moment.</div>
+  </div>
+  <div class="btm">
+    <button class="btn" onclick="show('paywall')">Activer les notifications</button>
+    <button class="btn ghost" onclick="show('paywall')">Peut-être plus tard</button>
+  </div>
+</div></div>
+</div>
+
+<!-- PAYWALL -->
+<div class="screen" id="s-paywall">
+<div class="phone"><div>
+  <div class="pb"><div class="pf" style="width:100%"></div></div>
+  <div class="obs">
+    <div style="text-align:center;margin-bottom:18px;">
+      <div style="font-size:22px;font-weight:800;color:var(--t);letter-spacing:-.5px;margin-bottom:4px;">Ton plan est prêt.</div>
+      <div style="font-size:13px;color:var(--mu);">Choisis comment débloquer PostChef.</div>
+    </div>
+    <div class="plan feat">
+      <div class="plan-badge">Recommandé · -35%</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><div class="plan-name">Pro Annuel</div><div class="plan-price">19€<span class="plan-per">/mois</span></div><div style="font-size:11px;color:var(--hi);margin-top:2px;">228€/an · facturé annuellement</div></div>
+        <div style="width:22px;height:22px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:4px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="feat-row"><div class="fd"></div>IA illimitée · toutes plateformes</div>
+      <div class="feat-row"><div class="fd"></div>Calendrier + briefs visuels complets</div>
+      <div class="feat-row"><div class="fd"></div>Veille tendances hebdo</div>
+      <div class="feat-row"><div class="fd"></div>Widget mobile + notifications</div>
+    </div>
+    <div class="plan">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div><div class="plan-name">Pro Mensuel</div><div class="plan-price" style="font-size:22px;">29€<span class="plan-per">/mois</span></div></div>
+        <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid var(--br);"></div>
+      </div>
+    </div>
+    <div class="plan">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div><div class="plan-name">Starter</div><div class="plan-price" style="color:#374151;font-size:20px;">Gratuit<span class="plan-per"> · 7 jours</span></div></div>
+        <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid var(--br);"></div>
+      </div>
+      <div class="feat-row" style="color:var(--hi);margin-top:6px;"><div class="fd" style="background:#d1d5db;"></div>5 idées/sem · 1 plateforme uniquement</div>
+    </div>
+    <div style="font-size:11px;color:var(--hi);text-align:center;margin-top:8px;">Sans engagement · Annulable à tout moment</div>
+  </div>
+  <div class="btm"><button class="btn" onclick="show('dashboard')">Essayer gratuitement 7 jours</button></div>
+</div></div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="screen" id="s-dashboard">
+<div class="phone">
+  <div style="background:#f9fafb;min-height:680px;">
+    <div style="background:#fff;padding:14px 20px;border-bottom:1px solid var(--di);">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="font-size:19px;font-weight:800;color:var(--t);letter-spacing:-.5px;">Bonjour, Marco</div><div style="font-size:12px;color:var(--hi);margin-top:1px;">Semaine du 7 avril · 3 posts à faire</div></div>
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" fill="#1D9E75"/><path d="M3 16c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      </div>
+    </div>
+    <div style="padding:14px 18px;">
+      <div class="sec-label">Cette semaine</div>
+      <div class="met-row">
+        <div class="met"><div class="met-n">3</div><div class="met-l">Posts planifiés</div><div class="met-d">+1 vs sem. der.</div></div>
+        <div class="met"><div class="met-n">847</div><div class="met-l">Vues estimées</div><div class="met-d">+23%</div></div>
+      </div>
+      <div class="sec-label">Calendrier</div>
+      <div class="post-item"><div class="p-day">LUN</div><div><div class="p-type">Plat du jour en vidéo</div><div class="p-desc">Filme ton plat signature en 15s — lumière naturelle</div><div style="display:flex;gap:5px;margin-top:5px;"><span class="pill pig">Instagram</span><span class="pill ptk">TikTok</span></div></div></div>
+      <div class="post-item"><div class="p-day">MER</div><div><div class="p-type">Coulisses cuisine</div><div class="p-desc">Prépa du matin, ambiance authentique</div><div style="display:flex;gap:5px;margin-top:5px;"><span class="pill pig">Instagram</span></div></div></div>
+      <div class="post-item"><div class="p-day">VEN</div><div><div class="p-type">Avis client mis en avant</div><div class="p-desc">Meilleur Google Review + photo du plat</div><div style="display:flex;gap:5px;margin-top:5px;"><span class="pill pig">Instagram</span><span class="pill ptk">TikTok</span></div></div></div>
+      <div class="sec-label" style="margin-top:16px;">Idées IA du moment</div>
+      <div class="idea"><div class="idea-h">"POV : tu prépares le meilleur plat de toute ma vie"</div><div class="idea-f">Storytime · TikTok · Fort potentiel</div></div>
+      <div class="idea" style="background:var(--gd);"><div class="idea-h">"Ce que les touristes commandent vs les locaux"</div><div class="idea-f">Comparaison · Instagram Reels</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SITE -->
+<div class="screen" id="s-site">
+<div class="phone">
+  <div style="background:#fff;min-height:800px;">
+    <div class="site-nav-bar"><div class="logo">Post<span>Chef</span></div><button class="site-btn" onclick="show('welcome')">Essayer</button></div>
+    <div class="site-hero">
+      <div class="sh1">Ton resto mérite<br>d'être <em>vu.</em></div>
+      <div class="sp">PostChef génère ton calendrier TikTok & Instagram en 3 minutes. Adapté à ta cuisine, ta clientèle, ton rythme.</div>
+      <button class="site-btn" style="font-size:15px;padding:14px 28px;border-radius:100px;" onclick="show('welcome')">Commencer gratuitement</button>
+      <div class="badge-row"><div class="sbadge">Sans CB</div><div class="sbadge">7 jours offerts</div><div class="sbadge">850+ restos</div></div>
+    </div>
+    <div style="padding:0 22px 8px;"><div style="font-size:11px;font-weight:600;color:var(--g);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Fonctionnalités</div><div style="font-size:22px;font-weight:900;color:var(--t);letter-spacing:-.8px;margin-bottom:18px;">Tout ce qu'il te faut,<br>rien de plus.</div></div>
+    <div class="feat-grid">
+      <div class="fc"><div class="fi"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1D9E75" stroke-width="1.8"><rect x="2" y="2" width="14" height="14" rx="2"/><line x1="6" y1="2" x2="6" y2="16"/><line x1="12" y1="2" x2="12" y2="16"/><line x1="2" y1="8" x2="16" y2="8"/></svg></div><div class="ft">Calendrier IA</div><div class="fd2">7 jours de posts planifiés auto</div></div>
+      <div class="fc"><div class="fi"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1D9E75" stroke-width="1.8"><path d="M9 2l2 5h5l-4 3 1.5 5L9 12l-4.5 3L6 10 2 7h5z"/></svg></div><div class="ft">Hooks viraux</div><div class="fd2">Accroches testées pour TikTok</div></div>
+      <div class="fc"><div class="fi"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1D9E75" stroke-width="1.8"><circle cx="9" cy="9" r="7"/><line x1="9" y1="4" x2="9" y2="9"/><line x1="9" y1="9" x2="12" y2="12"/></svg></div><div class="ft">Veille locale</div><div class="fd2">Tendances et événements</div></div>
+      <div class="fc"><div class="fi"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1D9E75" stroke-width="1.8"><path d="M2 14l4-4 3 3 5-6 4 7H2z"/></svg></div><div class="ft">Briefs visuels</div><div class="fd2">Angle, lumière, mise en scène</div></div>
+    </div>
+    <div style="padding:24px 22px 32px;background:#f9fafb;">
+      <div style="font-size:20px;font-weight:900;color:var(--t);letter-spacing:-.8px;margin-bottom:14px;">Ils en parlent mieux que nous.</div>
+      <div class="testi"><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"><div class="ta">SR</div><div><div class="tn">Sophie R.</div><div class="tr">Chez Sophie · Aix-en-Provence</div></div></div><div class="stars">★★★★★</div><div class="tt">"En 3 semaines, mes Reels ont doublé ma file d'attente le vendredi soir."</div></div>
+      <div class="testi"><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"><div class="ta" style="background:var(--gm);">ML</div><div><div class="tn">Marco L.</div><div class="tr">La Trattoria · Marseille</div></div></div><div class="stars">★★★★★</div><div class="tt">"J'aurais jamais trouvé ces idées seul. Le brief visuel m'a tout changé."</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div>
+
+<script>
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-'+id).classList.add('active');
+  const map={welcome:0,questions:1,social:2,loading:3,notif:4,paywall:5,dashboard:6,site:7};
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nb')[map[id]].classList.add('active');
+}
+function selScale(id,el){
+  document.querySelectorAll('#'+id+' .scale-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function selMotif(el){
+  document.querySelectorAll('.motif-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+</script>
+</body>
+</html>
