@@ -4,9 +4,33 @@ import ScaleSelector from '../../components/ui/ScaleSelector.jsx'
 import useAppStore from '../../store/useAppStore.js'
 
 const PLATEFORMES = [
-  { id: 'TikTok',    emoji: '🎵', color: 'text-pc-ink-2' },
-  { id: 'Instagram', emoji: '📸', color: 'text-[#c026d3]' },
-  { id: 'Facebook',  emoji: '👥', color: 'text-[#2563eb]' },
+  {
+    id: 'TikTok',
+    icon: (
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M18 3a4 4 0 0 0 4 4V11a8 8 0 0 1-4-1v6a7 7 0 1 1-7-7v4a3 3 0 1 0 3 3V3h4z"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'Instagram',
+    icon: (
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="20" height="20" rx="6"/>
+        <circle cx="13" cy="13" r="5"/>
+        <circle cx="19.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'Facebook',
+    icon: (
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="13" cy="13" r="10"/>
+        <path d="M16 8h-2a3 3 0 0 0-3 3v2H9v3h2v6h3v-6h2l1-3h-3v-2a1 1 0 0 1 1-1h2V8z"/>
+      </svg>
+    ),
+  },
 ]
 
 const FREQUENCES = [
@@ -17,11 +41,50 @@ const FREQUENCES = [
 ]
 
 const STYLES = [
-  { id: 'Vidéo courte', emoji: '🎬' },
-  { id: 'Photo plat',   emoji: '🍽️' },
-  { id: 'Coulisses',    emoji: '👨‍🍳' },
-  { id: 'Témoignages',  emoji: '💬' },
-  { id: 'Tendances',    emoji: '🔥' },
+  {
+    id: 'Vidéo courte',
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="1" y="3" width="9" height="8" rx="1.5"/>
+        <path d="M10 5.5l3-2v7l-3-2"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'Photo plat',
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="7" cy="7" r="3.5"/>
+        <ellipse cx="7" cy="12.5" rx="5.5" ry="1" strokeWidth="1.4"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'Coulisses',
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="7" cy="5" r="2.5"/>
+        <path d="M2 13c0-2.76 2.24-5 5-5s5 2.24 5 5"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'Témoignages',
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h2v2l3-2h5a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'Tendances',
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M1 10l4-4 3 3 5-6"/>
+        <path d="M9 3h4v4"/>
+      </svg>
+    ),
+  },
 ]
 
 function SectionLabel({ children }) {
@@ -74,7 +137,7 @@ export default function Step4Preferences({ onNext }) {
                   className={`rounded-card border-[1.5px] py-4 flex flex-col items-center gap-2 transition-all duration-150
                     ${sel ? 'border-pc-green bg-pc-green-light' : 'border-pc-border bg-pc-surface hover:border-pc-green/40'}`}
                 >
-                  <span className="text-[26px] leading-none">{p.emoji}</span>
+                  <span className={`${sel ? 'text-pc-green-dark' : 'text-pc-ink-3'}`}>{p.icon}</span>
                   <span className={`text-[12px] font-bold ${sel ? 'text-pc-green-dark' : 'text-pc-ink'}`}>{p.id}</span>
                 </button>
               )
@@ -102,7 +165,7 @@ export default function Step4Preferences({ onNext }) {
                   className={`flex items-center gap-2 px-4 py-[9px] rounded-pill border-[1.5px] text-[13px] font-medium transition-all duration-150
                     ${sel ? 'bg-pc-green text-white border-pc-green' : 'bg-pc-surface text-pc-ink border-pc-border hover:border-pc-green/40'}`}
                 >
-                  <span className="text-[14px] leading-none">{s.emoji}</span>
+                  <span className={sel ? 'text-white' : 'text-pc-ink-3'}>{s.icon}</span>
                   {s.id}
                 </button>
               )

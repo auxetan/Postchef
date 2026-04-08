@@ -1,5 +1,36 @@
 import Button from '../../components/ui/Button.jsx'
 
+const BENEFITS = [
+  {
+    title: '5 questions',
+    sub: 'Profil complet en moins de 2 min',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="9" cy="9" r="7.5"/>
+        <path d="M9 6v4l2.5 1.5"/>
+      </svg>
+    ),
+  },
+  {
+    title: 'Idées IA sur mesure',
+    sub: 'Hooks, formats, légendes prêts à poster',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 2l1.8 5H16l-4.2 3 1.6 5L9 12.5 5.6 15l1.6-5L3 7h5.2z"/>
+      </svg>
+    ),
+  },
+  {
+    title: 'Gratuit pour commencer',
+    sub: 'Sans CB — upgrade quand tu veux',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 9l5 5 7-8"/>
+      </svg>
+    ),
+  },
+]
+
 export default function Step1Welcome({ onNext }) {
   return (
     <div className="flex flex-col h-full min-h-screen">
@@ -7,13 +38,12 @@ export default function Step1Welcome({ onNext }) {
 
         {/* Chef icon */}
         <div className="w-[72px] h-[72px] rounded-[22px] bg-pc-green-light flex items-center justify-center mb-8">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-            <circle cx="18" cy="12" r="6" fill="#1D9E75"/>
-            <path d="M5 34c0-7.18 5.82-13 13-13s13 5.82 13 13" stroke="#1D9E75" strokeWidth="2.2" strokeLinecap="round"/>
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round">
+            <circle cx="18" cy="12" r="6" fill="#1D9E75" stroke="none"/>
+            <path d="M5 34c0-7.18 5.82-13 13-13s13 5.82 13 13" strokeWidth="2.2"/>
           </svg>
         </div>
 
-        {/* Headline */}
         <h1 className="text-[34px] font-black tracking-[-0.04em] text-pc-ink leading-[1.1] mb-4">
           Ton resto<br/>mérite d'être<br/>vu.
         </h1>
@@ -21,16 +51,11 @@ export default function Step1Welcome({ onNext }) {
           PostChef génère tes idées TikTok & Instagram en 3 minutes — adaptées à ta cuisine, ta clientèle, ton rythme.
         </p>
 
-        {/* Benefits */}
         <div className="space-y-4">
-          {[
-            { icon: '✦', title: '5 questions', sub: 'Profil complet en moins de 2 min' },
-            { icon: '✦', title: 'Idées IA sur mesure', sub: 'Hooks, formats, légendes prêts à poster' },
-            { icon: '✦', title: 'Gratuit pour commencer', sub: 'Sans CB — upgrade quand tu veux' },
-          ].map((b) => (
+          {BENEFITS.map((b) => (
             <div key={b.title} className="flex items-start gap-4">
               <div className="w-8 h-8 rounded-[10px] bg-pc-green-light flex items-center justify-center flex-shrink-0 mt-[2px]">
-                <span className="text-[13px] text-pc-green font-black">{b.icon}</span>
+                {b.icon}
               </div>
               <div>
                 <p className="text-[14px] font-bold text-pc-ink leading-none mb-[3px]">{b.title}</p>
