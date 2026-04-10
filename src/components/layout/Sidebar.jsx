@@ -35,6 +35,16 @@ const NAV = [
     ),
   },
   {
+    to: '/app/studio',
+    label: 'Studio',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="1" y="3" width="14" height="10" rx="2"/>
+        <path d="M6 6.5l4.5 3-4.5 3V6.5z"/>
+      </svg>
+    ),
+  },
+  {
     to: '/app/trends',
     label: 'Tendances',
     icon: (

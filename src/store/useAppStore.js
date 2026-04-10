@@ -70,6 +70,8 @@ const useAppStore = create(
         videoScriptUsedThisMonth:    0,
         // Légendes QuickCapture — reset 1er du mois
         captionUsedThisMonth:        0,
+        // Reels Studio — reset 1er du mois
+        videoReelUsedThisMonth:      0,
         monthStart:                  getThisMonth(),
       },
 
@@ -85,6 +87,16 @@ const useAppStore = create(
 
       // ── Bibliothèque d'idées sauvegardées ──
       savedIdeas: [],
+
+      // ── Studio (Virality Engine) ──
+      studio: {
+        clips: [],           // [{ id, file, url, duration, thumbnail, analysisLabel }]
+        directive: null,     // ViralityDirective JSON généré par Claude
+        renderStatus: null,  // null | 'pending' | 'rendering' | 'done' | 'error'
+        renderUrl: null,     // URL du MP4 final Creatomate
+        renderId: null,      // ID du render Creatomate pour polling
+        lastGenerated: null, // ISO date
+      },
 
       // ── Actions onboarding ──
       setOnboardingStep: (step) =>
@@ -157,6 +169,7 @@ const useAppStore = create(
             restaurantBrainUsedThisMonth: 0,
             videoScriptUsedThisMonth:     0,
             captionUsedThisMonth:         0,
+            videoReelUsedThisMonth:       0,
             monthStart:                   getThisMonth(),
           },
         })),
@@ -185,6 +198,7 @@ const useAppStore = create(
               restaurantBrainUsedThisMonth: monthChanged ? 0 : (u.restaurantBrainUsedThisMonth ?? 0),
               videoScriptUsedThisMonth:     monthChanged ? 0 : (u.videoScriptUsedThisMonth ?? 0),
               captionUsedThisMonth:         monthChanged ? 0 : (u.captionUsedThisMonth ?? 0),
+              videoReelUsedThisMonth:       monthChanged ? 0 : (u.videoReelUsedThisMonth ?? 0),
               monthStart:                   thisMonth,
             },
           }
@@ -220,6 +234,31 @@ const useAppStore = create(
       setMenuPhoto:     (photo)   => set({ menuPhoto: photo }),
       setIdeas:         (ideas)   => set({ ideas }),
       setIdeasLoading:  (loading) => set({ ideasLoading: loading }),
+
+      // ── Actions studio ──
+      setClips: (clips) =>
+        set((s) => ({ studio: { ...s.studio, clips } })),
+      addClip: (clip) =>
+        set((s) => ({ studio: { ...s.studio, clips: [...s.studio.clips, clip] } })),
+      removeClip: (id) =>
+        set((s) => ({ studio: { ...s.studio, clips: s.studio.clips.filter((c) => c.id !== id) } })),
+      setDirective: (directive) =>
+        set((s) => ({ studio: { ...s.studio, directive } })),
+      setRenderStatus: (status) =>
+        set((s) => ({ studio: { ...s.studio, renderStatus: status } })),
+      setRenderUrl: (url) =>
+        set((s) => ({ studio: { ...s.studio, renderUrl: url } })),
+      setRenderId: (id) =>
+        set((s) => ({ studio: { ...s.studio, renderId: id } })),
+      resetStudio: () =>
+        set(() => ({
+          studio: { clips: [], directive: null, renderStatus: null, renderUrl: null, renderId: null, lastGenerated: null },
+        })),
+
+      incrementVideoReelUsed: () =>
+        set((s) => ({
+          usage: { ...s.usage, videoReelUsedThisMonth: (s.usage.videoReelUsedThisMonth ?? 0) + 1 },
+        })),
 
       // ── Actions bibliothèque ──
       saveIdea: (idea) =>

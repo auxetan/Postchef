@@ -81,6 +81,8 @@ export const API_COSTS = {
   restaurantBrain:   0.004,
   // DALL-E 3 standard 1024×1024
   dishPhoto:         0.040,
+  // Creatomate 720p 15sec + Claude Haiku analysis
+  videoReel:         0.073,
 }
 
 /**
@@ -201,6 +203,16 @@ export const FEATURES = {
     starter:     false,
     pro_monthly: true,
     pro_annual:  true,
+  },
+
+  // — Reels Studio (par mois, reset 1er du mois) —
+  // Starter : 0 (feature gated derrière Pro)
+  // Pro Monthly : 5 reels → max ~$0.37/mois
+  // Pro Annual : 20 reels → max ~$1.46/mois
+  videoReelPerMonth: {
+    starter:     0,
+    pro_monthly: 5,
+    pro_annual:  20,
   },
 }
 

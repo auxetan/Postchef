@@ -20,20 +20,20 @@ const TABS = [
     ),
   },
   {
+    to: '/app/studio', label: 'Studio',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="1" y="3" width="14" height="10" rx="2"/>
+        <path d="M6 6.5l4.5 3-4.5 3V6.5z"/>
+      </svg>
+    ),
+  },
+  {
     to: '/app/ideas', label: 'Idées',
     icon: (
       <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
         <path d="M8 1a5 5 0 013.5 8.5V11a1 1 0 01-1 1h-5a1 1 0 01-1-1V9.5A5 5 0 018 1z"/>
         <path d="M6 13.5h4M6.5 15h3"/>
-      </svg>
-    ),
-  },
-  {
-    to: '/app/trends', label: 'Tendances',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M1 14l3-4 3 2 4-7 4 5"/>
-        <path d="M10 5h4v4"/>
       </svg>
     ),
   },

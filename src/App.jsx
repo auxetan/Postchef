@@ -9,6 +9,7 @@ import Ideas from './pages/Ideas.jsx'
 import Analytics from './pages/Analytics.jsx'
 import Account from './pages/Account.jsx'
 import Trends from './pages/Trends.jsx'
+import Studio from './pages/Studio.jsx'
 import useAppStore from './store/useAppStore.js'
 
 function UsageResetGuard() {
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="calendar" element={<Calendar />} />
           <Route path="ideas" element={<Ideas />} />
           <Route path="trends" element={<Trends />} />
+          <Route path="studio" element={<Studio />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="account" element={<Account />} />
         </Route>
