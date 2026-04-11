@@ -188,49 +188,57 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
     <div className="min-h-screen bg-pc-bg">
 
       {/* ── Header ─────────────────────────────────────────────── */}
-      <div className="bg-pc-surface border-b border-pc-border sticky top-0 z-30">
-        <div className="px-6 pt-7 pb-0 flex items-end justify-between max-w-2xl mx-auto">
-          <h1 className="text-[26px] font-black tracking-[-0.04em] text-pc-ink leading-none pb-4">
+      <div
+        className="sticky top-0 z-30"
+        style={{
+          background: 'rgba(247,247,245,0.85)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          borderBottom: '1px solid rgba(0,0,0,0.06)',
+        }}
+      >
+        <div className="px-5 pt-7 pb-4 flex items-center justify-between max-w-2xl mx-auto">
+          <h1 className="text-[28px] font-[800] tracking-[-0.03em] text-pc-ink leading-none">
             Idées IA
           </h1>
           {tab === 'ideas' && (
-            <div className="pb-4">
-              <button
-                onClick={handleGenerate}
-                disabled={loading || !canGenerateMore}
-                className={`flex items-center gap-2 px-4 py-[9px] rounded-btn text-[13px] font-bold transition-all disabled:opacity-40
-                  ${isExhausted
-                    ? 'bg-pc-bg border border-pc-border text-pc-ink-3 cursor-not-allowed'
-                    : 'bg-pc-green text-white hover:bg-pc-green-dark'}`}
-              >
-                {loading ? (
-                  <>
-                    <span className="w-3 h-3 rounded-full animate-spin inline-block" style={{ border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff' }} />
-                    En cours…
-                  </>
-                ) : isExhausted ? 'Quota atteint' : (
-                  <>
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 1v10M1 6h10"/></svg>
-                    Générer
-                  </>
-                )}
-              </button>
-            </div>
+            <button
+              onClick={handleGenerate}
+              disabled={loading || !canGenerateMore}
+              className="flex items-center gap-[7px] px-4 py-[9px] rounded-pill text-[13px] font-[700] transition-all disabled:opacity-50"
+              style={isExhausted
+                ? { background: 'rgba(0,0,0,0.05)', color: '#A3A3A3', cursor: 'not-allowed' }
+                : { background: '#1D9E75', color: 'white', boxShadow: '0 4px 14px rgba(29,158,117,0.28)' }
+              }
+            >
+              {loading ? (
+                <>
+                  <span className="w-[13px] h-[13px] rounded-full animate-spin inline-block" style={{ border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff' }} />
+                  En cours…
+                </>
+              ) : isExhausted ? 'Quota atteint' : (
+                <>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M6 1v10M1 6h10"/></svg>
+                  Générer
+                </>
+              )}
+            </button>
           )}
         </div>
 
         {/* Tabs */}
-        <div className="flex max-w-2xl mx-auto border-t border-pc-rule">
+        <div className="flex max-w-2xl mx-auto px-5 gap-6">
           {[['ideas', 'Idées IA'], ['bibliotheque', 'Bibliothèque']].map(([t, l]) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`flex-1 py-3 text-[12px] font-semibold border-b-2 transition-all flex items-center justify-center gap-[6px]
-                ${tab === t ? 'border-pc-ink text-pc-ink' : 'border-transparent text-pc-ink-4 hover:text-pc-ink-2'}`}
+              className={`py-3 text-[13px] font-[${tab === t ? '700' : '500'}] border-b-[2.5px] transition-all flex items-center gap-[6px] ${
+                tab === t ? 'border-pc-green text-pc-ink' : 'border-transparent text-pc-ink-4 hover:text-pc-ink'
+              }`}
             >
               {l}
               {t === 'bibliotheque' && savedIdeas.length > 0 && (
-                <span className="text-[10px] bg-pc-ink text-white rounded-full w-[18px] h-[18px] flex items-center justify-center font-bold">
+                <span className="text-[9px] font-[700] bg-pc-ink text-white rounded-full w-[17px] h-[17px] flex items-center justify-center">
                   {savedIdeas.length}
                 </span>
               )}
@@ -270,10 +278,13 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
 
           {/* Platform lock */}
           {allowedPlatformsCount !== Infinity && allowedPlatformsCount < 3 && (
-            <div className="bg-[#fefce8] border border-[#fde68a] rounded-btn px-4 py-3 flex items-center justify-between">
-              <span className="text-[12px] text-[#713f12]">
-                <span className="font-semibold">Starter :</span> 1 plateforme.{' '}
-                <span className="text-[#92400e]">Pro = toutes.</span>
+            <div
+              className="rounded-[14px] px-4 py-3 flex items-center justify-between"
+              style={{ background: 'rgba(29,158,117,0.06)', border: '1px solid rgba(29,158,117,0.15)' }}
+            >
+              <span className="text-[12px] text-pc-ink-2 font-[500]">
+                <span className="font-[700] text-pc-green">Starter :</span> 1 plateforme.{' '}
+                Pro = toutes.
               </span>
               <FeatureLock feature="platforms" compact />
             </div>
@@ -299,22 +310,34 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
             </div>
           )}
 
-          {/* Filters — text underline style */}
-          <div className="space-y-3">
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+          {/* Filters — pill chips */}
+          <div className="space-y-2">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
               {PLATFORMS.map((p) => (
-                <button key={p} onClick={() => setPlatform(p)}
-                  className={`text-[12px] font-semibold pb-1 whitespace-nowrap flex-shrink-0 border-b-2 transition-all
-                    ${platform === p ? 'border-pc-ink text-pc-ink' : 'border-transparent text-pc-ink-4 hover:text-pc-ink-2'}`}>
+                <button
+                  key={p}
+                  onClick={() => setPlatform(p)}
+                  className="whitespace-nowrap flex-shrink-0 text-[12px] font-[600] px-[14px] py-[6px] rounded-pill transition-all duration-150 press-scale"
+                  style={platform === p
+                    ? { background: '#0A0A0A', color: 'white' }
+                    : { background: 'rgba(0,0,0,0.05)', color: '#737373' }
+                  }
+                >
                   {p}
                 </button>
               ))}
             </div>
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
               {FORMATS.map((f) => (
-                <button key={f} onClick={() => setFormat(f)}
-                  className={`text-[12px] font-semibold pb-1 whitespace-nowrap flex-shrink-0 border-b-2 transition-all
-                    ${format === f ? 'border-pc-green text-pc-green' : 'border-transparent text-pc-ink-4 hover:text-pc-ink-2'}`}>
+                <button
+                  key={f}
+                  onClick={() => setFormat(f)}
+                  className="whitespace-nowrap flex-shrink-0 text-[12px] font-[600] px-[14px] py-[6px] rounded-pill transition-all duration-150 press-scale"
+                  style={format === f
+                    ? { background: '#1D9E75', color: 'white' }
+                    : { background: 'rgba(0,0,0,0.05)', color: '#737373' }
+                  }
+                >
                   {f}
                 </button>
               ))}
@@ -390,41 +413,58 @@ function IdeaCard({ idea, isSaved, expanded, hashtagsFor, restaurant,
   const hashtags    = showHashtags ? generateHashtags(idea, restaurant) : []
   const pc = PLATFORM_COLOR[idea.plateforme] || { text: 'text-pc-ink-3', badge: 'bg-pc-bg border-pc-border text-pc-ink-3' }
 
-  return (
-    <div className="bg-pc-surface border border-pc-border rounded-card overflow-hidden">
+  const scoreColor = idea.score >= 80 ? '#1D9E75' : idea.score >= 60 ? '#F59E0B' : '#A3A3A3'
 
+  return (
+    <div
+      className="bg-white overflow-hidden rounded-[20px]"
+      style={{ boxShadow: '0 2px 16px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05)' }}
+    >
       <div className="px-5 pt-5 pb-4">
-        {/* Platform + difficulty row */}
-        <div className="flex items-center justify-between mb-3">
+        {/* Top row: platform + score + bookmark */}
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <span className={`text-[11px] font-bold border rounded-[6px] px-[8px] py-[3px] ${pc.badge}`}>
+            <span
+              className="text-[10px] font-[700] px-[9px] py-[4px] rounded-pill"
+              style={
+                idea.plateforme === 'TikTok'
+                  ? { background: 'rgba(10,10,10,0.07)', color: '#0A0A0A' }
+                  : idea.plateforme === 'Instagram'
+                  ? { background: 'rgba(29,158,117,0.10)', color: '#1D9E75' }
+                  : { background: 'rgba(37,99,235,0.08)', color: '#2563eb' }
+              }
+            >
               {idea.plateforme}
             </span>
-            <span className="text-[11px] text-pc-ink-4 font-medium">{idea.format}</span>
+            <span className="text-[11px] text-pc-ink-4 font-[500]">{idea.format}</span>
           </div>
           <div className="flex items-center gap-2">
-            {idea.difficulte && (
-              <span className={`text-[11px] font-semibold ${DIFF_COLOR[idea.difficulte] || 'text-pc-ink-3'}`}>
-                {idea.difficulte}
-              </span>
+            {idea.score && (
+              <div
+                className="text-[11px] font-[700] px-[8px] py-[3px] rounded-pill"
+                style={{ background: `${scoreColor}14`, color: scoreColor }}
+              >
+                {idea.score}
+              </div>
             )}
             <button
               onClick={(e) => onBookmark(idea, e)}
-              className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-pc-bg transition-colors"
+              className="w-8 h-8 flex items-center justify-center rounded-full transition-colors press-scale"
+              style={{ background: isSaved ? 'rgba(29,158,117,0.10)' : 'rgba(0,0,0,0.04)' }}
             >
-              <svg width="15" height="15" viewBox="0 0 15 15"
+              <svg width="14" height="14" viewBox="0 0 14 14"
                 fill={isSaved ? '#1D9E75' : 'none'}
-                stroke={isSaved ? '#1D9E75' : '#D4D4D4'}
-                strokeWidth="1.5">
-                <path d="M3 2.5h9a1 1 0 011 1v9.5l-5-3-5 3V3.5a1 1 0 011-1z" strokeLinecap="round" strokeLinejoin="round"/>
+                stroke={isSaved ? '#1D9E75' : '#A3A3A3'}
+                strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2.5 2h9a1 1 0 011 1v9l-5-3-5 3V3a1 1 0 011-1z"/>
               </svg>
             </button>
           </div>
         </div>
 
-        {/* Hook — the star of the card */}
-        <p className="text-[15px] font-bold text-pc-ink leading-[1.45] mb-4 tracking-[-0.01em]">
-          "{idea.hook}"
+        {/* Hook — the star */}
+        <p className="text-[15px] font-[700] text-pc-ink leading-[1.5] mb-4 tracking-[-0.01em]">
+          &ldquo;{idea.hook}&rdquo;
         </p>
 
         {/* Actions */}
@@ -432,22 +472,26 @@ function IdeaCard({ idea, isSaved, expanded, hashtagsFor, restaurant,
           {canBrief ? (
             <button
               onClick={() => onExpand(isExpanded ? null : idea.id)}
-              className={`flex-1 text-[12px] font-semibold py-[8px] rounded-btn border transition-colors
-                ${isExpanded
-                  ? 'bg-pc-ink text-white border-pc-ink'
-                  : 'bg-pc-bg border-pc-border text-pc-ink-2 hover:border-pc-ink hover:text-pc-ink'}`}>
+              className="flex-1 text-[12px] font-[600] py-[9px] rounded-pill transition-all press-scale"
+              style={isExpanded
+                ? { background: '#0A0A0A', color: 'white' }
+                : { background: 'rgba(0,0,0,0.05)', color: '#404040' }
+              }
+            >
               {isExpanded ? '↑ Masquer' : 'Voir le brief'}
             </button>
           ) : (
-            <div className="flex-1 flex items-center justify-center gap-2 border border-pc-rule rounded-btn py-[8px] text-[12px] text-pc-ink-4 bg-pc-bg">
+            <div className="flex-1 flex items-center justify-center gap-2 rounded-pill py-[9px] text-[12px] text-pc-ink-4" style={{ background: 'rgba(0,0,0,0.04)' }}>
               Brief visuel <FeatureLock feature="briefVisuel" compact />
             </div>
           )}
           <button
             onClick={() => onSchedule(idea)}
-            className="flex-1 text-[12px] font-bold text-white bg-pc-green rounded-btn py-[8px] hover:bg-pc-green-dark transition-colors flex items-center justify-center gap-[6px]">
-            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-              <rect x="1" y="2" width="9" height="8" rx="1"/>
+            className="flex-1 text-[12px] font-[700] text-white rounded-pill py-[9px] transition-colors flex items-center justify-center gap-[6px] press-scale"
+            style={{ background: '#1D9E75', boxShadow: '0 2px 10px rgba(29,158,117,0.25)' }}
+          >
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <rect x="1" y="2" width="9" height="8" rx="1.5"/>
               <path d="M3.5 1v2M7.5 1v2M1 5h9"/>
             </svg>
             Planifier
@@ -457,49 +501,56 @@ function IdeaCard({ idea, isSaved, expanded, hashtagsFor, restaurant,
 
       {/* Expanded brief */}
       {isExpanded && canBrief && (
-        <div className="border-t border-pc-rule px-5 py-5 space-y-5 bg-pc-bg">
+        <div className="border-t border-pc-rule px-5 py-5 space-y-5" style={{ background: '#FAFAF9' }}>
           <div>
             <p className="pc-section-label mb-2">Brief visuel</p>
-            <p className="text-[13px] text-pc-ink-2 leading-[1.65]">{idea.brief}</p>
+            <p className="text-[13px] text-pc-ink-2 leading-[1.65] font-[450]">{idea.brief}</p>
           </div>
-
           <div>
-            <p className="pc-section-label mb-2">Légende</p>
-            <p className="text-[13px] text-pc-ink-3 leading-[1.65] mb-3">{idea.legende}</p>
-            <button onClick={(e) => onCopyLegend(idea.legende, e)}
-              className="text-[12px] font-semibold text-pc-ink border border-pc-border rounded-btn px-4 py-[6px] hover:bg-pc-surface transition-colors">
+            <p className="pc-section-label mb-2">Légende prête à poster</p>
+            <p className="text-[13px] text-pc-ink-3 leading-[1.65] mb-3 font-[450]">{idea.legende}</p>
+            <button
+              onClick={(e) => onCopyLegend(idea.legende, e)}
+              className="text-[12px] font-[600] text-pc-ink px-4 py-[7px] rounded-pill transition-colors press-scale"
+              style={{ background: 'rgba(0,0,0,0.06)' }}
+            >
               Copier la légende
             </button>
           </div>
-
           <div>
             <p className="pc-section-label mb-2">Hashtags viraux</p>
             {showHashtags ? (
               <>
                 <div className="flex flex-wrap gap-[6px] mb-3">
                   {hashtags.map((tag) => (
-                    <span key={tag} className="text-[11px] font-semibold bg-pc-green-light text-pc-green border border-pc-green/20 px-[10px] py-[4px] rounded-[6px]">
+                    <span
+                      key={tag}
+                      className="text-[11px] font-[600] px-[10px] py-[4px] rounded-pill"
+                      style={{ background: 'rgba(29,158,117,0.10)', color: '#1D9E75' }}
+                    >
                       {tag}
                     </span>
                   ))}
                 </div>
-                <button onClick={(e) => onCopyHashtags(hashtags, e)}
-                  className="text-[12px] font-semibold text-pc-ink border border-pc-border rounded-btn px-4 py-[6px] hover:bg-pc-surface transition-colors">
+                <button
+                  onClick={(e) => onCopyHashtags(hashtags, e)}
+                  className="text-[12px] font-[600] text-pc-ink px-4 py-[7px] rounded-pill press-scale"
+                  style={{ background: 'rgba(0,0,0,0.06)' }}
+                >
                   Copier les hashtags
                 </button>
               </>
             ) : (
-              <button onClick={() => onHashtags(idea.id)}
-                className="flex items-center gap-2 text-[12px] font-semibold text-pc-green border border-pc-green/30 rounded-btn px-4 py-[6px] bg-pc-green-light hover:bg-pc-green hover:text-white hover:border-pc-green transition-colors">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                  <path d="M2 4h8M2 8h8M5 1l-1 10M8 1l-1 10"/>
-                </svg>
+              <button
+                onClick={() => onHashtags(idea.id)}
+                className="flex items-center gap-2 text-[12px] font-[600] text-pc-green px-4 py-[7px] rounded-pill press-scale"
+                style={{ background: 'rgba(29,158,117,0.10)', border: '1px solid rgba(29,158,117,0.20)' }}
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M2 4h8M2 8h8M5 1l-1 10M8 1l-1 10"/></svg>
                 Générer les hashtags
               </button>
             )}
           </div>
-
-          {/* Video Script Generator */}
           <div>
             <p className="pc-section-label mb-2">Script vidéo</p>
             <VideoScriptGenerator idea={idea} />

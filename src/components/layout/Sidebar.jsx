@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import useAppStore from '../../store/useAppStore.js'
 import { PLAN_DISPLAY_NAMES } from '../../utils/plans.js'
 
@@ -7,128 +8,180 @@ const NAV = [
     to: '/app',
     end: true,
     label: 'Dashboard',
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M1 7L8 1l7 6v7a1 1 0 01-1 1H2a1 1 0 01-1-1V7z"/>
-        <path d="M5 15V9h6v6"/>
+    icon: (active) => (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M1 7L8 1l7 6v7a1 1 0 01-1 1H2a1 1 0 01-1-1V7z"
+          stroke="currentColor" strokeWidth={active ? 2 : 1.75} strokeLinecap="round" strokeLinejoin="round"
+          fill={active ? 'currentColor' : 'none'} fillOpacity={active ? 0.12 : 0}
+        />
+        <path d="M5 15V9h6v6" stroke="currentColor" strokeWidth={active ? 2 : 1.75} strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
   },
   {
     to: '/app/calendar',
     label: 'Calendrier',
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
-        <rect x="1" y="3" width="14" height="12" rx="2"/>
-        <path d="M5 1v3M11 1v3M1 7h14"/>
+    icon: (active) => (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="3" width="14" height="12" rx="2.5"
+          stroke="currentColor" strokeWidth={active ? 2 : 1.75}
+          fill={active ? 'currentColor' : 'none'} fillOpacity={active ? 0.10 : 0}
+        />
+        <path d="M5 1v3M11 1v3M1 7h14" stroke="currentColor" strokeWidth={active ? 2 : 1.75} strokeLinecap="round"/>
       </svg>
     ),
   },
   {
     to: '/app/ideas',
     label: 'Idées IA',
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
-        <path d="M8 1a5 5 0 013.5 8.5V11a1 1 0 01-1 1h-5a1 1 0 01-1-1V9.5A5 5 0 018 1z"/>
-        <path d="M6 13.5h4M6.5 15h3"/>
+    icon: (active) => (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M8 1a5 5 0 013.5 8.5V11a1 1 0 01-1 1h-5a1 1 0 01-1-1V9.5A5 5 0 018 1z"
+          stroke="currentColor" strokeWidth={active ? 2 : 1.75} strokeLinecap="round"
+          fill={active ? 'currentColor' : 'none'} fillOpacity={active ? 0.12 : 0}
+        />
+        <path d="M6 13.5h4M6.5 15h3" stroke="currentColor" strokeWidth={active ? 2 : 1.75} strokeLinecap="round"/>
       </svg>
     ),
   },
   {
     to: '/app/studio',
     label: 'Studio',
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="1" y="3" width="14" height="10" rx="2"/>
-        <path d="M6 6.5l4.5 3-4.5 3V6.5z"/>
+    icon: (active) => (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="3" width="14" height="10" rx="2.5"
+          stroke="currentColor" strokeWidth={active ? 2 : 1.75} strokeLinecap="round"
+          fill={active ? 'currentColor' : 'none'} fillOpacity={active ? 0.10 : 0}
+        />
+        <path d="M6 6.5l4.5 3-4.5 3V6.5z"
+          fill="currentColor" stroke="currentColor"
+          strokeWidth={active ? 0 : 1.6} strokeLinejoin="round"
+          fillOpacity={active ? 1 : 0.7}
+        />
       </svg>
     ),
   },
   {
     to: '/app/trends',
     label: 'Tendances',
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M1 14l3-4 3 2 4-7 4 5"/>
-        <path d="M10 5h4v4"/>
+    icon: (active) => (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M1 14l3-4 3 2 4-7 4 5" stroke="currentColor" strokeWidth={active ? 2 : 1.75} strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M10 5h4v4" stroke="currentColor" strokeWidth={active ? 2 : 1.75} strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
   },
   {
     to: '/app/analytics',
     label: 'Analytics',
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M1 13l4-5 3 3 4-6 3 8"/>
+    icon: (active) => (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M1 13l4-5 3 3 4-6 3 8" stroke="currentColor" strokeWidth={active ? 2 : 1.75} strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
   },
   {
     to: '/app/account',
     label: 'Compte',
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
-        <circle cx="8" cy="5" r="3"/>
-        <path d="M1 14c0-3.31 3.13-6 7-6s7 2.69 7 6"/>
+    icon: (active) => (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="5" r="3"
+          stroke="currentColor" strokeWidth={active ? 2 : 1.75}
+          fill={active ? 'currentColor' : 'none'} fillOpacity={active ? 0.12 : 0}
+        />
+        <path d="M1 14c0-3.31 3.13-6 7-6s7 2.69 7 6" stroke="currentColor" strokeWidth={active ? 2 : 1.75} strokeLinecap="round"/>
       </svg>
     ),
   },
 ]
 
-const PLAN_BADGE = {
-  starter:     { label: 'Starter',      cls: 'text-pc-ink-3' },
-  pro_monthly: { label: 'Pro Mensuel',  cls: 'text-[#2563eb]' },
-  pro_annual:  { label: 'Pro Annuel',   cls: 'text-pc-green' },
+const PLAN_CONFIG = {
+  starter:     { label: 'Starter',     bg: 'rgba(0,0,0,0.05)',        color: '#737373' },
+  pro_monthly: { label: 'Pro Mensuel', bg: 'rgba(37,99,235,0.08)',    color: '#2563eb' },
+  pro_annual:  { label: 'Pro Annuel',  bg: 'rgba(29,158,117,0.10)',   color: '#1D9E75' },
+  pro:         { label: 'Pro',         bg: 'rgba(29,158,117,0.10)',   color: '#1D9E75' },
 }
 
 export default function Sidebar() {
   const plan = useAppStore((s) => s.user?.plan || 'starter')
-  const badge = PLAN_BADGE[plan] || PLAN_BADGE.starter
+  const restaurantName = useAppStore((s) => s.onboarding?.restaurant?.name || 'Mon Restaurant')
+  const cfg = PLAN_CONFIG[plan] || PLAN_CONFIG.starter
+  const initials = restaurantName.split(' ').slice(0, 2).map(w => w[0]?.toUpperCase()).join('')
 
   return (
-    <aside className="hidden lg:flex flex-col w-[220px] h-screen bg-pc-surface border-r border-pc-border fixed left-0 top-0 z-40">
-
+    <aside
+      className="hidden lg:flex flex-col w-[220px] h-screen fixed left-0 top-0 z-40"
+      style={{ background: '#FFFFFF', borderRight: '1px solid rgba(0,0,0,0.06)' }}
+    >
       {/* Wordmark */}
-      <div className="px-6 py-6 border-b border-pc-rule">
-        <span className="text-[17px] font-black tracking-[-0.04em] text-pc-ink">
+      <div className="px-6 pt-7 pb-6">
+        <span className="text-[18px] font-[800] tracking-[-0.03em] text-pc-ink">
           Post<span className="text-pc-green">Chef</span>
         </span>
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 py-4 px-2 space-y-px">
+      <nav className="flex-1 px-3 space-y-[2px] overflow-y-auto">
         {NAV.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.end}
-            className={({ isActive }) =>
-              `relative flex items-center gap-3 px-4 py-[10px] rounded-[10px] text-[13px] font-medium transition-all duration-100
-              ${isActive
-                ? 'text-pc-ink bg-pc-bg font-semibold'
-                : 'text-pc-ink-3 hover:text-pc-ink-2 hover:bg-pc-bg'}`
-            }
           >
             {({ isActive }) => (
-              <>
+              <div className="relative">
                 {isActive && (
-                  <span className="absolute left-0 top-[6px] bottom-[6px] w-[3px] bg-pc-green rounded-full" />
+                  <motion.div
+                    layoutId="sidebar-active"
+                    className="absolute inset-0 rounded-[12px]"
+                    style={{ background: 'rgba(29,158,117,0.08)' }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                  />
                 )}
-                <span className={isActive ? 'text-pc-green' : 'text-current'}>
-                  {item.icon}
-                </span>
-                {item.label}
-              </>
+                <div
+                  className={`relative flex items-center gap-[10px] px-3 py-[9px] rounded-[12px] text-[13px] font-[${isActive ? '700' : '500'}] transition-all duration-100 ${
+                    isActive
+                      ? 'text-pc-green'
+                      : 'text-pc-ink-3 hover:text-pc-ink hover:bg-[rgba(0,0,0,0.03)]'
+                  }`}
+                >
+                  <span style={{ color: isActive ? '#1D9E75' : 'inherit' }}>
+                    {item.icon(isActive)}
+                  </span>
+                  <span className={isActive ? 'font-[700]' : 'font-[500]'}>
+                    {item.label}
+                  </span>
+                </div>
+              </div>
             )}
           </NavLink>
         ))}
       </nav>
 
-      {/* Plan indicator */}
-      <div className="px-5 py-4 border-t border-pc-rule">
-        <div className="text-[10px] font-bold uppercase tracking-caps text-pc-ink-4 mb-[3px]">Plan</div>
-        <div className={`text-[13px] font-bold ${badge.cls}`}>
-          {PLAN_DISPLAY_NAMES[plan] || 'Starter'}
+      {/* Restaurant + Plan footer */}
+      <div
+        className="mx-3 mb-5 p-3 rounded-[14px]"
+        style={{ background: 'rgba(0,0,0,0.03)' }}
+      >
+        <div className="flex items-center gap-3">
+          {/* Avatar */}
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-[800] text-white flex-shrink-0"
+            style={{ background: 'linear-gradient(135deg, #1D9E75 0%, #0F6E56 100%)' }}
+          >
+            {initials || '🍽️'}
+          </div>
+          <div className="min-w-0">
+            <div className="text-[12px] font-[700] text-pc-ink truncate leading-tight">
+              {restaurantName}
+            </div>
+            <div
+              className="inline-flex items-center px-[6px] py-[2px] rounded-[5px] text-[10px] font-[700] mt-[3px]"
+              style={{ background: cfg.bg, color: cfg.color }}
+            >
+              {cfg.label}
+            </div>
+          </div>
         </div>
       </div>
     </aside>

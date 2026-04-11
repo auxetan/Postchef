@@ -10,7 +10,7 @@ export default function AppShell() {
   return (
     <div className="min-h-screen bg-pc-bg">
       <Sidebar />
-      <main className="lg:ml-[220px] pb-20 lg:pb-0">
+      <main className="lg:ml-[220px] pb-28 lg:pb-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
