@@ -2,43 +2,16 @@ import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import useAppStore from '../../store/useAppStore'
 import useToastStore from '../../store/useToastStore'
-import { useCreatomate } from '../../hooks/useCreatomate'
 
 export default function VideoRenderStatus({ onNewVideo }) {
   const renderStatus = useAppStore((s) => s.studio.renderStatus)
-  const renderUrl = useAppStore((s) => s.studio.renderUrl)
-  const renderId = useAppStore((s) => s.studio.renderId)
-  const directive = useAppStore((s) => s.studio.directive)
-  const addPost = useAppStore((s) => s.addPost)
-  const addReel = useAppStore((s) => s.addReel)
-  const toast = useToastStore((s) => s.toast)
-  const { pollRender } = useCreatomate()
-  const intervalRef = useRef(null)
+  const renderUrl    = useAppStore((s) => s.studio.renderUrl)
+  const directive    = useAppStore((s) => s.studio.directive)
+  const addPost      = useAppStore((s) => s.addPost)
+  const addReel      = useAppStore((s) => s.addReel)
+  const toast        = useToastStore((s) => s.toast)
   const reelSavedRef = useRef(false)
-
-  // Polling du statut Creatomate avec gestion d'erreur réseau
-  useEffect(() => {
-    if (renderId && renderStatus === 'rendering') {
-      let failCount = 0
-      intervalRef.current = setInterval(async () => {
-        try {
-          const status = await pollRender(renderId)
-          failCount = 0
-          if (status === 'succeeded' || status === 'failed') {
-            clearInterval(intervalRef.current)
-          }
-        } catch {
-          failCount++
-          // Abandon après 5 erreurs réseau consécutives
-          if (failCount >= 5) {
-            clearInterval(intervalRef.current)
-            toast('Connexion perdue pendant le rendu', 'error')
-          }
-        }
-      }, 3000)
-      return () => clearInterval(intervalRef.current)
-    }
-  }, [renderId, renderStatus, pollRender, toast])
+  // Polling géré dans useShotstack — rien à faire ici.
 
   // Sauvegarde automatique dans l'historique quand le render est terminé
   useEffect(() => {

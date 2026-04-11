@@ -4,7 +4,7 @@ import useAppStore from '../../store/useAppStore'
 import useToastStore from '../../store/useToastStore'
 import { buildViralityPrompt } from '../../utils/viralityPrompt'
 import { uploadClip } from '../../utils/uploadClip'
-import { useCreatomate } from '../../hooks/useCreatomate'
+import { useShotstack } from '../../hooks/useShotstack'
 import TimelinePreview from './TimelinePreview'
 import MusicSelector from './MusicSelector'
 import HookVariantPicker from './HookVariantPicker'
@@ -86,7 +86,7 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
   const clientele = useAppStore((s) => s.onboarding.clientele)
   const brandKit = useAppStore((s) => s.brandKit)
   const toast = useToastStore((s) => s.toast)
-  const { startRender } = useCreatomate()
+  const { startRender } = useShotstack()
 
   const [platform, setPlatform] = useState('TikTok')
   const [objective, setObjective] = useState('notoriété')
@@ -233,7 +233,19 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
       }
       setDirective(finalDirective)
 
-      await startRender(finalDirective, uploadedClips)
+      const brollVideos = (finalDirective.b_roll_slots || [])
+        .filter((s) => s.enabled)
+        .map((s) => ({
+          afterClip: s.after_clip,
+          videoUrl:  s.videoUrl  || null,
+          imageUrl:  s.imageUrl  || null,
+          duration:  s.duration  || 1.5,
+        }))
+      await startRender(finalDirective, uploadedClips, {
+        wordTimings: [],
+        brollVideos,
+        brandKit,
+      })
       incrementVideoReelUsed()
       onRenderStart()
     } catch (e) {
