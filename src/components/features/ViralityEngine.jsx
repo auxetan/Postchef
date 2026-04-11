@@ -4,6 +4,7 @@ import useAppStore from '../../store/useAppStore'
 import useToastStore from '../../store/useToastStore'
 import { buildViralityPrompt } from '../../utils/viralityPrompt'
 import { uploadClip } from '../../utils/uploadClip'
+import { uploadToCdn } from '../../utils/ingestAsset'
 import { transcribeClipSequence } from '../../utils/whisper'
 import { useShotstack } from '../../hooks/useShotstack'
 import TimelinePreview from './TimelinePreview'
@@ -251,6 +252,19 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
         }
       }
 
+      // Upload du logo vers CDN public (Shotstack n'accepte pas les data URLs)
+      let resolvedBrandKit = brandKit
+      if (brandKit?.logoDataUrl && !brandKit?.logoUrl) {
+        try {
+          const logoUrl = await uploadToCdn(brandKit.logoDataUrl, 'logo.png')
+          resolvedBrandKit = { ...brandKit, logoUrl }
+          useAppStore.getState().setBrandKit({ logoUrl }) // cache pour éviter re-upload
+        } catch (e) {
+          console.warn('[brandkit] logo upload failed, rendu sans logo', e)
+          resolvedBrandKit = { ...brandKit, logoDataUrl: null }
+        }
+      }
+
       const brollVideos = (finalDirective.b_roll_slots || [])
         .filter((s) => s.enabled)
         .map((s) => ({
@@ -262,7 +276,7 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
       await startRender(finalDirective, uploadedClips, {
         wordTimings,
         brollVideos,
-        brandKit,
+        brandKit: resolvedBrandKit,
       })
       incrementVideoReelUsed()
       onRenderStart()
