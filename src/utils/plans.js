@@ -31,6 +31,15 @@ export const PLANS = {
     badge: 'Recommandé · -35%',
     color: '#0F6E56',
   },
+  premium: {
+    id: 'premium',
+    name: 'Premium',
+    price: '99€',
+    priceSub: '/mois',
+    monthly: 99,
+    badge: 'Tout illimité · Chef IA',
+    color: '#7C3AED',
+  },
 }
 
 /**
@@ -93,58 +102,57 @@ export const FEATURES = {
   // — Idées IA (par semaine, reset lundi) —
   ideasPerWeek: {
     starter:     5,
-    pro_monthly: 20,
+    pro_monthly: Infinity,
     pro_annual:  Infinity,
+    premium:     Infinity,
   },
 
   // — Photos IA DALL-E (par mois, reset 1er du mois) —
-  // Starter/Pro Monthly : 0 (prompt seulement, pas de vrai appel DALL-E)
-  // Pro Annual : 30 images/mois max → coût plafonné à ~$1.20/mois
   dishPhotoPerMonth: {
     starter:     0,
-    pro_monthly: 0,
+    pro_monthly: 30,
     pro_annual:  30,
+    premium:     Infinity,
   },
 
   // — Analyses RestaurantBrain (par mois, reset 1er du mois) —
   restaurantBrainPerMonth: {
     starter:     0,
-    pro_monthly: 5,
+    pro_monthly: 20,
     pro_annual:  20,
+    premium:     Infinity,
   },
 
   // — Scripts vidéo IA (par mois, reset 1er du mois) —
-  // Starter : 0 (feature déjà gated derrière briefVisuel)
-  // Pro Monthly : 30 scripts → max $0.075/mois
-  // Pro Annual : illimité (coût négligeable à $0.0025/script)
   videoScriptPerMonth: {
     starter:     0,
-    pro_monthly: 30,
+    pro_monthly: Infinity,
     pro_annual:  Infinity,
+    premium:     Infinity,
   },
 
   // — Légendes IA QuickCapture (par mois, reset 1er du mois) —
-  // Starter : 5 légendes/mois → hook sans surexposition
-  // Pro Monthly : 30 → max $0.060/mois
-  // Pro Annual : illimité ($0.002/légende)
   captionPerMonth: {
     starter:     5,
-    pro_monthly: 30,
+    pro_monthly: Infinity,
     pro_annual:  Infinity,
+    premium:     Infinity,
   },
 
   // — Plateformes simultanées —
   platforms: {
     starter:     1,
-    pro_monthly: 2,
+    pro_monthly: Infinity,
     pro_annual:  Infinity,
+    premium:     Infinity,
   },
 
   // — Calendrier : posts max/semaine —
   calendarPostsPerWeek: {
     starter:     3,
-    pro_monthly: 14,
+    pro_monthly: Infinity,
     pro_annual:  Infinity,
+    premium:     Infinity,
   },
 
   // — Brief visuel dans les idées —
@@ -152,6 +160,7 @@ export const FEATURES = {
     starter:     false,
     pro_monthly: true,
     pro_annual:  true,
+    premium:     true,
   },
 
   // — Overlay cuisine étendue (60+ types + recherche) —
@@ -159,6 +168,7 @@ export const FEATURES = {
     starter:     false,
     pro_monthly: true,
     pro_annual:  true,
+    premium:     true,
   },
 
   // — Overlay spécialité avec recherche —
@@ -166,6 +176,7 @@ export const FEATURES = {
     starter:     false,
     pro_monthly: true,
     pro_annual:  true,
+    premium:     true,
   },
 
   // — Import photo de carte / menu —
@@ -173,29 +184,31 @@ export const FEATURES = {
     starter:     false,
     pro_monthly: true,
     pro_annual:  true,
+    premium:     true,
   },
 
   // — Cerveau restaurant (Google Places + avis) —
-  // false = pas accès | 'basic' = sans analyse avis | true = complet
   restaurantBrain: {
     starter:     false,
-    pro_monthly: 'basic',
+    pro_monthly: true,
     pro_annual:  true,
+    premium:     true,
   },
 
-  // — Génération photo IA —
-  // false = pas accès | 'prompt' = prompt Midjourney seulement | true = DALL-E + prompt
+  // — Génération photo IA (DALL-E) —
   dishPhotoGenerator: {
     starter:     false,
-    pro_monthly: 'prompt',
+    pro_monthly: true,
     pro_annual:  true,
+    premium:     true,
   },
 
   // — Analytics avancé (heatmap, recommandations Chef) —
   analyticsAdvanced: {
     starter:     false,
-    pro_monthly: false,
+    pro_monthly: true,
     pro_annual:  true,
+    premium:     true,
   },
 
   // — Analytics standard (graphiques, top posts) —
@@ -203,16 +216,23 @@ export const FEATURES = {
     starter:     false,
     pro_monthly: true,
     pro_annual:  true,
+    premium:     true,
   },
 
   // — Reels Studio (par mois, reset 1er du mois) —
-  // Starter : 0 (feature gated derrière Pro)
-  // Pro Monthly : 5 reels → max ~$0.37/mois
-  // Pro Annual : 20 reels → max ~$1.46/mois
   videoReelPerMonth: {
     starter:     0,
-    pro_monthly: 5,
+    pro_monthly: 20,
     pro_annual:  20,
+    premium:     Infinity,
+  },
+
+  // — Chat IA Chef (assistant conversationnel) — Exclusif Premium
+  aiChat: {
+    starter:     false,
+    pro_monthly: false,
+    pro_annual:  false,
+    premium:     true,
   },
 }
 
@@ -228,7 +248,7 @@ export function canAccess(plan, feature) {
 }
 
 /** Hiérarchie des plans pour comparer */
-const PLAN_RANK = { starter: 0, pro_monthly: 1, pro_annual: 2 }
+const PLAN_RANK = { starter: 0, pro_monthly: 1, pro_annual: 2, premium: 3 }
 
 export function isAtLeast(plan, minPlan) {
   return (PLAN_RANK[plan] ?? 0) >= (PLAN_RANK[minPlan] ?? 0)
@@ -247,5 +267,6 @@ export function requiredPlanFor(feature) {
 export const PLAN_DISPLAY_NAMES = {
   starter:     'Starter',
   pro_monthly: 'Pro',
-  pro_annual:  'Pro Annuel',
+  pro_annual:  'Pro',
+  premium:     'Premium',
 }

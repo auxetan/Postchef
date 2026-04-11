@@ -10,6 +10,7 @@ import Analytics from './pages/Analytics.jsx'
 import Account from './pages/Account.jsx'
 import Trends from './pages/Trends.jsx'
 import Studio from './pages/Studio.jsx'
+import AiChat from './pages/AiChat.jsx'
 import useAppStore from './store/useAppStore.js'
 
 function UsageResetGuard() {
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="studio" element={<Studio />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="account" element={<Account />} />
+          <Route path="chef-ia" element={<AiChat />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

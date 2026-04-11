@@ -1,17 +1,22 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import useAppStore from '../store/useAppStore.js'
 import { PLANS, PLAN_DISPLAY_NAMES, getFeature } from '../utils/plans.js'
 
+const PRO_FEATURES = [
+  'Idées IA illimitées · toutes plateformes',
+  'Brief visuel + import carte menu',
+  'RestaurantBrain complet (avis Google)',
+  'Photo IA DALL-E · 30/mois',
+  'Analytics avancé + heatmap',
+  '20 Reels Studio / mois',
+]
+
 const PLAN_FEATURES = {
   starter: ['5 idées IA / semaine', '1 plateforme', '3 posts / semaine', 'Essai 7 jours gratuit'],
-  pro_monthly: ['20 idées IA / semaine', '2 plateformes', 'Brief visuel + import carte', 'RestaurantBrain basique', 'Photo IA (prompt Midjourney)', 'Analytics standard'],
-  pro_annual: ['Idées IA illimitées', 'Toutes les plateformes', 'Brief visuel + import carte', 'RestaurantBrain complet', 'Photo IA DALL-E', 'Analytics avancé + heatmap', 'Support prioritaire'],
-}
-
-const PLAN_COLOR = {
-  starter:     { ring: 'border-pc-border',   text: 'text-pc-ink-3', active: 'border-pc-ink bg-pc-ink text-white' },
-  pro_monthly: { ring: 'border-pc-border',   text: 'text-[#2563eb]', active: 'border-[#2563eb] bg-[#2563eb] text-white' },
-  pro_annual:  { ring: 'border-pc-border',   text: 'text-pc-green',  active: 'border-pc-green bg-pc-green text-white' },
+  pro_monthly: PRO_FEATURES,
+  pro_annual:  PRO_FEATURES,
+  premium:     ['Tout illimité sans exception', 'Photos DALL-E illimitées', 'Reels Studio illimités', 'Chef IA — assistant conversationnel', 'Support dédié 7j/7'],
 }
 
 const PLATFORMS_CONNECT = [
@@ -42,16 +47,20 @@ function Rule({ children }) {
 }
 
 export default function Account() {
+  const navigate = useNavigate()
   const user = useAppStore((s) => s.user)
   const onboarding = useAppStore((s) => s.onboarding)
   const updateRestaurant = useAppStore((s) => s.updateRestaurant)
   const setPlan = useAppStore((s) => s.setPlan)
 
-  const [name, setName] = useState(onboarding.restaurant.name || 'La Trattoria')
-  const [city, setCity] = useState(onboarding.restaurant.city || 'Marseille')
+  const [name, setName] = useState(onboarding.restaurant.name || '')
+  const [city, setCity] = useState(onboarding.restaurant.city || '')
   const [saved, setSaved] = useState(false)
   const [notifOn, setNotifOn] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [billing, setBilling] = useState(
+    user.plan === 'pro_monthly' ? 'monthly' : 'annual'
+  )
 
   const currentPlan = user.plan || 'starter'
   const usage       = useAppStore((s) => s.usage)
@@ -146,31 +155,140 @@ export default function Account() {
             </div>
           </div>
 
-          {/* Plan switcher */}
-          <p className="pc-section-label mb-3">Changer de plan · démo</p>
-          <div className="grid grid-cols-3 gap-2">
-            {Object.values(PLANS).map((plan) => {
-              const isActive = currentPlan === plan.id
-              const pc = PLAN_COLOR[plan.id] || PLAN_COLOR.starter
-              return (
-                <button key={plan.id} onClick={() => setPlan(plan.id)}
-                  className={`border-2 rounded-card px-3 py-4 text-left transition-all
-                    ${isActive ? pc.active : `bg-pc-surface ${pc.ring} hover:border-pc-ink-4`}`}>
-                  <div className={`text-[11px] font-bold leading-tight mb-1 ${isActive ? 'text-white/80' : 'text-pc-ink-2'}`}>
-                    {plan.name}
+          {/* Upgrade options — shown if not Premium */}
+          {currentPlan !== 'premium' && (
+            <div className="mt-4">
+              <p className="pc-section-label mb-3">Changer de plan · démo</p>
+
+              {/* Billing toggle (shown for non-starter) */}
+              {(currentPlan === 'pro_monthly' || currentPlan === 'pro_annual' || currentPlan === 'starter') && (
+                <div className="flex items-center justify-center mb-4">
+                  <div className="flex bg-pc-bg border border-pc-border rounded-[12px] p-1 gap-1">
+                    <button
+                      onClick={() => setBilling('monthly')}
+                      className={`px-4 py-[7px] rounded-[9px] text-[11px] font-bold transition-all ${
+                        billing === 'monthly'
+                          ? 'bg-pc-surface shadow-sm text-pc-ink border border-pc-border'
+                          : 'text-pc-ink-4'
+                      }`}
+                    >
+                      Mensuel · 29€
+                    </button>
+                    <button
+                      onClick={() => setBilling('annual')}
+                      className={`px-4 py-[7px] rounded-[9px] text-[11px] font-bold transition-all flex items-center gap-[6px] ${
+                        billing === 'annual'
+                          ? 'bg-pc-ink shadow-sm text-white'
+                          : 'text-pc-ink-4'
+                      }`}
+                    >
+                      Annuel · 19€
+                      <span className={`text-[8px] font-bold px-[5px] py-[1px] rounded-full ${
+                        billing === 'annual' ? 'bg-white/20 text-white' : 'bg-pc-green/15 text-pc-green'
+                      }`}>−35%</span>
+                    </button>
                   </div>
-                  <div className={`text-[15px] font-black tracking-[-0.03em] ${isActive ? 'text-white' : 'text-pc-ink'}`}>
-                    {plan.price}
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-2">
+                {/* Pro */}
+                <button
+                  onClick={() => setPlan(billing === 'annual' ? 'pro_annual' : 'pro_monthly')}
+                  className={`border-2 rounded-card px-3 py-4 text-left transition-all ${
+                    (currentPlan === 'pro_monthly' || currentPlan === 'pro_annual')
+                      ? 'border-pc-green bg-pc-green text-white'
+                      : 'bg-pc-surface border-pc-border hover:border-pc-green/50'
+                  }`}
+                >
+                  <div className={`text-[11px] font-bold leading-tight mb-1 ${
+                    (currentPlan === 'pro_monthly' || currentPlan === 'pro_annual') ? 'text-white/80' : 'text-pc-ink-2'
+                  }`}>Pro</div>
+                  <div className={`text-[16px] font-black tracking-[-0.03em] ${
+                    (currentPlan === 'pro_monthly' || currentPlan === 'pro_annual') ? 'text-white' : 'text-pc-ink'
+                  }`}>
+                    {billing === 'annual' ? '19€' : '29€'}
                   </div>
-                  {plan.priceSub && (
-                    <div className={`text-[9px] font-medium mt-[1px] ${isActive ? 'text-white/60' : 'text-pc-ink-4'}`}>
-                      {plan.priceSub}
-                    </div>
-                  )}
+                  <div className={`text-[9px] font-medium mt-[1px] ${
+                    (currentPlan === 'pro_monthly' || currentPlan === 'pro_annual') ? 'text-white/60' : 'text-pc-ink-4'
+                  }`}>/mois</div>
                 </button>
-              )
-            })}
-          </div>
+
+                {/* Premium */}
+                <button
+                  onClick={() => setPlan('premium')}
+                  className="border-2 rounded-card px-3 py-4 text-left transition-all bg-pc-surface border-pc-border hover:border-[#7C3AED]/50 relative overflow-hidden"
+                >
+                  <div className="absolute top-2 right-2 text-[8px] font-bold text-[#7C3AED] bg-[#7C3AED]/10 px-[5px] py-[2px] rounded-full">
+                    IA
+                  </div>
+                  <div className="text-[11px] font-bold leading-tight mb-1 text-[#7C3AED]">Premium</div>
+                  <div className="text-[16px] font-black tracking-[-0.03em] text-pc-ink">99€</div>
+                  <div className="text-[9px] font-medium mt-[1px] text-pc-ink-4">/mois</div>
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* ── Chef IA ──────────────────────────────────────── */}
+        <section>
+          <Rule>Chef IA</Rule>
+          {currentPlan === 'premium' ? (
+            <button
+              onClick={() => navigate('/app/chef-ia')}
+              className="w-full bg-gradient-to-br from-[#7C3AED] to-[#5B21B6] rounded-card px-5 py-5 text-left active:scale-[0.99] transition-transform"
+              style={{ boxShadow: '0 4px 20px rgba(124,58,237,0.25)' }}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10 2C6.13 2 3 5.13 3 9c0 2.39 1.19 4.5 3 5.74V17a1 1 0 001 1h6a1 1 0 001-1v-2.26C15.81 13.5 17 11.39 17 9c0-3.87-3.13-7-7-7z"/>
+                    <path d="M7.5 17.5h5"/>
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-[14px] font-black text-white leading-none">Parler à Chef IA</p>
+                  <p className="text-[11px] text-white/60 mt-[3px]">Ton assistant restaurant personnel</p>
+                </div>
+                <div className="ml-auto">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
+                    <path d="M6 3l5 5-5 5"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-[12px] text-white/70 leading-relaxed">
+                Pose n'importe quelle question sur ton resto, ta stratégie de contenu, tes hashtags...
+              </p>
+            </button>
+          ) : (
+            <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-5 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#7C3AED]/5 to-transparent pointer-events-none" />
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-[#7C3AED]/10 flex items-center justify-center flex-shrink-0">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#7C3AED" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10 2C6.13 2 3 5.13 3 9c0 2.39 1.19 4.5 3 5.74V17a1 1 0 001 1h6a1 1 0 001-1v-2.26C15.81 13.5 17 11.39 17 9c0-3.87-3.13-7-7-7z"/>
+                    <path d="M7.5 17.5h5"/>
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-[6px]">
+                    <p className="text-[14px] font-black text-pc-ink">Chef IA</p>
+                    <span className="text-[9px] font-bold text-[#7C3AED] border border-[#7C3AED]/30 bg-[#7C3AED]/8 px-[8px] py-[2px] rounded-full">Premium</span>
+                  </div>
+                  <p className="text-[12px] text-pc-ink-3 leading-[1.6] mb-4">
+                    Un assistant IA dédié à ton restaurant. Pose-lui toutes tes questions sur ta stratégie de contenu, tes hashtags, tes recettes ou ton menu.
+                  </p>
+                  <button
+                    onClick={() => setPlan('premium')}
+                    className="text-[12px] font-bold text-white bg-[#7C3AED] px-4 py-[9px] rounded-btn hover:bg-[#6D28D9] transition-colors"
+                  >
+                    Passer au Premium — 99€/mois
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </section>
 
         {/* ── Consommation IA ──────────────────────────────── */}

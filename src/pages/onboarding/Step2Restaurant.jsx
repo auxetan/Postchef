@@ -36,7 +36,17 @@ export default function Step2Restaurant({ onNext }) {
 
   const extraCuisines = cuisines.filter((c) => !QUICK_CUISINES.includes(c))
 
+  const [errors, setErrors] = useState({})
+
   const handleNext = () => {
+    const newErrors = {}
+    if (!name.trim()) newErrors.name = 'Le nom du restaurant est requis'
+    if (!city.trim()) newErrors.city = 'La ville est requise'
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+    setErrors({})
     updateRestaurant({ name, city, cuisineTypes: cuisines, specialite })
     onNext()
   }
@@ -56,24 +66,26 @@ export default function Step2Restaurant({ onNext }) {
 
           {/* Nom */}
           <div>
-            <SectionLabel>Nom du restaurant</SectionLabel>
+            <SectionLabel>Nom du restaurant <span className="text-[#ef4444] normal-case font-normal">*</span></SectionLabel>
             <input
-              className={inputClass}
+              className={`${inputClass} ${errors.name ? 'border-[#ef4444] focus:border-[#ef4444]' : ''}`}
               placeholder="Ex : La Trattoria"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => { setName(e.target.value); if (errors.name) setErrors((p) => ({ ...p, name: undefined })) }}
             />
+            {errors.name && <p className="text-[12px] text-[#ef4444] mt-[6px] font-medium">{errors.name}</p>}
           </div>
 
           {/* Ville */}
           <div>
-            <SectionLabel>Ville</SectionLabel>
+            <SectionLabel>Ville <span className="text-[#ef4444] normal-case font-normal">*</span></SectionLabel>
             <input
-              className={inputClass}
+              className={`${inputClass} ${errors.city ? 'border-[#ef4444] focus:border-[#ef4444]' : ''}`}
               placeholder="Ex : Marseille"
               value={city}
-              onChange={(e) => setCity(e.target.value)}
+              onChange={(e) => { setCity(e.target.value); if (errors.city) setErrors((p) => ({ ...p, city: undefined })) }}
             />
+            {errors.city && <p className="text-[12px] text-[#ef4444] mt-[6px] font-medium">{errors.city}</p>}
           </div>
 
           {/* Cuisine */}
