@@ -4,6 +4,7 @@ import useAppStore from '../../store/useAppStore'
 import useToastStore from '../../store/useToastStore'
 import { buildViralityPrompt } from '../../utils/viralityPrompt'
 import { uploadClip } from '../../utils/uploadClip'
+import { transcribeClipSequence } from '../../utils/whisper'
 import { useShotstack } from '../../hooks/useShotstack'
 import TimelinePreview from './TimelinePreview'
 import MusicSelector from './MusicSelector'
@@ -233,6 +234,23 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
       }
       setDirective(finalDirective)
 
+      // Transcription Whisper (si captions activées et fichiers disponibles)
+      let wordTimings = []
+      if (captionStyle !== 'none' && clips.some((c) => c.file)) {
+        setStatus('transcribing')
+        try {
+          wordTimings = await transcribeClipSequence(
+            uploadedClips,
+            finalTrims,
+            clipOrder,
+            captionLanguage,
+          )
+        } catch (e) {
+          console.warn('[whisper] fallback overlays Claude', e)
+          toast('Transcription indisponible — overlays Claude utilisés', 'info')
+        }
+      }
+
       const brollVideos = (finalDirective.b_roll_slots || [])
         .filter((s) => s.enabled)
         .map((s) => ({
@@ -242,7 +260,7 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
           duration:  s.duration  || 1.5,
         }))
       await startRender(finalDirective, uploadedClips, {
-        wordTimings: [],
+        wordTimings,
         brollVideos,
         brandKit,
       })
@@ -288,6 +306,17 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
         <div className="w-10 h-10 mx-auto mb-4 border-2 border-pc-border border-t-pc-green rounded-full animate-spin" />
         <p className="text-[14px] font-bold text-pc-ink">Upload de tes clips...</p>
         <p className="text-[12px] text-pc-ink-3 mt-1">Préparation du rendu</p>
+      </div>
+    )
+  }
+
+  // ─── État : transcription en cours ───
+  if (status === 'transcribing') {
+    return (
+      <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-8 text-center">
+        <div className="w-10 h-10 mx-auto mb-4 border-2 border-pc-border border-t-pc-green rounded-full animate-spin" />
+        <p className="text-[14px] font-bold text-pc-ink">Transcription audio...</p>
+        <p className="text-[12px] text-pc-ink-3 mt-1">Génération des captions {captionLanguage.toUpperCase()}</p>
       </div>
     )
   }
