@@ -3,20 +3,40 @@ import { motion, AnimatePresence } from 'framer-motion'
 import ClipUploader from '../components/features/ClipUploader'
 import ViralityEngine from '../components/features/ViralityEngine'
 import VideoRenderStatus from '../components/features/VideoRenderStatus'
+import ReelHistory from '../components/features/ReelHistory'
+import FeatureLock from '../components/ui/FeatureLock'
 import useAppStore from '../store/useAppStore'
 import { getFeature } from '../utils/plans'
 
 export default function Studio() {
   const [step, setStep] = useState(1)
+  const [activeTab, setActiveTab] = useState('create') // 'create' | 'history'
   const plan = useAppStore((s) => s.user.plan)
   const reelUsed = useAppStore((s) => s.usage.videoReelUsedThisMonth ?? 0)
   const reelMax = getFeature(plan, 'videoReelPerMonth')
+  const reelsCount = useAppStore((s) => s.reels.length)
   const resetStudio = useAppStore((s) => s.resetStudio)
   const quotaReached = reelMax !== Infinity && reelUsed >= reelMax
+
+  // Gating pour le plan starter
+  if (plan === 'starter') {
+    return (
+      <div className="min-h-screen bg-pc-bg pb-24 md:pb-8">
+        <div className="max-w-2xl mx-auto px-6 pt-8">
+          <FeatureLock
+            feature="videoReelPerMonth"
+            title="Studio — Reels IA"
+            description="Crée des Reels viraux en 60 secondes avec l'IA. Disponible à partir du plan Pro."
+          />
+        </div>
+      </div>
+    )
+  }
 
   const handleNewVideo = () => {
     resetStudio()
     setStep(1)
+    setActiveTab('create')
   }
 
   return (
@@ -38,51 +58,103 @@ export default function Studio() {
             </div>
           )}
         </div>
+
+        {/* Onglets Créer / Mes Reels */}
+        <div className="flex gap-6 max-w-2xl mx-auto mt-3">
+          <button
+            onClick={() => setActiveTab('create')}
+            className={`text-[14px] font-semibold pb-2 transition-colors ${
+              activeTab === 'create'
+                ? 'border-b-2 border-pc-green text-pc-ink'
+                : 'text-pc-ink-4 hover:text-pc-ink'
+            }`}
+          >
+            Créer
+          </button>
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`text-[14px] font-semibold pb-2 transition-colors flex items-center gap-1.5 ${
+              activeTab === 'history'
+                ? 'border-b-2 border-pc-green text-pc-ink'
+                : 'text-pc-ink-4 hover:text-pc-ink'
+            }`}
+          >
+            Mes Reels
+            {reelsCount > 0 && (
+              <span className="text-[10px] font-bold bg-pc-ink text-white px-1.5 py-px rounded-pill">
+                {reelsCount}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* Step indicator */}
-      <StepIndicator currentStep={step} />
-
-      {/* Content */}
+      {/* Contenu */}
       <div className="max-w-2xl mx-auto px-6 mt-6">
         <AnimatePresence mode="wait">
-          {step === 1 && (
+          {activeTab === 'history' ? (
             <motion.div
-              key="upload"
+              key="history"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.2 }}
             >
-              <ClipUploader
-                onComplete={() => setStep(2)}
-                quotaReached={quotaReached}
-              />
+              <ReelHistory />
             </motion.div>
-          )}
-          {step === 2 && (
+          ) : (
             <motion.div
-              key="directive"
+              key="create"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.2 }}
             >
-              <ViralityEngine
-                onBack={() => setStep(1)}
-                onRenderStart={() => setStep(3)}
-              />
-            </motion.div>
-          )}
-          {step === 3 && (
-            <motion.div
-              key="render"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.2 }}
-            >
-              <VideoRenderStatus onNewVideo={handleNewVideo} />
+              {/* Indicateur d'étapes */}
+              <StepIndicator currentStep={step} />
+              <div className="mt-6">
+                <AnimatePresence mode="wait">
+                  {step === 1 && (
+                    <motion.div
+                      key="upload"
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -12 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ClipUploader
+                        onComplete={() => setStep(2)}
+                        quotaReached={quotaReached}
+                      />
+                    </motion.div>
+                  )}
+                  {step === 2 && (
+                    <motion.div
+                      key="directive"
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -12 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ViralityEngine
+                        onBack={() => setStep(1)}
+                        onRenderStart={() => setStep(3)}
+                      />
+                    </motion.div>
+                  )}
+                  {step === 3 && (
+                    <motion.div
+                      key="render"
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -12 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <VideoRenderStatus onNewVideo={handleNewVideo} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -94,7 +166,7 @@ export default function Studio() {
 function StepIndicator({ currentStep }) {
   const steps = ['Tes clips', 'Analyse IA', 'Ton Reel']
   return (
-    <div className="flex items-center justify-center gap-3 px-6 pt-5">
+    <div className="flex items-center justify-center gap-3">
       {steps.map((label, i) => {
         const n = i + 1
         const active = n === currentStep
