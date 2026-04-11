@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import useAppStore from '../../store/useAppStore'
+import useToastStore from '../../store/useToastStore'
 import { useCreatomate } from '../../hooks/useCreatomate'
 
 export default function VideoRenderStatus({ onNewVideo }) {
@@ -9,25 +10,56 @@ export default function VideoRenderStatus({ onNewVideo }) {
   const renderId = useAppStore((s) => s.studio.renderId)
   const directive = useAppStore((s) => s.studio.directive)
   const addPost = useAppStore((s) => s.addPost)
+  const addReel = useAppStore((s) => s.addReel)
+  const toast = useToastStore((s) => s.toast)
   const { pollRender } = useCreatomate()
   const intervalRef = useRef(null)
+  const reelSavedRef = useRef(false)
 
-  // Polling — pollRender is stable via useCallback
+  // Polling du statut Creatomate avec gestion d'erreur réseau
   useEffect(() => {
     if (renderId && renderStatus === 'rendering') {
+      let failCount = 0
       intervalRef.current = setInterval(async () => {
-        const status = await pollRender(renderId)
-        if (status === 'succeeded' || status === 'failed') {
-          clearInterval(intervalRef.current)
+        try {
+          const status = await pollRender(renderId)
+          failCount = 0
+          if (status === 'succeeded' || status === 'failed') {
+            clearInterval(intervalRef.current)
+          }
+        } catch {
+          failCount++
+          // Abandon après 5 erreurs réseau consécutives
+          if (failCount >= 5) {
+            clearInterval(intervalRef.current)
+            toast('Connexion perdue pendant le rendu', 'error')
+          }
         }
       }, 3000)
       return () => clearInterval(intervalRef.current)
     }
-  }, [renderId, renderStatus, pollRender])
+  }, [renderId, renderStatus, pollRender, toast])
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text)
-  }
+  // Sauvegarde automatique dans l'historique quand le render est terminé
+  useEffect(() => {
+    if (renderStatus === 'done' && renderUrl && directive && !reelSavedRef.current) {
+      reelSavedRef.current = true
+      addReel({
+        id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+        videoUrl: renderUrl,
+        directive: {
+          hook_text: directive.hook_text,
+          template: directive.template,
+          virality_score: directive.virality_score,
+          caption: directive.caption,
+          hashtags: directive.hashtags,
+        },
+        platform: 'Instagram',
+        status: 'ready',
+      })
+    }
+  }, [renderStatus, renderUrl, directive, addReel])
 
   const handleAddToCalendar = () => {
     if (!directive) return
@@ -46,9 +78,34 @@ export default function VideoRenderStatus({ onNewVideo }) {
       status: 'brouillon',
       videoUrl: renderUrl,
     })
+    toast('Ajouté au calendrier')
   }
 
-  // ─── Pending ───
+  const handleShare = async () => {
+    if (navigator.share && navigator.canShare) {
+      try {
+        const response = await fetch(renderUrl)
+        const blob = await response.blob()
+        const file = new File([blob], 'postchef-reel.mp4', { type: 'video/mp4' })
+
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: directive?.hook_text || 'Mon Reel PostChef',
+            files: [file],
+          })
+          toast('Partagé !')
+          return
+        }
+      } catch (e) {
+        if (e.name === 'AbortError') return
+      }
+    }
+    // Fallback : copier l'URL
+    navigator.clipboard.writeText(renderUrl)
+    toast('Lien copié')
+  }
+
+  // ─── En attente ───
   if (renderStatus === 'pending') {
     return (
       <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-8 text-center">
@@ -60,7 +117,7 @@ export default function VideoRenderStatus({ onNewVideo }) {
     )
   }
 
-  // ─── Rendering ───
+  // ─── Rendu en cours ───
   if (renderStatus === 'rendering') {
     return (
       <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-8 text-center">
@@ -71,7 +128,7 @@ export default function VideoRenderStatus({ onNewVideo }) {
         <p className="text-[12px] text-pc-ink-3 mb-4">
           Environ 30 secondes
         </p>
-        {/* Animated progress bar */}
+        {/* Barre de progression animée */}
         <div className="w-full h-1.5 bg-pc-border rounded-full overflow-hidden">
           <motion.div
             className="h-full bg-pc-green rounded-full"
@@ -84,7 +141,7 @@ export default function VideoRenderStatus({ onNewVideo }) {
     )
   }
 
-  // ─── Error ───
+  // ─── Erreur ───
   if (renderStatus === 'error') {
     return (
       <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-8 text-center">
@@ -105,11 +162,11 @@ export default function VideoRenderStatus({ onNewVideo }) {
     )
   }
 
-  // ─── Done ───
+  // ─── Terminé ───
   if (renderStatus === 'done' && renderUrl) {
     return (
       <div className="space-y-3">
-        {/* Video player */}
+        {/* Lecteur vidéo */}
         <div className="bg-pc-surface border border-pc-border rounded-card overflow-hidden">
           <video
             src={renderUrl}
@@ -123,29 +180,27 @@ export default function VideoRenderStatus({ onNewVideo }) {
           />
         </div>
 
-        {/* Score reminder */}
+        {/* Score de viralité */}
         {directive && (
           <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-4 flex items-center justify-between">
             <span className="text-[12px] font-semibold text-pc-ink-3">
               Score de viralité
             </span>
             <span
-              className="text-[20px] font-[800]"
-              style={{
-                color:
-                  directive.virality_score > 80
-                    ? '#1D9E75'
-                    : directive.virality_score >= 60
-                      ? '#D97706'
-                      : '#737373',
-              }}
+              className={`text-[20px] font-[800] ${
+                directive.virality_score > 80
+                  ? 'text-pc-green'
+                  : directive.virality_score >= 60
+                    ? 'text-[#D97706]'
+                    : 'text-pc-ink-3'
+              }`}
             >
               {directive.virality_score}
             </span>
           </div>
         )}
 
-        {/* Action buttons */}
+        {/* Boutons d'action */}
         <div className="space-y-2">
           <a
             href={renderUrl}
@@ -155,9 +210,19 @@ export default function VideoRenderStatus({ onNewVideo }) {
             Télécharger le Reel
           </a>
 
+          <button
+            onClick={handleShare}
+            className="w-full py-[11px] rounded-btn text-[13px] font-bold text-white bg-pc-ink hover:bg-pc-ink-2 transition-colors"
+          >
+            Partager
+          </button>
+
           {directive?.caption && (
             <button
-              onClick={() => copyToClipboard(directive.caption)}
+              onClick={() => {
+                navigator.clipboard.writeText(directive.caption)
+                toast('Caption copié')
+              }}
               className="w-full py-[11px] rounded-btn text-[13px] font-bold text-pc-ink bg-pc-surface border border-pc-border hover:bg-pc-bg transition-colors"
             >
               Copier la caption
@@ -166,7 +231,10 @@ export default function VideoRenderStatus({ onNewVideo }) {
 
           {directive?.hashtags?.length > 0 && (
             <button
-              onClick={() => copyToClipboard(directive.hashtags.join(' '))}
+              onClick={() => {
+                navigator.clipboard.writeText(directive.hashtags.join(' '))
+                toast('Hashtags copiés')
+              }}
               className="w-full py-[11px] rounded-btn text-[13px] font-bold text-pc-ink bg-pc-surface border border-pc-border hover:bg-pc-bg transition-colors"
             >
               Copier les hashtags
@@ -191,6 +259,5 @@ export default function VideoRenderStatus({ onNewVideo }) {
     )
   }
 
-  // Fallback
   return null
 }

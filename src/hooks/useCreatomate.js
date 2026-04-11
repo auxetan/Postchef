@@ -21,23 +21,31 @@ const MUSIC_TRACKS = {
 }
 
 export function buildCreatomatePayload(directive, clips) {
+  // Réordonner les clips selon clip_order de la directive
+  const orderedClips = (directive.clip_order || clips.map((_, i) => i + 1))
+    .map((n) => clips[n - 1])
+    .filter(Boolean)
+
   return {
     template_id: TEMPLATE_IDS[directive.template],
     modifications: {
-      ...clips.reduce(
-        (acc, clip, i) => ({
+      ...orderedClips.reduce((acc, clip, i) => {
+        const trim = directive.clip_trims?.find(
+          (t) => t.clip_index === clips.indexOf(clip)
+        )
+        return {
           ...acc,
           [`clip_${i + 1}_source`]: clip.uploadedUrl,
-          [`clip_${i + 1}_trim_start`]: directive.clip_trims[i]?.start || 0,
-          [`clip_${i + 1}_trim_end`]: directive.clip_trims[i]?.end || clip.duration,
-        }),
-        {}
-      ),
+          [`clip_${i + 1}_trim_start`]: trim?.start ?? 0,
+          [`clip_${i + 1}_trim_end`]: trim?.end ?? clip.duration,
+        }
+      }, {}),
       hook_text: directive.hook_text,
       location_text:
-        directive.text_overlays.find((o) => o.text.includes('\u{1F4CD}'))?.text || '',
-      cta_text: directive.text_overlays.at(-1)?.text || 'Réservez \u{1F446}',
+        directive.text_overlays?.find((o) => o.text.includes('\u{1F4CD}'))?.text || '',
+      cta_text: directive.text_overlays?.at(-1)?.text || 'Réservez \u{1F446}',
       music_track: MUSIC_TRACKS[directive.music_mood],
+      transition_style: directive.transition_style || 'hard_cut',
       duration: directive.total_duration,
     },
     output_format: 'mp4',

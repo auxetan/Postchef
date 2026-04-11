@@ -11,24 +11,46 @@ function getAnalysisLabel(duration) {
   return 'Séquence longue'
 }
 
-function generateThumbnail(file) {
+/**
+ * Capture plusieurs frames d'un fichier vidéo.
+ * Retourne un tableau de data URLs JPEG (début, milieu, fin).
+ */
+function generateFrames(file, count = 3) {
   return new Promise((resolve) => {
     const video = document.createElement('video')
     video.preload = 'metadata'
     video.muted = true
     video.src = URL.createObjectURL(file)
-    video.currentTime = 0.5
-    video.onseeked = () => {
-      const canvas = document.createElement('canvas')
-      canvas.width = 180
-      canvas.height = 320
-      canvas.getContext('2d').drawImage(video, 0, 0, 180, 320)
-      resolve(canvas.toDataURL('image/jpeg', 0.7))
+
+    video.onloadedmetadata = async () => {
+      const duration = video.duration
+      const times =
+        count === 1
+          ? [0.5]
+          : Array.from({ length: count }, (_, i) =>
+              Math.min(0.5 + (i * (duration - 1)) / (count - 1), duration - 0.1)
+            )
+
+      const frames = []
+      for (const t of times) {
+        video.currentTime = t
+        await new Promise((r) => {
+          video.onseeked = r
+        })
+        const canvas = document.createElement('canvas')
+        canvas.width = 180
+        canvas.height = 320
+        canvas.getContext('2d').drawImage(video, 0, 0, 180, 320)
+        frames.push(canvas.toDataURL('image/jpeg', 0.7))
+      }
+
       URL.revokeObjectURL(video.src)
+      resolve(frames)
     }
+
     video.onerror = () => {
-      resolve(null)
       URL.revokeObjectURL(video.src)
+      resolve([null])
     }
   })
 }
@@ -68,13 +90,14 @@ export default function ClipUploader({ onComplete, quotaReached }) {
         if (!file.type.startsWith('video/')) continue
         const duration = await getVideoDuration(file)
         if (duration > MAX_CLIP_DURATION) continue
-        const thumbnail = await generateThumbnail(file)
+        const frames = await generateFrames(file, 3)
         addClip({
           id: crypto.randomUUID(),
           file,
           url: URL.createObjectURL(file),
           duration,
-          thumbnail,
+          thumbnail: frames[0],   // Première frame pour l'affichage
+          frames,                  // Toutes les frames pour Vision IA
           analysisLabel: getAnalysisLabel(duration),
         })
       }
@@ -115,7 +138,7 @@ export default function ClipUploader({ onComplete, quotaReached }) {
 
   return (
     <div className="space-y-4">
-      {/* Drop zone */}
+      {/* Zone de dépôt */}
       <motion.div
         onDragOver={(e) => {
           e.preventDefault()
@@ -155,7 +178,7 @@ export default function ClipUploader({ onComplete, quotaReached }) {
         )}
       </motion.div>
 
-      {/* Clip previews */}
+      {/* Aperçus des clips */}
       {clips.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {clips.map((clip, idx) => (
@@ -174,15 +197,21 @@ export default function ClipUploader({ onComplete, quotaReached }) {
                   🎬
                 </div>
               )}
-              {/* Duration badge */}
+              {/* Badge durée */}
               <div className="absolute bottom-2 left-2 bg-black/70 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-[5px]">
                 {clip.duration.toFixed(1)}s
               </div>
-              {/* Label badge */}
+              {/* Badge label */}
               <div className="absolute top-2 left-2 bg-white/90 text-pc-ink text-[9px] font-semibold px-1.5 py-0.5 rounded-[5px]">
                 {clip.analysisLabel}
               </div>
-              {/* Remove button */}
+              {/* Indicateur multi-frames */}
+              {clip.frames?.length > 1 && (
+                <div className="absolute bottom-2 right-2 bg-pc-green/80 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[5px]">
+                  {clip.frames.filter(Boolean).length}f
+                </div>
+              )}
+              {/* Bouton supprimer */}
               <button
                 onClick={(e) => {
                   e.stopPropagation()
@@ -197,7 +226,7 @@ export default function ClipUploader({ onComplete, quotaReached }) {
         </div>
       )}
 
-      {/* Tip */}
+      {/* Conseil */}
       {clips.length > 0 && clips.length < 2 && (
         <p className="text-[12px] text-pc-ink-3 text-center">
           Astuce : 2-4 clips courts donnent les meilleurs résultats

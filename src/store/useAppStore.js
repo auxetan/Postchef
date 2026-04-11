@@ -90,13 +90,16 @@ const useAppStore = create(
 
       // ── Studio (Virality Engine) ──
       studio: {
-        clips: [],           // [{ id, file, url, duration, thumbnail, analysisLabel }]
+        clips: [],           // [{ id, file, url, duration, thumbnail, frames, analysisLabel }]
         directive: null,     // ViralityDirective JSON généré par Claude
         renderStatus: null,  // null | 'pending' | 'rendering' | 'done' | 'error'
         renderUrl: null,     // URL du MP4 final Creatomate
         renderId: null,      // ID du render Creatomate pour polling
         lastGenerated: null, // ISO date
       },
+
+      // ── Historique des Reels créés ──
+      reels: [],             // max 50 — [{ id, createdAt, videoUrl, directive, platform, status }]
 
       // ── Actions onboarding ──
       setOnboardingStep: (step) =>
@@ -260,6 +263,16 @@ const useAppStore = create(
           usage: { ...s.usage, videoReelUsedThisMonth: (s.usage.videoReelUsedThisMonth ?? 0) + 1 },
         })),
 
+      // ── Actions reels ──
+      addReel: (reel) =>
+        set((s) => ({ reels: [reel, ...s.reels].slice(0, 50) })),
+      removeReel: (id) =>
+        set((s) => ({ reels: s.reels.filter((r) => r.id !== id) })),
+      updateReelStatus: (id, status) =>
+        set((s) => ({
+          reels: s.reels.map((r) => (r.id === id ? { ...r, status } : r)),
+        })),
+
       // ── Actions bibliothèque ──
       saveIdea: (idea) =>
         set((s) => ({
@@ -277,6 +290,7 @@ const useAppStore = create(
         posts:      state.posts,
         ideas:      state.ideas,
         savedIdeas: state.savedIdeas,
+        reels:      state.reels,
       }),
     }
   )
