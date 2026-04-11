@@ -1,5 +1,21 @@
 # MEGAPROMPT — Studio PostChef, parité Opus Clip réelle
 
+> **STATUT PHASES 1-4 : ✅ DONE — commits pushés sur `main`**
+>
+> | Phase | Commit | Statut |
+> |---|---|---|
+> | 1 — Shotstack (rendu réel) | `f0bdbb1` | ✅ |
+> | 2 — Whisper ASR (captions) | `9a6346f` | ✅ |
+> | 3 — Pexels B-roll + ingestAsset CDN | `c62e253` | ✅ |
+> | 4 — Brand kit appliqué (logo CDN + font) | `79fe0f4` | ✅ |
+>
+> **Prochaines actions pour une nouvelle session :**
+> - Configurer les clés env (`VITE_SHOTSTACK_KEY`, `VITE_PEXELS_KEY`, `VITE_OPENAI_KEY`) dans Vercel + `.env.local`
+> - Tester le pipeline E2E avec de vrais clips
+> - Phase 5 (optionnelle) : publishing stub + bouton "Programmer" dans VideoRenderStatus
+
+---
+
 > Prompt autonome pour agent IA. Copie-colle intégralement dans une nouvelle session.
 > Objectif : passer la feature `Studio` d'un prototype UI à un pipeline de production vidéo fonctionnel, aligné sur Opus Clip.
 
@@ -25,7 +41,7 @@ src/components/features/HookVariantPicker.jsx — choix hook A/B/C
 src/components/features/ViralityAxesScore.jsx — score 4 axes (Hook/Flow/Value/Trend)
 src/components/features/CaptionStylePicker.jsx — style + langue captions
 src/components/features/BrandKitPicker.jsx   — logo/couleurs/font
-src/components/features/BRollSlots.jsx       — B-roll IA (génère des IMAGES DALL-E aujourd'hui)
+src/components/features/BRollSlots.jsx       — B-roll vidéo Pexels + fallback DALL-E image
 src/components/features/ViralityTips.jsx     — suggestions basées sur axes
 src/components/features/VideoRenderStatus.jsx — polling render
 src/components/features/ReelHistory.jsx      — historique des reels créés
@@ -79,19 +95,16 @@ src/store/useAppStore.js                     — store Zustand persisté (contie
 - Store Zustand persisté avec slice `studio`, `brandKit`, `reels`
 - UI du picker de musique, brand kit, caption style
 
-### Cassé / placeholder / UI-only (à réparer)
-- `useCreatomate.js:9-13` : `TEMPLATE_IDS = { dish_reveal: 'tmpl_xxxxxxxxxx', ... }` — placeholders, aucun render ne peut aboutir
-- Le `caption_style`, `brand_logo`, `broll_*_source` envoyés au payload Creatomate partent dans le vide
-- `BRollSlots.jsx` génère des IMAGES statiques DALL-E, pas de la vidéo
-- `CaptionStylePicker` : le dropdown langue n'a aucun effet réel (pas d'ASR)
-- `BrandKitPicker` : logo/couleur stockés mais jamais appliqués à la sortie
-- `uploadClip.js` : vérifier si l'implémentation pointe vers une vraie CDN ou retourne les blob URLs
+### ✅ RÉPARÉ (phases 1-4)
+- `useCreatomate.js` → supprimé, remplacé par `useShotstack.js` + `utils/shotstack.js`
+- `uploadClip.js` → délègue à `ingestAsset.uploadToCdn` (Shotstack Ingest ou Cloudinary)
+- `BRollSlots.jsx` → Pexels stock video en priorité, DALL-E image en fallback
+- Captions → Whisper word-level timestamps, kinetic/classic/minimal réels
+- Brand kit → logo uploadé via CDN avant render, couleur+font appliqués dans Shotstack edit
 
-### Absent complètement
-- Transcription audio (ASR) — coeur d'Opus Clip
-- Stock video library
-- Auto-reframe (clips déjà 9:16 à l'upload PostChef, faible priorité)
-- Scheduler / auto-post
+### Encore absent (hors scope confirmé)
+- Auto-reframe smart crop (clips déjà 9:16 — hors scope)
+- Scheduler / auto-post réel (Phase 5 = stub uniquement, requiert backend + comptes dev approuvés)
 
 ---
 
