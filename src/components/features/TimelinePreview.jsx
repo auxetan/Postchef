@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { motion } from 'framer-motion'
 
 const MUSIC_LABELS = {
   warm_upbeat:   'Warm & Upbeat',
@@ -9,30 +10,50 @@ const MUSIC_LABELS = {
 
 /**
  * Affiche une timeline visuelle du montage avant le render.
- * Chaque clip est un bloc proportionnel à sa durée.
- * Les overlays texte sont positionnés comme des badges au-dessus.
+ * - Clips ordonnés avec durées proportionnelles
+ * - Overlays texte positionnés comme des badges
+ * - B-roll IA inséré visuellement
+ * - Preview kinetic caption animée (si caption_style === 'kinetic')
  */
-export default function TimelinePreview({ directive, clips, clipOrder }) {
+export default function TimelinePreview({ directive, clips, clipOrder, captionStyle }) {
   const totalDuration = directive?.total_duration || 1
 
-  // Blocs de clips ordonnés selon clip_order
-  const orderedClips = useMemo(() => {
-    return (clipOrder || directive?.clip_order || clips.map((_, i) => i + 1))
-      .map((n) => clips[n - 1])
-      .filter(Boolean)
-      .map((clip, i) => {
-        const trim = directive?.clip_trims?.find(
-          (t) => t.clip_index === clips.indexOf(clip)
-        )
-        return {
-          clip,
-          index: i,
-          start: trim?.start ?? 0,
-          end: trim?.end ?? clip.duration,
-          duration: (trim?.end ?? clip.duration) - (trim?.start ?? 0),
-        }
+  // Blocs de clips + B-roll ordonnés selon clip_order
+  const segments = useMemo(() => {
+    if (!directive) return []
+    const order = clipOrder || directive?.clip_order || clips.map((_, i) => i + 1)
+    const enabledBroll = (directive.b_roll_slots || []).filter((s) => s.enabled)
+    const result = []
+
+    order.forEach((n, idx) => {
+      const clip = clips[n - 1]
+      if (!clip) return
+      const clipIdx = n - 1
+      const trim = directive?.clip_trims?.find((t) => t.clip_index === clipIdx)
+      const start = trim?.start ?? 0
+      const end = trim?.end ?? clip.duration
+      result.push({
+        type: 'clip',
+        thumbnail: clip.thumbnail,
+        duration: end - start,
+        label: `${idx + 1}`,
       })
+      // Insérer B-rolls positionnés après ce clip
+      enabledBroll
+        .filter((b) => b.after_clip === clipIdx)
+        .forEach((b) => {
+          result.push({
+            type: 'broll',
+            thumbnail: b.imageUrl,
+            duration: b.duration || 1.5,
+            label: 'AI',
+          })
+        })
+    })
+    return result
   }, [directive, clips, clipOrder])
+
+  const totalWithBroll = segments.reduce((s, seg) => s + seg.duration, 0) || totalDuration
 
   if (!directive) return null
 
@@ -40,7 +61,9 @@ export default function TimelinePreview({ directive, clips, clipOrder }) {
     <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-5">
       <div className="flex items-center justify-between mb-4">
         <span className="pc-section-label">Preview du montage</span>
-        <span className="text-[12px] font-semibold text-pc-ink">{totalDuration}s total</span>
+        <span className="text-[12px] font-semibold text-pc-ink">
+          {totalWithBroll.toFixed(1)}s total
+        </span>
       </div>
 
       {/* Zone scrollable */}
@@ -69,33 +92,45 @@ export default function TimelinePreview({ directive, clips, clipOrder }) {
             })}
           </div>
 
-          {/* Barre de timeline avec les clips */}
-          <div className="flex gap-0.5 h-16">
-            {orderedClips.map(({ clip, index, duration }) => {
-              const widthPct = (duration / totalDuration) * 100
+          {/* Barre de timeline avec les segments (clips + b-rolls) */}
+          <div className="flex gap-0.5 h-16 relative">
+            {segments.map((seg, index) => {
+              const widthPct = (seg.duration / totalWithBroll) * 100
               return (
                 <div
                   key={index}
-                  className="relative rounded-btn overflow-hidden flex-shrink-0"
+                  className={`relative rounded-btn overflow-hidden flex-shrink-0 ${
+                    seg.type === 'broll' ? 'ring-2 ring-pc-green ring-offset-1' : ''
+                  }`}
                   style={{ width: `${widthPct}%`, minWidth: 32 }}
                 >
-                  {clip.thumbnail ? (
-                    <img
-                      src={clip.thumbnail}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
+                  {seg.thumbnail ? (
+                    <img src={seg.thumbnail} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full bg-pc-bg" />
+                    <div className="w-full h-full bg-pc-bg flex items-center justify-center">
+                      <span className="text-[14px]">🎞️</span>
+                    </div>
+                  )}
+                  {seg.type === 'broll' && (
+                    <div className="absolute top-1 right-1 bg-pc-green text-white text-[8px] font-black px-1 py-px rounded-[3px]">
+                      AI
+                    </div>
                   )}
                   {/* Durée */}
                   <div className="absolute bottom-1 left-1 bg-black/70 text-white text-[10px] font-semibold px-1 py-px rounded-[3px]">
-                    {duration.toFixed(1)}s
+                    {seg.duration.toFixed(1)}s
                   </div>
                 </div>
               )
             })}
           </div>
+
+          {/* Kinetic caption preview animée */}
+          {captionStyle === 'kinetic' && directive.hook_text && (
+            <div className="mt-3 h-8 bg-black rounded-btn flex items-center justify-center overflow-hidden relative">
+              <KineticWordsLoop text={directive.hook_text} />
+            </div>
+          )}
 
           {/* Règle temporelle */}
           <div className="relative h-4 mt-1">
@@ -105,7 +140,7 @@ export default function TimelinePreview({ directive, clips, clipOrder }) {
                 className="absolute top-0 text-[9px] text-pc-ink-4"
                 style={{ left: `${pct * 100}%`, transform: 'translateX(-50%)' }}
               >
-                {(pct * totalDuration).toFixed(0)}s
+                {(pct * totalWithBroll).toFixed(0)}s
               </div>
             ))}
           </div>
@@ -121,6 +156,34 @@ export default function TimelinePreview({ directive, clips, clipOrder }) {
           </span>
         </div>
       )}
+    </div>
+  )
+}
+
+/** Boucle mot par mot animée — évoque la preview kinetic */
+function KineticWordsLoop({ text }) {
+  const words = text.split(/\s+/).filter(Boolean)
+  if (!words.length) return null
+  return (
+    <div className="flex gap-1">
+      {words.map((w, i) => (
+        <motion.span
+          key={i}
+          animate={{
+            opacity: [0.2, 1, 1, 0.2],
+            scale: [0.9, 1.1, 1, 0.9],
+          }}
+          transition={{
+            duration: words.length * 0.35,
+            times: [i / words.length, (i + 0.3) / words.length, (i + 0.7) / words.length, (i + 1) / words.length],
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+          className="text-white text-[11px] font-black uppercase tracking-tight"
+        >
+          {w}
+        </motion.span>
+      ))}
     </div>
   )
 }

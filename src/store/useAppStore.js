@@ -101,6 +101,14 @@ const useAppStore = create(
       // ── Historique des Reels créés ──
       reels: [],             // max 50 — [{ id, createdAt, videoUrl, directive, platform, status }]
 
+      // ── Brand Kit (logo, couleurs, font) ──
+      brandKit: {
+        logoDataUrl: null,       // base64 data URL du logo (upload local)
+        primaryColor: '#1D9E75', // couleur principale (défaut: pc-green)
+        accentColor:  '#0F172A', // couleur accent (défaut: pc-ink)
+        fontFamily:   'sans',    // 'sans' | 'serif' | 'display'
+      },
+
       // ── Actions onboarding ──
       setOnboardingStep: (step) =>
         set((s) => ({ onboarding: { ...s.onboarding, step } })),
@@ -273,6 +281,10 @@ const useAppStore = create(
           reels: s.reels.map((r) => (r.id === id ? { ...r, status } : r)),
         })),
 
+      // ── Actions brand kit ──
+      setBrandKit: (data) =>
+        set((s) => ({ brandKit: { ...s.brandKit, ...data } })),
+
       // ── Actions bibliothèque ──
       saveIdea: (idea) =>
         set((s) => ({
@@ -291,6 +303,7 @@ const useAppStore = create(
         ideas:      state.ideas,
         savedIdeas: state.savedIdeas,
         reels:      state.reels,
+        brandKit:   state.brandKit,
       }),
     }
   )

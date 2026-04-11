@@ -47,6 +47,22 @@ export function buildCreatomatePayload(directive, clips) {
       music_track: MUSIC_TRACKS[directive.music_mood],
       transition_style: directive.transition_style || 'hard_cut',
       duration: directive.total_duration,
+      caption_style: directive.caption_style || 'classic',
+      caption_language: directive.caption_language || 'fr',
+      // Brand kit
+      brand_logo: directive.brand_kit?.logoDataUrl || null,
+      brand_primary_color: directive.brand_kit?.primaryColor || '#1D9E75',
+      brand_accent_color: directive.brand_kit?.accentColor || '#0F172A',
+      brand_font: directive.brand_kit?.fontFamily || 'sans',
+      // B-roll activés
+      ...(directive.b_roll_slots || [])
+        .filter((s) => s.enabled && s.imageUrl)
+        .reduce((acc, s, i) => ({
+          ...acc,
+          [`broll_${i + 1}_source`]: s.imageUrl,
+          [`broll_${i + 1}_after_clip`]: s.after_clip + 1,
+          [`broll_${i + 1}_duration`]: s.duration,
+        }), {}),
     },
     output_format: 'mp4',
     frame_rate: 30,

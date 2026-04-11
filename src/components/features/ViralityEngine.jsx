@@ -8,6 +8,11 @@ import { useCreatomate } from '../../hooks/useCreatomate'
 import TimelinePreview from './TimelinePreview'
 import MusicSelector from './MusicSelector'
 import HookVariantPicker from './HookVariantPicker'
+import ViralityAxesScore from './ViralityAxesScore'
+import CaptionStylePicker from './CaptionStylePicker'
+import BrandKitPicker from './BrandKitPicker'
+import BRollSlots from './BRollSlots'
+import ViralityTips from './ViralityTips'
 
 const PLATFORMS = ['TikTok', 'Instagram']
 const OBJECTIVES = [
@@ -20,7 +25,7 @@ const OBJECTIVES = [
 const PROGRESS_MESSAGES = [
   'Analyse de tes clips...',
   'Identification des meilleures séquences...',
-  'Calcul du score de viralité...',
+  'Calcul du score multi-axes...',
   'Construction du montage optimal...',
 ]
 
@@ -65,7 +70,7 @@ function ScoreBadge({ score, city, cuisine }) {
         <div className={`text-[11px] font-bold uppercase tracking-[0.08em] ${color}`}>
           {label}
         </div>
-        <div className="text-[11px] text-pc-ink-4">Score de viralité</div>
+        <div className="text-[11px] text-pc-ink-4">Score de viralité global</div>
         <BenchmarkLine score={score} city={city} cuisine={cuisine} />
       </div>
     </div>
@@ -79,11 +84,13 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
   const incrementVideoReelUsed = useAppStore((s) => s.incrementVideoReelUsed)
   const restaurant = useAppStore((s) => s.onboarding.restaurant)
   const clientele = useAppStore((s) => s.onboarding.clientele)
+  const brandKit = useAppStore((s) => s.brandKit)
   const toast = useToastStore((s) => s.toast)
   const { startRender } = useCreatomate()
 
   const [platform, setPlatform] = useState('TikTok')
   const [objective, setObjective] = useState('notoriété')
+  const [clipAnything, setClipAnything] = useState('')
   // idle | analyzing | uploading | ready | error
   const [status, setStatus] = useState('idle')
   const [progressIdx, setProgressIdx] = useState(0)
@@ -95,6 +102,10 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
   const [editHashtags, setEditHashtags] = useState('')
   const [clipOrder, setClipOrder] = useState([])
   const [selectedMusicMood, setSelectedMusicMood] = useState(null)
+  const [captionStyle, setCaptionStyle] = useState(null)
+  const [captionLanguage, setCaptionLanguage] = useState('fr')
+  // highlight sélectionné par clip : { [clip_index]: highlight_idx }
+  const [selectedHighlights, setSelectedHighlights] = useState({})
 
   // Rotation des messages de progression
   useEffect(() => {
@@ -113,6 +124,16 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
     setEditHashtags(directive.hashtags?.join(' ') || '')
     setClipOrder(directive.clip_order || clips.map((_, i) => i + 1))
     setSelectedMusicMood(directive.music_mood || null)
+    setCaptionStyle(directive.caption_style || 'kinetic')
+    setCaptionLanguage(directive.caption_language || 'fr')
+    // Sélectionner le meilleur highlight pour chaque clip par défaut
+    if (directive.clip_highlights?.length > 0) {
+      const defaults = {}
+      directive.clip_highlights.forEach((ch) => {
+        defaults[ch.clip_index] = 0 // premier highlight = meilleur
+      })
+      setSelectedHighlights(defaults)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- clips ne change pas après analyse
   }, [directive])
 
@@ -127,6 +148,9 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
         clips,
         platform,
         objective,
+        clipAnything: clipAnything.trim() || null,
+        captionLanguage,
+        brandKit,
       })
 
       const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -154,7 +178,7 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
       setStatus('ready')
     } catch (e) {
       // Fallback local si API indisponible
-      const fallback = generateFallbackDirective(clips, platform, objective, restaurant)
+      const fallback = generateFallbackDirective(clips, platform, objective, restaurant, clipAnything)
       setDirective(fallback)
       setStatus('ready')
       toast('Génération locale (API indisponible)', 'info')
@@ -175,10 +199,25 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
           })
         )
       } catch {
-        // Fallback : utiliser les blob URLs (le render échouera, mais l'UX reste fluide)
         uploadedClips = clips.map((clip) => ({ ...clip, uploadedUrl: clip.url }))
         toast('Upload CDN indisponible, tentative sans CDN', 'info')
       }
+
+      // Construire les trims finaux en tenant compte des highlights sélectionnés
+      const finalTrims = clipOrder
+        .filter((n) => clips[n - 1])
+        .map((n) => {
+          const clipIdx = n - 1
+          const highlightIdx = selectedHighlights[clipIdx]
+          const clipHighlights = directive.clip_highlights?.find((ch) => ch.clip_index === clipIdx)
+          const highlight = clipHighlights?.highlights?.[highlightIdx]
+          // Priorité : highlight sélectionné > trim original > clip entier
+          if (highlight) {
+            return { clip_index: clipIdx, start: highlight.start, end: highlight.end }
+          }
+          return directive.clip_trims?.find((t) => t.clip_index === clipIdx) || null
+        })
+        .filter(Boolean)
 
       const finalDirective = {
         ...directive,
@@ -186,12 +225,15 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
         caption: editCaption,
         hashtags: editHashtags.split(/\s+/).filter(Boolean),
         clip_order: clipOrder,
+        clip_trims: finalTrims,
         music_mood: selectedMusicMood || directive.music_mood,
+        caption_style: captionStyle,
+        caption_language: captionLanguage,
+        brand_kit: brandKit,
       }
       setDirective(finalDirective)
 
       await startRender(finalDirective, uploadedClips)
-      // Quota incrémenté APRÈS le succès du startRender
       incrementVideoReelUsed()
       onRenderStart()
     } catch (e) {
@@ -218,6 +260,11 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
             {PROGRESS_MESSAGES[progressIdx]}
           </motion.p>
         </AnimatePresence>
+        {clipAnything && (
+          <p className="text-[11px] text-pc-ink-3 mt-2">
+            Directive : « {clipAnything} »
+          </p>
+        )}
       </div>
     )
   }
@@ -237,7 +284,7 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
   if ((status === 'ready' || status === 'error') && directive) {
     return (
       <div className="space-y-3">
-        {/* Carte score */}
+        {/* Carte score global + benchmark */}
         <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-5">
           <ScoreBadge
             score={directive.virality_score}
@@ -255,6 +302,12 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
             </ul>
           )}
         </div>
+
+        {/* Score multi-axes */}
+        <ViralityAxesScore axes={directive.virality_axes} />
+
+        {/* Tips dynamiques pour booster le score */}
+        <ViralityTips axes={directive.virality_axes} />
 
         {/* Sélecteur de variantes de hook A/B/C */}
         {directive.hook_variants?.length > 0 && (
@@ -284,7 +337,7 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
           </div>
         </div>
 
-        {/* Plan de montage avec drag & drop */}
+        {/* Plan de montage avec drag & drop + highlights */}
         <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-5">
           <div className="pc-section-label mb-3">Plan de montage</div>
           <Reorder.Group
@@ -294,25 +347,57 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
             className="space-y-2"
           >
             {clipOrder.filter((n) => clips[n - 1]).map((n) => {
-              const trim = directive.clip_trims?.find((t) => t.clip_index === n - 1)
-              const clip = clips[n - 1]
+              const clipIdx = n - 1
+              const clip = clips[clipIdx]
+              const clipHighlights = directive.clip_highlights?.find(
+                (ch) => ch.clip_index === clipIdx
+              )
+              const activeTrim = directive.clip_trims?.find((t) => t.clip_index === clipIdx)
+              const activeHighlightIdx = selectedHighlights[clipIdx] ?? null
+              const activeHighlight = clipHighlights?.highlights?.[activeHighlightIdx]
+              const displayTrim = activeHighlight || activeTrim
+
               return (
                 <Reorder.Item key={n} value={n} className="cursor-grab active:cursor-grabbing">
-                  <div className="flex items-center gap-3 p-2 bg-pc-bg rounded-btn">
-                    {/* Handle drag */}
-                    <span className="text-pc-ink-4 text-[14px] select-none">⠿</span>
+                  <div className="flex items-start gap-3 p-2 bg-pc-bg rounded-btn">
+                    <span className="text-pc-ink-4 text-[14px] select-none mt-1">⠿</span>
                     {clip.thumbnail && (
                       <img
                         src={clip.thumbnail}
                         alt=""
-                        className="w-8 h-14 object-cover rounded-[5px]"
+                        className="w-8 h-14 object-cover rounded-[5px] shrink-0"
                       />
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="text-[12px] font-semibold text-pc-ink">Clip {n}</div>
-                      {trim && (
+                      {displayTrim && (
                         <div className="text-[11px] text-pc-ink-3">
-                          {trim.start.toFixed(1)}s → {trim.end.toFixed(1)}s ({(trim.end - trim.start).toFixed(1)}s)
+                          {displayTrim.start.toFixed(1)}s → {displayTrim.end.toFixed(1)}s
+                          {' '}({(displayTrim.end - displayTrim.start).toFixed(1)}s)
+                        </div>
+                      )}
+                      {/* Sélecteur de highlights */}
+                      {clipHighlights?.highlights?.length > 1 && (
+                        <div className="flex gap-1 mt-1.5 flex-wrap">
+                          {clipHighlights.highlights.map((hl, i) => (
+                            <button
+                              key={i}
+                              onClick={() =>
+                                setSelectedHighlights((prev) => ({
+                                  ...prev,
+                                  [clipIdx]: i,
+                                }))
+                              }
+                              title={hl.reason}
+                              className={`text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] transition-colors ${
+                                activeHighlightIdx === i
+                                  ? 'bg-pc-green text-white'
+                                  : 'bg-pc-border text-pc-ink-3 hover:bg-pc-rule'
+                              }`}
+                            >
+                              {hl.score} · {hl.start.toFixed(0)}s–{hl.end.toFixed(0)}s
+                            </button>
+                          ))}
                         </div>
                       )}
                     </div>
@@ -329,8 +414,16 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
           </div>
         </div>
 
+        {/* B-roll IA entre les clips */}
+        <BRollSlots slots={directive.b_roll_slots} />
+
         {/* Preview timeline visuelle */}
-        <TimelinePreview directive={directive} clips={clips} clipOrder={clipOrder} />
+        <TimelinePreview
+          directive={directive}
+          clips={clips}
+          clipOrder={clipOrder}
+          captionStyle={captionStyle}
+        />
 
         {/* Sélecteur de musique */}
         <MusicSelector
@@ -338,6 +431,17 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
           selected={selectedMusicMood}
           onSelect={setSelectedMusicMood}
         />
+
+        {/* Style captions animées + langue */}
+        <CaptionStylePicker
+          selected={captionStyle}
+          onSelect={setCaptionStyle}
+          language={captionLanguage}
+          onLanguageChange={setCaptionLanguage}
+        />
+
+        {/* Brand Kit — logo, couleurs, police */}
+        <BrandKitPicker />
 
         {/* Overlays texte */}
         <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-5 space-y-3">
@@ -399,7 +503,7 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
     )
   }
 
-  // ─── État idle : sélection plateforme + objectif ───
+  // ─── État idle : sélection plateforme + objectif + ClipAnything ───
   return (
     <div className="space-y-3">
       {/* Sélecteur de plateforme */}
@@ -442,6 +546,25 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
         </div>
       </div>
 
+      {/* ClipAnything — directive NL libre */}
+      <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-5">
+        <div className="flex items-center justify-between mb-2">
+          <div className="pc-section-label">Guide l'IA (optionnel)</div>
+          <span className="text-[9px] font-black tracking-[0.06em] text-pc-green uppercase">
+            ClipAnything
+          </span>
+        </div>
+        <input
+          value={clipAnything}
+          onChange={(e) => setClipAnything(e.target.value)}
+          placeholder="Ex : « ambiance romantique », « montre le chef », « reel ASMR »..."
+          className="w-full text-[13px] text-pc-ink bg-pc-bg rounded-btn px-3 py-2.5 border border-pc-border focus:border-pc-green focus:outline-none transition-colors placeholder:text-pc-ink-4"
+        />
+        <p className="text-[11px] text-pc-ink-4 mt-1.5">
+          L'IA adaptera le montage et les hooks à ta directive.
+        </p>
+      </div>
+
       {/* Récapitulatif des clips */}
       <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-5">
         <div className="pc-section-label mb-2">Clips sélectionnés</div>
@@ -482,26 +605,49 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
 
 // ─── Fallback local si API Claude indisponible ───────────────────────────────
 
-function generateFallbackDirective(clips, platform, objective, restaurant) {
+function generateFallbackDirective(clips, platform, objective, restaurant, clipAnything) {
   const templates = ['dish_reveal', 'behind_scenes', 'daily_special', 'ambiance']
   const template = templates[Math.floor(Math.random() * templates.length)]
   const city = restaurant?.city || 'ta ville'
+  const hookVariants = [
+    { hook_type: 'pattern_interrupt', hook_text: 'Attends de voir ça...', virality_score: 82, reason: 'Curiosité immédiate' },
+    { hook_type: 'question', hook_text: 'Tu connais ce spot ?', virality_score: 76, reason: 'Engagement par la question' },
+    { hook_type: 'pov', hook_text: `POV: ton meilleur repas à ${city}`, virality_score: 79, reason: 'Format POV trending' },
+  ]
 
   return {
     template,
     hook_type: 'pattern_interrupt',
-    hook_text: 'Attends de voir ça...',
-    hook_variants: [
-      { hook_type: 'pattern_interrupt', hook_text: 'Attends de voir ça...', virality_score: 82, reason: 'Curiosité immédiate' },
-      { hook_type: 'question', hook_text: 'Tu connais ce spot ?', virality_score: 76, reason: 'Engagement par la question' },
-      { hook_type: 'pov', hook_text: `POV: ton meilleur repas à ${city}`, virality_score: 79, reason: 'Format POV trending' },
-    ],
+    hook_text: clipAnything ? `${clipAnything.slice(0, 30)}...` : 'Attends de voir ça...',
+    hook_variants: hookVariants,
+    virality_score: 72,
+    virality_axes: { hook: 75, flow: 68, value: 72, trend: 70 },
+    virality_reasons: ['Contenu authentique', 'Format adapté à la plateforme'],
     clip_order: clips.map((_, i) => i + 1),
     clip_trims: clips.map((clip, i) => ({
       clip_index: i,
       start: 0,
       end: Math.min(clip.duration, 4),
     })),
+    clip_highlights: clips.map((clip, i) => ({
+      clip_index: i,
+      highlights: [
+        { start: 0, end: Math.min(clip.duration, 3.5), score: 78, reason: 'Meilleur moment détecté' },
+        ...(clip.duration > 5 ? [{ start: Math.min(clip.duration * 0.4, clip.duration - 3), end: Math.min(clip.duration * 0.4 + 3, clip.duration), score: 71, reason: 'Moment alternatif' }] : []),
+      ],
+    })),
+    caption_style: platform === 'TikTok' ? 'kinetic' : 'classic',
+    caption_language: 'fr',
+    b_roll_slots: clips.length >= 2 ? [
+      {
+        after_clip: 0,
+        duration: 1.5,
+        purpose: 'dish_closeup',
+        label: 'Gros plan signature',
+        prompt: `Professional food photography, extreme close-up of ${restaurant?.specialite || 'signature dish'}, natural light, steam, 8K, vertical 9:16`,
+        enabled: false,
+      },
+    ] : [],
     text_overlays: [
       { text: 'Attends de voir ça...', timing_start: 0, timing_end: 2.5, position: 'center', style: 'bold_white' },
       { text: `📍 ${city}`, timing_start: 4, timing_end: 7, position: 'bottom', style: 'subtle_dark' },
@@ -511,8 +657,6 @@ function generateFallbackDirective(clips, platform, objective, restaurant) {
     music_mood: platform === 'TikTok' ? 'energetic' : 'warm_upbeat',
     music_bpm_range: 'medium_90-110',
     total_duration: Math.min(clips.reduce((s, c) => s + Math.min(c.duration, 4), 0), 15),
-    virality_score: 72,
-    virality_reasons: ['Contenu authentique', 'Format adapté à la plateforme'],
     caption: `Découvrez ${restaurant?.name || 'notre restaurant'} 🍽️ ${objective === 'réservations' ? 'Réservez vite !' : 'Passez nous voir !'}`,
     hashtags: ['#restaurant', `#${city.toLowerCase().replace(/\s/g, '')}`, '#foodie', '#reels'],
   }
