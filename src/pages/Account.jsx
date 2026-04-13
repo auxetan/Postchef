@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAppStore from '../store/useAppStore.js'
 import { PLANS, PLAN_DISPLAY_NAMES, getFeature } from '../utils/plans.js'
+import useAuth from '../hooks/useAuth.js'
 
 const PRO_FEATURES = [
   'Idées IA illimitées · toutes plateformes',
@@ -48,6 +49,7 @@ function Rule({ children }) {
 
 export default function Account() {
   const navigate = useNavigate()
+  const { signOut, syncStatus, user: authUser } = useAuth()
   const user = useAppStore((s) => s.user)
   const onboarding = useAppStore((s) => s.onboarding)
   const updateRestaurant = useAppStore((s) => s.updateRestaurant)
@@ -61,6 +63,7 @@ export default function Account() {
   const [billing, setBilling] = useState(
     user.plan === 'pro_monthly' ? 'monthly' : 'annual'
   )
+  const [logoutLoading, setLogoutLoading] = useState(false)
 
   const currentPlan = user.plan || 'starter'
   const usage       = useAppStore((s) => s.usage)
@@ -90,6 +93,13 @@ export default function Account() {
     setTimeout(() => setSaved(false), 2000)
   }
 
+  const handleLogout = async () => {
+    setLogoutLoading(true)
+    await signOut()
+    setLogoutLoading(false)
+    navigate('/login', { replace: true })
+  }
+
   const inputClass = 'w-full bg-pc-bg border border-pc-border rounded-btn px-4 py-[12px] text-[14px] text-pc-ink placeholder:text-pc-ink-4 focus:outline-none focus:border-pc-ink focus:bg-pc-surface transition-all'
   const labelClass = 'pc-section-label block mb-[8px]'
 
@@ -111,6 +121,29 @@ export default function Account() {
         {/* Profil */}
         <section>
           <Rule>Profil restaurant</Rule>
+          <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-4 mb-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[13px] font-semibold text-pc-ink">{authUser?.email || user.email || 'Compte connecté'}</p>
+                <p className="text-[11px] text-pc-ink-4 mt-[2px]">
+                  {syncStatus === 'saving'
+                    ? 'Synchronisation en cours...'
+                    : syncStatus === 'ready'
+                      ? 'Synchronisé avec le serveur'
+                      : syncStatus === 'demo'
+                        ? 'Mode démo local'
+                        : 'Session active'}
+                </p>
+              </div>
+              <button
+                onClick={handleLogout}
+                disabled={logoutLoading}
+                className="text-[12px] font-bold text-pc-ink border border-pc-border rounded-btn px-4 py-[8px] hover:bg-pc-bg transition-colors disabled:opacity-50"
+              >
+                {logoutLoading ? 'Déconnexion...' : 'Se déconnecter'}
+              </button>
+            </div>
+          </div>
           <div className="space-y-3 mb-5">
             <div>
               <label className={labelClass}>Nom</label>
@@ -229,6 +262,33 @@ export default function Account() {
               </div>
             </div>
           )}
+        </section>
+
+        {/* ── FAQ Facturation ──────────────────────────────── */}
+        <section>
+          <Rule>Questions fréquentes</Rule>
+          <div className="space-y-2">
+            {[
+              {
+                q: 'Puis-je annuler à tout moment ?',
+                a: "Oui. Tu peux annuler depuis cette page ou par email. Ton accès reste actif jusqu'à la fin de la période payée. Aucun frais d'annulation.",
+              },
+              {
+                q: "L'essai 7 jours est vraiment gratuit ?",
+                a: "Complètement. Aucune CB requise pour démarrer. Si tu décides de continuer, tu choisis ton plan à la fin des 7 jours.",
+              },
+              {
+                q: 'Quand suis-je prélevé ?',
+                a: "Le premier prélèvement a lieu le jour de ton passage au plan payant. Ensuite, chaque mois (ou chaque année si tu choisis le plan annuel) à la même date.",
+              },
+              {
+                q: 'Mes données sont-elles conservées si je change de plan ?',
+                a: "Oui. Tes posts, idées et paramètres sont conservés indépendamment de ton plan. Si tu passes de Pro à Starter, tes données existantes restent accessibles.",
+              },
+            ].map((item) => (
+              <FaqItem key={item.q} question={item.q} answer={item.a} />
+            ))}
+          </div>
         </section>
 
         {/* ── Chef IA ──────────────────────────────────────── */}
@@ -438,6 +498,34 @@ export default function Account() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── FaqItem ───────────────────────────────────────────────────────────────────
+function FaqItem({ question, answer }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="bg-pc-surface border border-pc-border rounded-elem overflow-hidden">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between px-4 py-[14px] text-left"
+        aria-expanded={open}
+      >
+        <span className="text-[13px] font-semibold text-pc-ink pr-4">{question}</span>
+        <svg
+          width="14" height="14" viewBox="0 0 14 14" fill="none"
+          stroke="#737373" strokeWidth="2" strokeLinecap="round"
+          className={`flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+        >
+          <path d="M2 5l5 5 5-5" />
+        </svg>
+      </button>
+      {open && (
+        <div className="px-4 pb-[14px] text-[12px] text-pc-ink-3 leading-[1.65]">
+          {answer}
         </div>
       )}
     </div>

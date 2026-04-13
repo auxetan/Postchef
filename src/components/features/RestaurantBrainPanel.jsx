@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useRestaurantBrain } from '../../hooks/useRestaurantBrain.js'
+import DemoBadge from '../ui/DemoBadge.jsx'
 
 const STARS = (n) => '★'.repeat(Math.round(n)) + '☆'.repeat(5 - Math.round(n))
 
@@ -10,7 +11,7 @@ const PLATFORM_COLOR = {
 }
 
 export default function RestaurantBrainPanel({ restaurantName, city }) {
-  const { loading, place, insights, error, search, reset, quotaReached, remaining, monthlyMax } = useRestaurantBrain()
+  const { loading, place, insights, error, isMock, search, reset, quotaReached, remaining, monthlyMax } = useRestaurantBrain()
   const [started, setStarted] = useState(false)
 
   const handleSearch = () => {
@@ -116,8 +117,24 @@ export default function RestaurantBrainPanel({ restaurantName, city }) {
       <div className="bg-pc-surface rounded-card border border-pc-border p-4">
         <div className="flex items-start justify-between gap-2 mb-3">
           <div>
-            <div className="text-[15px] font-bold text-pc-ink">{place.name}</div>
-            <div className="text-[12px] text-pc-ink-3 mt-[2px]">{place.address}</div>
+            <div className="flex items-center gap-2 mb-[2px]">
+              <div className="text-[15px] font-bold text-pc-ink">{place.name}</div>
+              {isMock
+                ? <DemoBadge variant="demo" label="Aperçu démo" />
+                : (
+                  <span className="inline-flex items-center gap-[4px] text-[10px] font-semibold text-[#1D4ED8] bg-[#EFF6FF] px-2 py-[2px] rounded-full">
+                    <svg width="10" height="10" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2C5.6 2 2 5.6 2 10s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm1 11H9V9h2v4zm0-6H9V5h2v2z"/></svg>
+                    Google Places
+                  </span>
+                )
+              }
+            </div>
+            <div className="text-[12px] text-pc-ink-3">{place.address}</div>
+            {isMock && (
+              <div className="text-[11px] text-[#92400E] mt-[4px]">
+                Google Places non configuré — données d'exemple
+              </div>
+            )}
           </div>
           <button onClick={reset} className="text-[11px] text-pc-ink-4 hover:text-pc-ink-3 font-medium flex-shrink-0">
             Relancer

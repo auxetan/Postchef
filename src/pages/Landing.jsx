@@ -141,14 +141,14 @@ function PhoneMockup() {
         </div>
       </FloatingPill>
 
-      {/* Floating resto pill — left middle */}
+      {/* Floating badge "Sans CB" */}
       <FloatingPill
         delay={1.2}
         className="-left-8 bottom-44"
       >
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-pc-green" />
-          <span className="text-[9px] font-[700] text-pc-ink">850+ restos</span>
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#1D9E75" strokeWidth="2" strokeLinecap="round"><path d="M2 6L5 9L10 3"/></svg>
+          <span className="text-[9px] font-[700] text-pc-ink">Sans CB</span>
         </div>
       </FloatingPill>
     </div>
@@ -158,41 +158,96 @@ function PhoneMockup() {
 /* ── Feature item ─────────────────────────────────────────────────── */
 const FEATURES = [
   {
-    emoji: '📅',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="4" width="16" height="14" rx="3"/>
+        <path d="M6 2v3M14 2v3M2 9h16"/>
+      </svg>
+    ),
     title: 'Calendrier IA',
-    desc: '7 jours planifiés automatiquement',
+    desc: '7 jours de contenu planifiés en 3 minutes, adaptés à ta cuisine',
   },
   {
-    emoji: '⚡',
-    title: 'Hooks viraux',
-    desc: 'Accroches testées pour TikTok',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M10 2a6 6 0 014 10.47V14.5a1 1 0 01-1 1H7a1 1 0 01-1-1V12.47A6 6 0 0110 2z"/>
+        <path d="M7.5 17h5M8 18.5h4"/>
+      </svg>
+    ),
+    title: 'Idées virales',
+    desc: 'Hooks testés sur TikTok et Instagram, générés pour ton type de resto',
   },
   {
-    emoji: '🔍',
-    title: 'Veille locale',
-    desc: 'Tendances et événements',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="10" cy="10" r="8"/>
+        <path d="M10 6v4l2.5 2.5"/>
+      </svg>
+    ),
+    title: 'Restaurant Brain',
+    desc: 'Tes avis Google analysés pour trouver ce qui fait revenir tes clients',
   },
   {
-    emoji: '🎬',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="4" width="16" height="12" rx="2.5"/>
+        <path d="M8 8l5 2.5L8 13V8z" fill="#1D9E75" stroke="none"/>
+      </svg>
+    ),
     title: 'Studio Reels',
-    desc: 'Clips montés par IA en 60s',
+    desc: 'Tes clips transformés en Reels montés et sous-titrés en 60 secondes',
   },
 ]
 
-const TESTIMONIALS = [
+/* ── Cas d'usage ──────────────────────────────────────────────────── */
+const USE_CASES = [
   {
-    initials: 'SR',
-    name: 'Sophie R.',
-    resto: 'Chez Sophie · Aix',
-    text: '"En 3 semaines, mes Reels ont doublé ma file d\'attente le vendredi soir."',
-    color: '#1D9E75',
+    situation: 'Tu veux remplir le service du midi',
+    result: 'PostChef génère une idée de story "table dispo → viens" + 3 légendes prêtes à publier en 2 minutes.',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M10 2v4M4.93 4.93l2.83 2.83M2 10h4M4.93 15.07l2.83-2.83M10 14v4M15.07 15.07l-2.83-2.83M18 10h-4M15.07 4.93l-2.83 2.83"/>
+      </svg>
+    ),
   },
   {
-    initials: 'ML',
-    name: 'Marco L.',
-    resto: 'La Trattoria · Marseille',
-    text: '"J\'aurais jamais trouvé ces idées seul. Le brief visuel m\'a tout changé."',
-    color: '#0F6E56',
+    situation: 'Tu veux vendre ton plat signature',
+    result: 'PostChef identifie ton plat le plus cité dans les avis et crée un script de Reel qui déclenche des réservations.',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 10c0-4 3.5-7 7-7s7 3 7 7-3.5 7-7 7"/>
+        <path d="M10 6v4l3 2"/>
+      </svg>
+    ),
+  },
+  {
+    situation: 'Tu veux poster sans y passer 2h',
+    result: 'Un calendrier complet, des captions corrigées et tes hashtags locaux — sans ouvrir ChatGPT.',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    ),
+  },
+]
+
+/* ── FAQ ──────────────────────────────────────────────────────────── */
+const FAQ = [
+  {
+    q: 'Est-ce vraiment gratuit au départ ?',
+    a: 'Oui, 7 jours d\'essai complet sans CB. Tu n\'es débité que si tu choisis de continuer.',
+  },
+  {
+    q: 'Puis-je annuler à tout moment ?',
+    a: 'Oui, sans préavis, sans frais. Ton compte repasse en Starter avec tes données intactes.',
+  },
+  {
+    q: 'PostChef fonctionne pour quel type de restaurant ?',
+    a: 'Tous types — brasserie, pizzeria, gastronomique, street food. L\'IA s\'adapte à ta cuisine et ta clientèle lors de l\'onboarding.',
+  },
+  {
+    q: 'Les idées sont-elles vraiment personnalisées ?',
+    a: 'Oui. PostChef utilise le nom de ton restaurant, ta cuisine, tes avis Google et ton historique de posts pour générer des idées que tu ne trouverais pas avec un outil générique.',
   },
 ]
 
@@ -232,7 +287,7 @@ export default function Landing() {
         <motion.button
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.96 }}
-          onClick={() => navigate('/onboarding')}
+          onClick={() => navigate('/signup')}
           className="bg-pc-green text-white text-[13px] font-[700] px-5 py-[9px] rounded-pill"
           style={{ boxShadow: '0 4px 16px rgba(29,158,117,0.30)' }}
         >
@@ -252,7 +307,7 @@ export default function Landing() {
             className="inline-flex items-center gap-2 bg-pc-green-light border border-pc-green/20 px-3 py-[6px] rounded-pill mb-5"
           >
             <div className="w-[6px] h-[6px] rounded-full bg-pc-green" />
-            <span className="text-[11px] font-[700] text-pc-green tracking-[0.04em]">850+ restaurants actifs</span>
+            <span className="text-[11px] font-[700] text-pc-green tracking-[0.04em]">Accès anticipé · Gratuit 7 jours · Sans CB</span>
           </motion.div>
 
           {/* Headline */}
@@ -287,14 +342,14 @@ export default function Landing() {
             <motion.button
               whileHover={{ scale: 1.03, boxShadow: '0 8px 28px rgba(29,158,117,0.40)' }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => navigate('/onboarding')}
+              onClick={() => navigate('/signup')}
               className="bg-pc-green text-white text-[15px] font-[700] px-7 py-[14px] rounded-pill"
               style={{ boxShadow: '0 4px 20px rgba(29,158,117,0.30)' }}
             >
               Commencer gratuitement
             </motion.button>
             <button
-              onClick={() => navigate('/onboarding')}
+              onClick={() => navigate('/signup')}
               className="text-[14px] font-[600] text-pc-ink-3 flex items-center gap-1 hover:text-pc-ink transition-colors"
             >
               Voir démo
@@ -350,7 +405,9 @@ export default function Landing() {
                 className="bg-white rounded-[20px] p-5"
                 style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}
               >
-                <div className="text-[24px] mb-3">{f.emoji}</div>
+                <div className="w-9 h-9 rounded-[10px] bg-pc-green-light flex items-center justify-center mb-3">
+                  {f.icon}
+                </div>
                 <div className="text-[13px] font-[700] text-pc-ink mb-1">{f.title}</div>
                 <div className="text-[11px] text-pc-ink-4 leading-[1.5]">{f.desc}</div>
               </motion.div>
@@ -359,17 +416,53 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Testimonials ──────────────────────────────────────────── */}
+      {/* ── Cas d'usage ───────────────────────────────────────────── */}
       <section className="px-5 py-10 bg-white">
         <div className="max-w-[520px] mx-auto">
-          <h3 className="text-[22px] font-[800] text-pc-ink tracking-[-0.03em] mb-5">
-            Ils en parlent mieux que nous.
+          <div className="text-[10px] font-[700] tracking-[0.10em] uppercase text-pc-green mb-3">
+            Cas d&apos;usage
+          </div>
+          <h2 className="text-[22px] font-[800] text-pc-ink tracking-[-0.03em] leading-tight mb-6">
+            Tu veux quoi exactement ?
+          </h2>
+          <div className="space-y-3">
+            {USE_CASES.map((uc, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08, duration: 0.3 }}
+                className="rounded-[20px] p-5 border border-pc-rule"
+                style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-[10px] bg-pc-green-light flex items-center justify-center flex-shrink-0 mt-[2px]">
+                    {uc.icon}
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-[700] text-pc-ink mb-[6px]">{uc.situation}</div>
+                    <div className="text-[12px] text-pc-ink-3 leading-[1.6]">{uc.result}</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Testimonials ──────────────────────────────────────────── */}
+      <section className="px-5 py-10 bg-pc-bg">
+        <div className="max-w-[520px] mx-auto">
+          <h3 className="text-[22px] font-[800] text-pc-ink tracking-[-0.03em] mb-2">
+            Ce que ça change.
           </h3>
+          <p className="text-[12px] text-pc-ink-4 mb-5">Exemples de résultats — partage le tien une fois abonné.</p>
           <div className="space-y-3">
             {TESTIMONIALS.map((t) => (
               <div
                 key={t.name}
-                className="rounded-[20px] border border-pc-rule p-5"
+                className="rounded-[20px] border border-pc-rule p-5 bg-white"
                 style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}
               >
                 <div className="flex items-center gap-3 mb-3">
@@ -393,27 +486,31 @@ export default function Landing() {
       </section>
 
       {/* ── Pricing ───────────────────────────────────────────────── */}
-      <section className="px-5 py-10 bg-pc-bg">
+      <section className="px-5 py-10 bg-white">
         <div className="max-w-[520px] mx-auto">
-          <h3 className="text-[22px] font-[800] text-pc-ink tracking-[-0.03em] mb-5 text-center">
+          <h3 className="text-[22px] font-[800] text-pc-ink tracking-[-0.03em] mb-1 text-center">
             Simple et transparent.
           </h3>
+          <p className="text-[12px] text-pc-ink-4 text-center mb-6">Résiliez à tout moment · Sans engagement · Données préservées</p>
           <div className="space-y-3">
             {[
               {
-                name: 'Pro Annuel', price: '19€', per: '/mois', sub: '228€/an · économise 35%',
+                name: 'Pro Annuel', price: '19€', per: '/mois', sub: '228€/an — économise 35%',
                 badge: 'Recommandé',
-                features: ['Idées IA illimitées · toutes plateformes', 'Studio Reels + Brand Kit', 'RestaurantBrain complet + photo IA', 'Analytics avancé + support prioritaire'],
+                cta: 'Commencer gratuitement',
+                features: ['Idées IA illimitées · toutes plateformes', 'Brief visuel + import carte menu', 'RestaurantBrain (avis Google analysés)', 'Photo IA DALL-E · 30/mois', 'Analytics + heatmap · 20 Reels/mois'],
                 highlight: true,
               },
               {
-                name: 'Pro Mensuel', price: '29€', per: '/mois',
-                features: ['20 idées/sem · 2 plateformes', 'Brief visuel + import menu', 'RestaurantBrain basique'],
+                name: 'Pro Mensuel', price: '29€', per: '/mois', sub: null,
+                badge: null, cta: 'Essayer 7 jours',
+                features: ['Idées IA illimitées · toutes plateformes', 'Brief visuel + import menu', 'RestaurantBrain · 20 analyses/mois', '20 Reels Studio / mois'],
                 highlight: false,
               },
               {
-                name: 'Starter', price: 'Gratuit', per: ' · 7 jours',
-                features: ['5 idées/sem · 1 plateforme', '3 posts / semaine'],
+                name: 'Starter', price: 'Gratuit', per: ' · 7 jours', sub: null,
+                badge: null, cta: 'Démarrer sans CB',
+                features: ['5 idées IA / semaine · 1 plateforme', '3 posts planifiés / semaine'],
                 highlight: false,
               },
             ].map((plan) => (
@@ -421,7 +518,7 @@ export default function Landing() {
                 key={plan.name}
                 className="rounded-[20px] p-5 relative"
                 style={{
-                  background: plan.highlight ? 'white' : 'white',
+                  background: 'white',
                   boxShadow: plan.highlight
                     ? '0 4px 24px rgba(29,158,117,0.15), 0 0 0 2px #1D9E75'
                     : '0 2px 12px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.06)',
@@ -442,7 +539,7 @@ export default function Landing() {
                     {plan.sub && <div className="text-[11px] text-pc-ink-4 mt-[2px]">{plan.sub}</div>}
                   </div>
                 </div>
-                <div className="space-y-[6px]">
+                <div className="space-y-[6px] mb-4">
                   {plan.features.map((f) => (
                     <div key={f} className="flex items-start gap-2 text-[12px] text-pc-ink-2">
                       <svg className="flex-shrink-0 mt-[2px]" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1D9E75" strokeWidth="2" strokeLinecap="round"><path d="M2.5 7L5.5 10L11.5 4"/></svg>
@@ -450,8 +547,29 @@ export default function Landing() {
                     </div>
                   ))}
                 </div>
+                <button
+                  onClick={() => navigate('/signup')}
+                  className={`w-full text-[13px] font-[700] py-[10px] rounded-pill transition-opacity hover:opacity-90 ${
+                    plan.highlight ? 'bg-pc-green text-white' : 'bg-pc-bg text-pc-ink border border-pc-border'
+                  }`}
+                >
+                  {plan.cta}
+                </button>
               </div>
             ))}
+          </div>
+
+          {/* FAQ */}
+          <div className="mt-8">
+            <div className="text-[10px] font-[700] tracking-[0.10em] uppercase text-pc-green mb-4">FAQ</div>
+            <div className="space-y-3">
+              {FAQ.map((item) => (
+                <div key={item.q} className="rounded-[16px] bg-pc-bg p-4">
+                  <div className="text-[13px] font-[700] text-pc-ink mb-[6px]">{item.q}</div>
+                  <div className="text-[12px] text-pc-ink-3 leading-[1.6]">{item.a}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -467,7 +585,7 @@ export default function Landing() {
             style={{ background: 'rgba(29,158,117,0.15)', border: '1px solid rgba(29,158,117,0.30)' }}
           >
             <div className="w-[6px] h-[6px] rounded-full bg-pc-green" />
-            <span className="text-[11px] font-[700] text-pc-green tracking-[0.04em]">850+ restos · Marseille à Paris</span>
+            <span className="text-[11px] font-[700] text-pc-green tracking-[0.04em]">Gratuit 7 jours · Sans CB · Résiliable</span>
           </div>
           <h3 className="text-[28px] font-[800] text-white tracking-[-0.04em] leading-tight mb-3">
             Prêt à remplir ta salle ?
@@ -478,7 +596,7 @@ export default function Landing() {
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => navigate('/onboarding')}
+            onClick={() => navigate('/signup')}
             className="bg-white text-pc-ink text-[15px] font-[700] px-8 py-[14px] rounded-pill"
             style={{ boxShadow: '0 8px 28px rgba(0,0,0,0.25)' }}
           >

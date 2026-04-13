@@ -163,38 +163,69 @@ export default function Studio() {
   )
 }
 
+const STEPS = [
+  {
+    label: 'Tes clips',
+    desc: 'Importe ta vidéo brute — même filmée à la main',
+    time: null,
+  },
+  {
+    label: 'Brief IA',
+    desc: "Chef analyse ton clip et choisit le meilleur angle pour l'accrocher",
+    time: '~10 sec',
+  },
+  {
+    label: 'Ton Reel',
+    desc: "Résultat prêt à publier sur TikTok et Instagram",
+    time: '~30 sec',
+  },
+]
+
 function StepIndicator({ currentStep }) {
-  const steps = ['Tes clips', 'Analyse IA', 'Ton Reel']
+  const activeStep = STEPS[currentStep - 1]
   return (
-    <div className="flex items-center justify-center gap-3">
-      {steps.map((label, i) => {
-        const n = i + 1
-        const active = n === currentStep
-        const done = n < currentStep
-        return (
-          <div key={n} className="flex items-center gap-2">
-            <div
-              className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-colors ${
-                done
-                  ? 'bg-pc-green text-white'
-                  : active
-                    ? 'bg-pc-ink text-white'
-                    : 'bg-pc-border text-pc-ink-4'
-              }`}
-            >
-              {done ? '\u2713' : n}
+    <div>
+      {/* Pill row */}
+      <div className="flex items-center justify-center gap-3">
+        {STEPS.map((s, i) => {
+          const n = i + 1
+          const active = n === currentStep
+          const done = n < currentStep
+          return (
+            <div key={n} className="flex items-center gap-2">
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-colors ${
+                  done
+                    ? 'bg-pc-green text-white'
+                    : active
+                      ? 'bg-pc-ink text-white'
+                      : 'bg-pc-border text-pc-ink-4'
+                }`}
+              >
+                {done ? '✓' : n}
+              </div>
+              <span className={`text-[12px] font-medium ${active ? 'text-pc-ink' : 'text-pc-ink-4'}`}>
+                {s.label}
+              </span>
+              {i < STEPS.length - 1 && (
+                <div className="w-8 h-px bg-pc-border mx-1" />
+              )}
             </div>
-            <span
-              className={`text-[12px] font-medium ${active ? 'text-pc-ink' : 'text-pc-ink-4'}`}
-            >
-              {label}
-            </span>
-            {i < steps.length - 1 && (
-              <div className="w-8 h-px bg-pc-border mx-1" />
-            )}
-          </div>
-        )
-      })}
+          )
+        })}
+      </div>
+
+      {/* Active step description */}
+      <div className="mt-3 flex items-center justify-center gap-2">
+        <span className="text-[12px] text-pc-ink-3 leading-snug text-center">
+          {activeStep.desc}
+        </span>
+        {activeStep.time && (
+          <span className="flex-shrink-0 text-[10px] font-bold text-pc-ink-4 bg-pc-bg border border-pc-border px-2 py-[2px] rounded-full">
+            {activeStep.time}
+          </span>
+        )}
+      </div>
     </div>
   )
 }

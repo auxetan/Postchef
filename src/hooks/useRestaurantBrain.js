@@ -1,23 +1,12 @@
 /**
  * useRestaurantBrain — recherche un restaurant via Google Places API
  * puis analyse ses avis avec Claude pour générer des insights contenu.
- *
- * Pour activer Google Places :
- *   1. Créer un fichier .env à la racine avec :
- *      VITE_GOOGLE_PLACES_KEY=ta_clé_ici
- *   2. Activer "Places API (New)" dans Google Cloud Console
- *
- * Pour activer Claude :
- *      VITE_ANTHROPIC_KEY=ta_clé_ici
- *   ⚠️  Ne jamais exposer une clé Anthropic en frontend prod — utiliser un backend.
  */
 
 import { useState } from 'react'
 import useAppStore from '../store/useAppStore.js'
 import { getFeature } from '../utils/plans.js'
-
-const GOOGLE_KEY    = import.meta.env.VITE_GOOGLE_PLACES_KEY
-const ANTHROPIC_KEY = import.meta.env.VITE_ANTHROPIC_KEY
+import { postJson, requestClaude } from '../utils/serverApi.js'
 
 // Données mock pour le dev sans API key
 const MOCK_PLACE = {
@@ -52,6 +41,7 @@ export function useRestaurantBrain() {
   const [place, setPlace] = useState(null)
   const [insights, setInsights] = useState(null)
   const [error, setError] = useState(null)
+  const [isMock, setIsMock] = useState(false)
 
   const plan                        = useAppStore((s) => s.user.plan)
   const brainUsed                   = useAppStore((s) => s.usage.restaurantBrainUsedThisMonth ?? 0)
@@ -68,54 +58,16 @@ export function useRestaurantBrain() {
     setError(null)
 
     try {
-      if (GOOGLE_KEY) {
-        // Appel réel Google Places
-        const query = encodeURIComponent(`${name} ${city}`)
-        const res = await fetch(
-          `https://places.googleapis.com/v1/places:searchText`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Goog-Api-Key': GOOGLE_KEY,
-              'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.internationalPhoneNumber,places.websiteUri,places.priceLevel,places.reviews',
-            },
-            body: JSON.stringify({ textQuery: `${name} restaurant ${city}` }),
-          }
-        )
-        const data = await res.json()
-        const p = data.places?.[0]
-        if (!p) throw new Error('Restaurant non trouvé')
-
-        const placeData = {
-          name: p.displayName?.text || name,
-          address: p.formattedAddress || '',
-          rating: p.rating || 0,
-          totalRatings: p.userRatingCount || 0,
-          phone: p.internationalPhoneNumber || '',
-          website: p.websiteUri || '',
-          priceLevel: p.priceLevel || 0,
-          reviews: (p.reviews || []).slice(0, 5).map((r) => ({
-            author: r.authorAttribution?.displayName || 'Anonyme',
-            rating: r.rating || 0,
-            text: r.originalText?.text || r.text?.text || '',
-            date: r.relativePublishTimeDescription || '',
-          })),
-        }
-        setPlace(placeData)
-        incrementRestaurantBrainUsed()
-        await analyzeWithClaude(placeData, name)
-      } else {
-        // Mock pour le dev
-        await new Promise((r) => setTimeout(r, 1800))
-        setPlace(MOCK_PLACE)
-        incrementRestaurantBrainUsed()
-        await new Promise((r) => setTimeout(r, 1200))
-        setInsights(MOCK_INSIGHTS)
-      }
+      const data = await postJson('/api/google-places', { name, city })
+      const placeData = data.place
+      setIsMock(false)
+      setPlace(placeData)
+      incrementRestaurantBrainUsed()
+      await analyzeWithClaude(placeData, name)
     } catch (e) {
       setError(e.message || 'Erreur lors de la recherche')
-      // Fallback mock
+      // Fallback démo — signalé explicitement dans le panel
+      setIsMock(true)
       setPlace(MOCK_PLACE)
       setInsights(MOCK_INSIGHTS)
     } finally {
@@ -124,11 +76,6 @@ export function useRestaurantBrain() {
   }
 
   const analyzeWithClaude = async (placeData, restaurantName) => {
-    if (!ANTHROPIC_KEY) {
-      setInsights(MOCK_INSIGHTS)
-      return
-    }
-
     const reviewsText = placeData.reviews
       .map((r) => `${r.rating}★ — ${r.text}`)
       .join('\n')
@@ -154,29 +101,18 @@ Analyse ces avis et fournis en JSON :
 Réponds UNIQUEMENT en JSON valide.`
 
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': ANTHROPIC_KEY,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true',
-        },
-        body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: 800,
-          messages: [{ role: 'user', content: prompt }],
-        }),
+      const data = await requestClaude({
+        prompt,
+        maxTokens: 800,
       })
-      const data = await res.json()
-      const parsed = JSON.parse(data.content[0].text)
+      const parsed = JSON.parse(data.text)
       setInsights(parsed)
     } catch {
       setInsights(MOCK_INSIGHTS)
     }
   }
 
-  const reset = () => { setPlace(null); setInsights(null); setError(null) }
+  const reset = () => { setPlace(null); setInsights(null); setError(null); setIsMock(false) }
 
-  return { loading, place, insights, error, search, reset, quotaReached, remaining, monthlyMax }
+  return { loading, place, insights, error, isMock, search, reset, quotaReached, remaining, monthlyMax }
 }
