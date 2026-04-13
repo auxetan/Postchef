@@ -148,7 +148,7 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
     try {
       const data = await requestClaude({
         prompt,
-        maxTokens: 2000,
+        maxTokens: 600,
       })
       const match  = data.text.match(/\[[\s\S]*\]/)
       const parsed = JSON.parse(match ? match[0] : data.text)

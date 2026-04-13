@@ -49,7 +49,7 @@ Règles :
         const data = await requestClaude({
           prompt,
           imageDataUrl: dataUrl,
-          maxTokens: 700,
+          maxTokens: 320,
         })
         const match  = data.text.match(/\{[\s\S]*\}/)
         const parsed = JSON.parse(match ? match[0] : data.text)

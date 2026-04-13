@@ -112,6 +112,7 @@ Réponds UNIQUEMENT en JSON valide :
         const data = await requestClaude({
           prompt,
           imageDataUrl: imagePreview,
+          maxTokens: 280,
           maxTokens: 600,
         })
         const match  = data.text.match(/\{[\s\S]*\}/)

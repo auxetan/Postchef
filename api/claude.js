@@ -44,7 +44,11 @@ export default createApiHandler({
       : null
 
     const messages = buildMessages(body, image)
-    const systemPrompt = body.system ? String(body.system).slice(0, 2000) : undefined
+    const systemText = body.system ? String(body.system).slice(0, 2000) : undefined
+    // Prompt caching — system prompts répétés (ex: Chef IA) économisent ~90% des tokens
+    const system = systemText
+      ? [{ type: 'text', text: systemText, cache_control: { type: 'ephemeral' } }]
+      : undefined
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -52,11 +56,12 @@ export default createApiHandler({
         'content-type': 'application/json',
         'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'prompt-caching-2024-07-31',
       },
       body: JSON.stringify({
         model,
         max_tokens: maxTokens,
-        ...(systemPrompt ? { system: systemPrompt } : {}),
+        ...(system ? { system } : {}),
         messages,
       }),
     })

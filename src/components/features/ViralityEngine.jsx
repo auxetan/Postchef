@@ -158,7 +158,7 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
 
       const data = await requestClaude({
         prompt,
-        maxTokens: 2048,
+        maxTokens: 1600,
       })
       const text = data.text
       const jsonMatch = text.match(/\{[\s\S]*\}/)

@@ -118,7 +118,7 @@ Format durée : "2-3s", "5-8s", etc. Camera : "📱 Portrait" ou "📷 Paysage".
     try {
       const data = await requestClaude({
         prompt,
-        maxTokens: 900,
+        maxTokens: 600,
       })
       const match  = data.text.match(/\[[\s\S]*\]/)
       const parsed = JSON.parse(match ? match[0] : data.text)

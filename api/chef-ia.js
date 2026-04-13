@@ -148,7 +148,12 @@ export default createApiHandler({
       if (!m.role || !m.content) throw new ApiError(400, 'INVALID_MESSAGE', 'message mal formé')
       return { role: m.role, content: String(m.content).slice(0, 4000) }
     })
-    const system = body.system ? String(body.system).slice(0, 3000) : undefined
+    const systemText = body.system ? String(body.system).slice(0, 3000) : undefined
+
+    // Prompt caching — réduit de ~90% le coût du system prompt sur les appels répétés
+    const system = systemText
+      ? [{ type: 'text', text: systemText, cache_control: { type: 'ephemeral' } }]
+      : undefined
 
     // ── 1re passe : Claude avec outils ──────────────────────────────────────
     const r1 = await fetch('https://api.anthropic.com/v1/messages', {
@@ -157,10 +162,11 @@ export default createApiHandler({
         'content-type': 'application/json',
         'x-api-key': claudeKey,
         'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'prompt-caching-2024-07-31',
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 1200,
+        max_tokens: 800,
         ...(system ? { system } : {}),
         tools: TOOLS,
         tool_choice: { type: 'auto' },
@@ -257,10 +263,11 @@ export default createApiHandler({
         'content-type': 'application/json',
         'x-api-key': claudeKey,
         'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'prompt-caching-2024-07-31',
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 500,
+        max_tokens: 400,
         ...(system ? { system } : {}),
         messages: [
           ...messages,

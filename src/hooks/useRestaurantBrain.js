@@ -77,13 +77,19 @@ export function useRestaurantBrain() {
 
   const analyzeWithClaude = async (placeData, restaurantName) => {
     const reviewsText = placeData.reviews
-      .map((r) => `${r.rating}★ — ${r.text}`)
+      .filter((r) => r.text)
+      .slice(0, 8)
+      .map((r) => `${r.rating}★ — ${r.text.slice(0, 200)}`)
       .join('\n')
+
+    const topicsLine = placeData.topics?.length
+      ? `\nSujets fréquents : ${placeData.topics.map((t) => `${t.keyword} (${t.count})`).join(', ')}`
+      : ''
 
     const prompt = `Tu es Chef, expert contenu pour restaurants.
 
 Restaurant : ${restaurantName}
-Note Google : ${placeData.rating}/5 (${placeData.totalRatings} avis)
+Note Google : ${placeData.rating}/5 (${placeData.totalRatings} avis)${topicsLine}
 Avis récents :
 ${reviewsText}
 
@@ -103,7 +109,7 @@ Réponds UNIQUEMENT en JSON valide.`
     try {
       const data = await requestClaude({
         prompt,
-        maxTokens: 800,
+        maxTokens: 400,
       })
       const parsed = JSON.parse(data.text)
       setInsights(parsed)
