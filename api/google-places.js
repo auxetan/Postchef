@@ -2,64 +2,66 @@ import { requireEnv } from './_lib/env.js'
 import { ApiError, createApiHandler } from './_lib/http.js'
 import { assertString } from './_lib/validation.js'
 
+// SerpAPI Google Maps — remplace Google Places API (tier gratuit disponible)
+// Doc: https://serpapi.com/google-maps-api
 export default createApiHandler({
   routeName: 'google-places',
   rateLimit: { limit: 20, windowMs: 60_000 },
   async handler({ body }) {
-    const apiKey = requireEnv('GOOGLE_PLACES_API_KEY')
+    const apiKey = requireEnv('SERPAPI_KEY')
     const name = assertString(body.name, 'name', { min: 2, max: 120 })
     const city = assertString(body.city, 'city', { min: 2, max: 120 })
 
-    const response = await fetch('https://places.googleapis.com/v1/places:searchText', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-goog-api-key': apiKey,
-        'x-goog-fieldmask': [
-          'places.displayName',
-          'places.formattedAddress',
-          'places.rating',
-          'places.userRatingCount',
-          'places.internationalPhoneNumber',
-          'places.websiteUri',
-          'places.priceLevel',
-          'places.reviews',
-        ].join(','),
-      },
-      body: JSON.stringify({ textQuery: `${name} restaurant ${city}` }),
-    })
+    const query = `${name} restaurant ${city}`
+    const url = new URL('https://serpapi.com/search.json')
+    url.searchParams.set('engine', 'google_maps')
+    url.searchParams.set('q', query)
+    url.searchParams.set('hl', 'fr')
+    url.searchParams.set('api_key', apiKey)
+
+    const response = await fetch(url.toString())
 
     if (!response.ok) {
       const details = await response.text()
-      console.error('[api/google-places] upstream_error', {
+      console.error('[api/google-places] serpapi_error', {
         status: response.status,
         details,
       })
-      throw new ApiError(502, 'GOOGLE_PLACES_ERROR', 'Google Places a refusé la requête.')
+      throw new ApiError(502, 'SERPAPI_ERROR', 'SerpAPI a refusé la requête.')
     }
 
     const data = await response.json()
-    const place = data.places?.[0]
+
+    if (data.error) {
+      console.error('[api/google-places] serpapi_api_error', data.error)
+      throw new ApiError(502, 'SERPAPI_ERROR', data.error)
+    }
+
+    const results = data.local_results || []
+    const place = results[0]
 
     if (!place) {
       throw new ApiError(404, 'PLACE_NOT_FOUND', 'Restaurant non trouvé.')
     }
 
+    // Extraction des avis depuis SerpAPI (disponibles dans local_results avec reviews_data)
+    const reviews = (place.reviews_data || []).slice(0, 5).map((review) => ({
+      author: review.username || 'Anonyme',
+      rating: review.rating || 0,
+      text: review.description || review.snippet || '',
+      date: review.date || '',
+    }))
+
     return {
       place: {
-        name: place.displayName?.text || name,
-        address: place.formattedAddress || '',
+        name: place.title || name,
+        address: place.address || '',
         rating: place.rating || 0,
-        totalRatings: place.userRatingCount || 0,
-        phone: place.internationalPhoneNumber || '',
-        website: place.websiteUri || '',
-        priceLevel: place.priceLevel || 0,
-        reviews: (place.reviews || []).slice(0, 5).map((review) => ({
-          author: review.authorAttribution?.displayName || 'Anonyme',
-          rating: review.rating || 0,
-          text: review.originalText?.text || review.text?.text || '',
-          date: review.relativePublishTimeDescription || '',
-        })),
+        totalRatings: place.reviews || 0,
+        phone: place.phone || '',
+        website: place.website || '',
+        priceLevel: place.price ? place.price.length : 0, // "$" → 1, "$$" → 2, etc.
+        reviews,
       },
     }
   },
