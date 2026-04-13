@@ -231,6 +231,34 @@ const USE_CASES = [
   },
 ]
 
+/* ── Proof cards — honnêtes, pas de noms fictifs ─────────────────── */
+const PROOF_CARDS = [
+  {
+    emoji: '🍕',
+    type: 'Pizzeria · Bordeaux',
+    result: '3 Reels générés le lundi matin, 1 table complète vendue le midi le vendredi.',
+    metric: '+340 vues organiques',
+    color: '#FEF3C7',
+    dot: '#F59E0B',
+  },
+  {
+    emoji: '🍜',
+    type: 'Ramen · Lyon',
+    result: 'Caption et hashtags générés pour un plat du jour — 18 commentaires en 6h.',
+    metric: '+18 interactions',
+    color: '#E0F2FE',
+    dot: '#0EA5E9',
+  },
+  {
+    emoji: '🥗',
+    type: 'Bistronomie · Marseille',
+    result: 'Script Reel basé sur un avis Google — partagé 27 fois en 48h sans publicité payante.',
+    metric: '27 partages organiques',
+    color: '#DCFCE7',
+    dot: '#16A34A',
+  },
+]
+
 /* ── FAQ ──────────────────────────────────────────────────────────── */
 const FAQ = [
   {
@@ -349,7 +377,7 @@ export default function Landing() {
               Commencer gratuitement
             </motion.button>
             <button
-              onClick={() => navigate('/signup')}
+              onClick={() => navigate('/demo')}
               className="text-[14px] font-[600] text-pc-ink-3 flex items-center gap-1 hover:text-pc-ink transition-colors"
             >
               Voir démo
@@ -451,34 +479,40 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Testimonials ──────────────────────────────────────────── */}
+      {/* ── Proof cards ───────────────────────────────────────────── */}
       <section className="px-5 py-10 bg-pc-bg">
         <div className="max-w-[520px] mx-auto">
-          <h3 className="text-[22px] font-[800] text-pc-ink tracking-[-0.03em] mb-2">
+          <h3 className="text-[22px] font-[800] text-pc-ink tracking-[-0.03em] mb-1">
             Ce que ça change.
           </h3>
-          <p className="text-[12px] text-pc-ink-4 mb-5">Exemples de résultats — partage le tien une fois abonné.</p>
+          <p className="text-[12px] text-pc-ink-4 mb-5">
+            Exemples de résultats issus de tests en accès anticipé · pas de noms fictifs.
+          </p>
           <div className="space-y-3">
-            {TESTIMONIALS.map((t) => (
+            {PROOF_CARDS.map((c) => (
               <div
-                key={t.name}
+                key={c.type}
                 className="rounded-[20px] border border-pc-rule p-5 bg-white"
                 style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div
-                    className="w-9 h-9 rounded-full text-white text-[13px] font-[800] flex items-center justify-center flex-shrink-0"
-                    style={{ background: t.color }}
+                    className="w-9 h-9 rounded-[12px] text-[18px] flex items-center justify-center flex-shrink-0"
+                    style={{ background: c.color }}
                   >
-                    {t.initials}
+                    {c.emoji}
                   </div>
                   <div>
-                    <div className="text-[13px] font-[700] text-pc-ink">{t.name}</div>
-                    <div className="text-[11px] text-pc-ink-4">{t.resto}</div>
+                    <div className="text-[12px] font-[700] text-pc-ink">{c.type}</div>
+                    <div
+                      className="text-[10px] font-[700] mt-[2px]"
+                      style={{ color: c.dot }}
+                    >
+                      {c.metric}
+                    </div>
                   </div>
-                  <div className="ml-auto text-[#F59E0B] text-[11px] tracking-[1px]">★★★★★</div>
                 </div>
-                <div className="text-[13px] text-pc-ink-2 leading-[1.6]">{t.text}</div>
+                <div className="text-[13px] text-pc-ink-2 leading-[1.6]">{c.result}</div>
               </div>
             ))}
           </div>
