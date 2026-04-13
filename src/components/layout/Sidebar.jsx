@@ -121,12 +121,13 @@ export default function Sidebar() {
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 px-3 space-y-[2px] overflow-y-auto">
+      <nav className="flex-1 px-3 space-y-[2px] overflow-y-auto" aria-label="Navigation principale">
         {NAV.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.end}
+            aria-label={item.label}
           >
             {({ isActive }) => (
               <div className="relative">

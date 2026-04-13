@@ -1,6 +1,7 @@
 import { Fragment } from 'react'
 import useFeatureAccess from '../hooks/useFeatureAccess.js'
 import FeatureLock from '../components/ui/FeatureLock.jsx'
+import DemoBadge from '../components/ui/DemoBadge.jsx'
 import { mockStats } from '../utils/mockData.js'
 
 const WEEKS = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7']
@@ -42,8 +43,11 @@ export default function Analytics() {
       {/* Header */}
       <div className="bg-pc-surface border-b border-pc-border px-6 pt-7 pb-5 sticky top-0 z-30">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-[26px] font-black tracking-[-0.04em] text-pc-ink leading-none">Analytics</h1>
-          <p className="text-[12px] text-pc-ink-4 mt-[6px] font-medium">30 derniers jours</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-[26px] font-black tracking-[-0.04em] text-pc-ink leading-none">Analytics</h1>
+            <DemoBadge variant="demo" />
+          </div>
+          <p className="text-[12px] text-pc-ink-4 mt-[6px] font-medium">Données simulées — connexion aux réseaux à venir</p>
         </div>
       </div>
 

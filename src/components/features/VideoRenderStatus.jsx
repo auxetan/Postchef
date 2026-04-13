@@ -44,11 +44,11 @@ export default function VideoRenderStatus({ onNewVideo }) {
       date: today.toISOString().split('T')[0],
       day: FR_DAYS[today.getDay()],
       dayShort: FR_SHORT[today.getDay()],
-      title: directive.hook_text,
+      type: 'Reel IA',
+      description: directive.hook_text || directive.caption || 'Reel prêt à publier',
       caption: directive.caption,
-      platform: 'Instagram',
-      type: 'reel',
-      status: 'brouillon',
+      plateformes: ['Instagram'],
+      status: 'pret-a-publier',
       videoUrl: renderUrl,
     })
     toast('Ajouté au calendrier')
@@ -74,7 +74,7 @@ export default function VideoRenderStatus({ onNewVideo }) {
       }
     }
     // Fallback : copier l'URL
-    navigator.clipboard.writeText(renderUrl)
+    navigator.clipboard?.writeText(renderUrl)
     toast('Lien copié')
   }
 
@@ -193,7 +193,7 @@ export default function VideoRenderStatus({ onNewVideo }) {
           {directive?.caption && (
             <button
               onClick={() => {
-                navigator.clipboard.writeText(directive.caption)
+                navigator.clipboard?.writeText(directive.caption)
                 toast('Caption copié')
               }}
               className="w-full py-[11px] rounded-btn text-[13px] font-bold text-pc-ink bg-pc-surface border border-pc-border hover:bg-pc-bg transition-colors"
@@ -205,7 +205,7 @@ export default function VideoRenderStatus({ onNewVideo }) {
           {directive?.hashtags?.length > 0 && (
             <button
               onClick={() => {
-                navigator.clipboard.writeText(directive.hashtags.join(' '))
+                navigator.clipboard?.writeText(directive.hashtags.join(' '))
                 toast('Hashtags copiés')
               }}
               className="w-full py-[11px] rounded-btn text-[13px] font-bold text-pc-ink bg-pc-surface border border-pc-border hover:bg-pc-bg transition-colors"

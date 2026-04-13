@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { mockTrendingSounds, mockFormats, mockSeasonalEvents } from '../utils/mockData.js'
+import DemoBadge from '../components/ui/DemoBadge.jsx'
 
 const TABS = [
   ['sounds', 'Sons trending'],
@@ -36,9 +37,12 @@ export default function Trends() {
       <div className="bg-pc-surface border-b border-pc-border sticky top-0 z-30">
         <div className="px-6 pt-7 pb-0 max-w-2xl mx-auto">
           <p className="pc-section-label mb-2">Cette semaine</p>
-          <h1 className="text-[26px] font-black tracking-[-0.04em] text-pc-ink leading-none pb-4">
-            Tendances
-          </h1>
+          <div className="flex items-center gap-2 pb-4">
+            <h1 className="text-[26px] font-black tracking-[-0.04em] text-pc-ink leading-none">
+              Tendances
+            </h1>
+            <DemoBadge variant="beta" />
+          </div>
         </div>
 
         {/* Tabs */}

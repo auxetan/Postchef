@@ -3,18 +3,33 @@ import { mockPosts } from '../utils/mockData.js'
 import useAppStore from '../store/useAppStore.js'
 import useToastStore from '../store/useToastStore.js'
 import PlanningModal from '../components/ui/PlanningModal.jsx'
+import EmptyState from '../components/ui/EmptyState.jsx'
 
 const DAY_HEADERS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 const MONTH_NAMES = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
 const DAY_INDEX = { Lundi: 0, Mardi: 1, Mercredi: 2, Jeudi: 3, Vendredi: 4, Samedi: 5, Dimanche: 6 }
 
 const STATUS_COLOR = {
-  idee:       'bg-[#f3f4f6] text-[#374151] border-[#e5e7eb]',
-  'a-tourner':'bg-[#fef3c7] text-[#92400e] border-[#fde68a]',
-  publie:     'bg-pc-green-light text-pc-green-dark border-pc-green-mid',
+  idee:             'bg-[#f3f4f6] text-[#374151] border-[#e5e7eb]',
+  'a-tourner':      'bg-[#fef3c7] text-[#92400e] border-[#fde68a]',
+  'pret-a-publier': 'bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]',
+  publie:           'bg-pc-green-light text-pc-green-dark border-pc-green-mid',
+  brouillon:        'bg-[#f3f4f6] text-[#374151] border-[#e5e7eb]',
 }
-const STATUS_LABEL = { idee: 'Idée', 'a-tourner': 'À tourner', publie: 'Publié' }
-const STATUS_NEXT  = { idee: 'a-tourner', 'a-tourner': 'publie', publie: 'idee' }
+const STATUS_LABEL = {
+  idee:             'Idée',
+  'a-tourner':      'À tourner',
+  'pret-a-publier': 'Prêt à publier',
+  publie:           'Publié',
+  brouillon:        'Brouillon',
+}
+const STATUS_NEXT  = {
+  idee:             'a-tourner',
+  'a-tourner':      'pret-a-publier',
+  'pret-a-publier': 'publie',
+  publie:           'idee',
+  brouillon:        'a-tourner',
+}
 
 const PLATFORM_PILL = {
   Instagram: 'bg-pc-green-light text-pc-green-dark',
@@ -22,8 +37,8 @@ const PLATFORM_PILL = {
   Facebook:  'bg-[#eff6ff] text-[#1d4ed8]',
 }
 
-const STATUS_FILTERS = ['Tous', 'Idée', 'À tourner', 'Publié']
-const STATUS_FILTER_MAP = { 'Idée': 'idee', 'À tourner': 'a-tourner', 'Publié': 'publie' }
+const STATUS_FILTERS = ['Tous', 'Idée', 'À tourner', 'Prêt', 'Publié']
+const STATUS_FILTER_MAP = { 'Idée': 'idee', 'À tourner': 'a-tourner', 'Prêt': 'pret-a-publier', 'Publié': 'publie' }
 
 function buildMonthGrid(year, month) {
   const firstDay = new Date(year, month, 1)
@@ -318,6 +333,7 @@ export default function Calendar() {
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
               toast={toast}
+              onAdd={() => setShowPlanningModal(true)}
             />
           </div>
         )}
@@ -339,12 +355,21 @@ export default function Calendar() {
 }
 
 // ── PostList ──────────────────────────────────────────────────────────────────
-function PostList({ posts, expandedPost, setExpandedPost, showDay, storePostIds, onStatusChange, onDelete, onDragStart, onDragEnd, toast }) {
+function PostList({ posts, expandedPost, setExpandedPost, showDay, storePostIds, onStatusChange, onDelete, onDragStart, onDragEnd, toast, onAdd }) {
   if (posts.length === 0) {
     return (
-      <div className="text-center py-8 text-pc-ink-4 text-[13px]">
-        Aucun post pour ce filtre
-      </div>
+      <EmptyState
+        compact
+        icon={
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#A3A3A3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="4" width="16" height="14" rx="3"/>
+            <path d="M6.5 2.5V5.5M13.5 2.5V5.5M2 8.5H18"/>
+          </svg>
+        }
+        title="Aucun post ce mois-ci"
+        description="Commence à planifier ton contenu pour remplir le calendrier."
+        action={onAdd ? { label: '+ Planifier un post', onClick: onAdd } : undefined}
+      />
     )
   }
 

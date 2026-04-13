@@ -1,113 +1,22 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import {
+  createDefaultStoreData as createDefaults,
+  createDefaultBrandKit,
+  createDefaultStudio,
+  createDefaultUsage,
+  getThisMonday,
+  getThisMonth,
+} from '../lib/appStateDefaults.js'
 
-// ── Helpers date ─────────────────────────────────────────────────────────────
-
-/** Retourne la date ISO du lundi de la semaine courante */
-function getThisMonday() {
-  const d = new Date()
-  const day = d.getDay() // 0=Dim, 1=Lun, …, 6=Sam
-  const diff = day === 0 ? -6 : 1 - day // décalage vers lundi
-  const monday = new Date(d)
-  monday.setDate(d.getDate() + diff)
-  return monday.toISOString().split('T')[0]
+function createDefaultAppState() {
+  return createDefaults()
 }
-
-/** Retourne 'YYYY-MM' du mois courant */
-function getThisMonth() {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
-}
-
-// ────────────────────────────────────────────────────────────────────────────
 
 const useAppStore = create(
   persist(
     (set, get) => ({
-      // ── Onboarding ──
-      onboarding: {
-        step: 1,
-        completed: false,
-        restaurant: {
-          name: '',
-          city: '',
-          cuisineTypes: [],
-          specialite: '',
-          couverts: '20-50',
-        },
-        clientele: {
-          profils: [],
-          objectif: '',
-        },
-        preferences: {
-          plateformes: [],
-          frequence: '2-3/sem',
-          styles: [],
-        },
-      },
-
-      // ── User ──
-      user: {
-        id: null,
-        prenom: 'Marco',
-        email: '',
-        plan: 'starter', // 'starter' | 'pro_monthly' | 'pro_annual'
-        planExpiry: null,
-      },
-
-      // ── Usage (quotas IA) ──
-      // weekStart : lundi ISO de la semaine courante
-      // monthStart : 'YYYY-MM' du mois courant
-      usage: {
-        // Idées IA — reset chaque lundi
-        ideasUsedThisWeek:           0,
-        weekStart:                   getThisMonday(),
-        // Photos DALL-E — reset 1er du mois (Pro Annual uniquement)
-        dishPhotoUsedThisMonth:      0,
-        // Analyses RestaurantBrain — reset 1er du mois
-        restaurantBrainUsedThisMonth: 0,
-        // Scripts vidéo IA — reset 1er du mois
-        videoScriptUsedThisMonth:    0,
-        // Légendes QuickCapture — reset 1er du mois
-        captionUsedThisMonth:        0,
-        // Reels Studio — reset 1er du mois
-        videoReelUsedThisMonth:      0,
-        monthStart:                  getThisMonth(),
-      },
-
-      // ── Menu photo ──
-      menuPhoto: null,
-
-      // ── Posts (calendrier) ──
-      posts: [],
-
-      // ── Ideas ──
-      ideas: [],
-      ideasLoading: false,
-
-      // ── Bibliothèque d'idées sauvegardées ──
-      savedIdeas: [],
-
-      // ── Studio (Virality Engine) ──
-      studio: {
-        clips: [],           // [{ id, file, url, duration, thumbnail, frames, analysisLabel }]
-        directive: null,     // ViralityDirective JSON généré par Claude
-        renderStatus: null,  // null | 'pending' | 'rendering' | 'done' | 'error'
-        renderUrl: null,     // URL du MP4 final Creatomate
-        renderId: null,      // ID du render Creatomate pour polling
-        lastGenerated: null, // ISO date
-      },
-
-      // ── Historique des Reels créés ──
-      reels: [],             // max 50 — [{ id, createdAt, videoUrl, directive, platform, status }]
-
-      // ── Brand Kit (logo, couleurs, font) ──
-      brandKit: {
-        logoDataUrl: null,       // base64 data URL du logo (upload local)
-        primaryColor: '#1D9E75', // couleur principale (défaut: pc-green)
-        accentColor:  '#0F172A', // couleur accent (défaut: pc-ink)
-        fontFamily:   'sans',    // 'sans' | 'serif' | 'display'
-      },
+      ...createDefaultAppState(),
 
       // ── Actions onboarding ──
       setOnboardingStep: (step) =>
@@ -143,6 +52,36 @@ const useAppStore = create(
       // ── Actions user ──
       setUser:  (data) => set((s) => ({ user: { ...s.user, ...data } })),
       setPlan:  (plan) => set((s) => ({ user: { ...s.user, plan } })),
+      hydrateFromServer: (snapshot) =>
+        set((s) => ({
+          user: { ...s.user, ...(snapshot.user || {}) },
+          onboarding: {
+            ...s.onboarding,
+            ...(snapshot.onboarding || {}),
+            restaurant: {
+              ...s.onboarding.restaurant,
+              ...(snapshot.onboarding?.restaurant || {}),
+            },
+            clientele: {
+              ...s.onboarding.clientele,
+              ...(snapshot.onboarding?.clientele || {}),
+            },
+            preferences: {
+              ...s.onboarding.preferences,
+              ...(snapshot.onboarding?.preferences || {}),
+            },
+          },
+          usage: { ...s.usage, ...(snapshot.usage || {}) },
+          posts: Array.isArray(snapshot.posts) ? snapshot.posts : s.posts,
+          ideas: Array.isArray(snapshot.ideas) ? snapshot.ideas : s.ideas,
+          savedIdeas: Array.isArray(snapshot.savedIdeas) ? snapshot.savedIdeas : s.savedIdeas,
+          reels: Array.isArray(snapshot.reels) ? snapshot.reels : s.reels,
+          brandKit: { ...s.brandKit, ...(snapshot.brandKit || {}) },
+        })),
+      resetSessionState: () =>
+        set(() => ({
+          ...createDefaultAppState(),
+        })),
 
       // ── Actions usage ──
 
@@ -173,16 +112,7 @@ const useAppStore = create(
 
       resetUsage: () =>
         set(() => ({
-          usage: {
-            ideasUsedThisWeek:            0,
-            weekStart:                    getThisMonday(),
-            dishPhotoUsedThisMonth:       0,
-            restaurantBrainUsedThisMonth: 0,
-            videoScriptUsedThisMonth:     0,
-            captionUsedThisMonth:         0,
-            videoReelUsedThisMonth:       0,
-            monthStart:                   getThisMonth(),
-          },
+          usage: createDefaultUsage(),
         })),
 
       /**
@@ -263,7 +193,7 @@ const useAppStore = create(
         set((s) => ({ studio: { ...s.studio, renderId: id } })),
       resetStudio: () =>
         set(() => ({
-          studio: { clips: [], directive: null, renderStatus: null, renderUrl: null, renderId: null, lastGenerated: null },
+          studio: createDefaultStudio(),
         })),
 
       incrementVideoReelUsed: () =>
@@ -284,6 +214,8 @@ const useAppStore = create(
       // ── Actions brand kit ──
       setBrandKit: (data) =>
         set((s) => ({ brandKit: { ...s.brandKit, ...data } })),
+      resetBrandKit: () =>
+        set(() => ({ brandKit: createDefaultBrandKit() })),
 
       // ── Actions bibliothèque ──
       saveIdea: (idea) =>
@@ -305,6 +237,16 @@ const useAppStore = create(
         reels:      state.reels,
         brandKit:   state.brandKit,
       }),
+      // Migration : corriger les stores persistés sans user.id ou avec 'Marco'
+      onRehydrateStorage: () => (state) => {
+        if (!state) return
+        if (!state.user?.id) {
+          state.user = { ...state.user, id: crypto.randomUUID() }
+        }
+        if (state.user?.prenom === 'Marco') {
+          state.user = { ...state.user, prenom: '' }
+        }
+      },
     }
   )
 )

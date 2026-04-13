@@ -256,17 +256,17 @@ export function isAtLeast(plan, minPlan) {
 
 /** Quel plan minimum faut-il pour cette feature ? */
 export function requiredPlanFor(feature) {
-  const tiers = ['starter', 'pro_monthly', 'pro_annual']
+  const tiers = ['starter', 'pro_monthly', 'pro_annual', 'premium']
   for (const tier of tiers) {
     const val = FEATURES[feature]?.[tier]
     if (val !== false && val !== 0) return tier
   }
-  return 'pro_annual'
+  return 'premium'
 }
 
 export const PLAN_DISPLAY_NAMES = {
   starter:     'Starter',
   pro_monthly: 'Pro',
-  pro_annual:  'Pro',
+  pro_annual:  'Pro Annuel',
   premium:     'Premium',
 }

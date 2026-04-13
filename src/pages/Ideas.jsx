@@ -2,8 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { mockIdeas } from '../utils/mockData.js'
 import useAppStore from '../store/useAppStore.js'
-
-const ANTHROPIC_KEY = import.meta.env.VITE_ANTHROPIC_KEY
 import useToastStore from '../store/useToastStore.js'
 import useFeatureAccess from '../hooks/useFeatureAccess.js'
 import FeatureLock from '../components/ui/FeatureLock.jsx'
@@ -11,6 +9,7 @@ import IdeasCounter from '../components/ui/IdeasCounter.jsx'
 import DishPhotoGenerator from '../components/features/DishPhotoGenerator.jsx'
 import VideoScriptGenerator from '../components/features/VideoScriptGenerator.jsx'
 import PlanningModal from '../components/ui/PlanningModal.jsx'
+import { requestClaude } from '../utils/serverApi.js'
 
 const PLATFORMS = ['Tous', 'TikTok', 'Instagram', 'Facebook']
 const FORMATS   = ['Tous', 'Vidéo', 'Photo', 'Reel', 'Carrousel']
@@ -113,8 +112,7 @@ export default function Ideas() {
     const clientele   = onboarding.clientele
     const preferences = onboarding.preferences
 
-    if (ANTHROPIC_KEY) {
-      const prompt = `Tu es Chef, expert en marketing restaurant sur les réseaux sociaux.
+    const prompt = `Tu es Chef, expert en marketing restaurant sur les réseaux sociaux.
 
 Restaurant : ${restaurant.name || 'Mon restaurant'}
 Ville : ${restaurant.city || 'France'}
@@ -141,31 +139,15 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
   }
 ]`
 
-      try {
-        const res  = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': ANTHROPIC_KEY,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true',
-          },
-          body: JSON.stringify({
-            model: 'claude-haiku-4-5-20251001',
-            max_tokens: 2000,
-            messages: [{ role: 'user', content: prompt }],
-          }),
-        })
-        const data   = await res.json()
-        const text   = data.content?.[0]?.text || ''
-        const match  = text.match(/\[[\s\S]*\]/)
-        const parsed = JSON.parse(match ? match[0] : text)
-        storeIdeas(parsed)
-      } catch {
-        storeIdeas([...mockIdeas].sort(() => Math.random() - 0.5))
-      }
-    } else {
-      await new Promise((r) => setTimeout(r, 1500))
+    try {
+      const data = await requestClaude({
+        prompt,
+        maxTokens: 2000,
+      })
+      const match  = data.text.match(/\[[\s\S]*\]/)
+      const parsed = JSON.parse(match ? match[0] : data.text)
+      storeIdeas(parsed)
+    } catch {
       storeIdeas([...mockIdeas].sort(() => Math.random() - 0.5))
     }
 
@@ -251,10 +233,14 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
       {tab === 'bibliotheque' && (
         <div className="px-6 py-7 max-w-2xl mx-auto">
           {savedIdeas.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="text-[48px] mb-4">🔖</div>
-              <div className="text-[17px] font-bold text-pc-ink mb-2">Bibliothèque vide</div>
-              <div className="text-[13px] text-pc-ink-3">Sauvegarde tes idées préférées avec l'icône signet.</div>
+            <div className="text-center py-16">
+              <div className="w-12 h-12 rounded-full bg-pc-bg border border-pc-border flex items-center justify-center mx-auto mb-4">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#A3A3A3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 2h10a1 1 0 011 1v14l-6-3-6 3V3a1 1 0 011-1z"/>
+                </svg>
+              </div>
+              <div className="text-[15px] font-bold text-pc-ink mb-[6px]">Bibliothèque vide</div>
+              <div className="text-[12px] text-pc-ink-3 leading-[1.6] max-w-[200px] mx-auto">Appuie sur l'icône signet d'une idée pour la sauvegarder ici.</div>
             </div>
           ) : (
             <div className="space-y-2">

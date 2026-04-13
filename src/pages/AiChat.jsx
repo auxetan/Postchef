@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAppStore from '../store/useAppStore.js'
 import useFeatureAccess from '../hooks/useFeatureAccess.js'
+import DemoBadge from '../components/ui/DemoBadge.jsx'
+import { isDemo } from '../utils/demoMode.js'
 
 const SUGGESTIONS = [
   'Quels hashtags utiliser pour mon resto ?',
@@ -177,7 +179,10 @@ export default function AiChat() {
             </svg>
           </div>
           <div>
-            <p className="text-[14px] font-black text-pc-ink leading-none">Chef IA</p>
+            <div className="flex items-center gap-[6px]">
+              <p className="text-[14px] font-black text-pc-ink leading-none">Chef IA</p>
+              {isDemo('chef-ia') && <DemoBadge variant="beta" />}
+            </div>
             <p className="text-[10px] text-[#7C3AED] font-semibold mt-[1px]">En ligne · Premium</p>
           </div>
         </div>
@@ -195,7 +200,7 @@ export default function AiChat() {
       {/* Suggestions */}
       {messages.length === 1 && !isTyping && (
         <div className="fixed bottom-[72px] left-0 right-0 px-5 pb-3 max-w-2xl mx-auto">
-          <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {SUGGESTIONS.map((s) => (
               <button
                 key={s}

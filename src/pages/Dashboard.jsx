@@ -8,19 +8,25 @@ import useAppStore from '../store/useAppStore.js'
 import useFeatureAccess from '../hooks/useFeatureAccess.js'
 
 const STATUS_DOT = {
-  'idee':      '#D4D4D4',
-  'a-tourner': '#F59E0B',
-  'publie':    '#1D9E75',
+  'idee':            '#D4D4D4',
+  'a-tourner':       '#F59E0B',
+  'pret-a-publier':  '#3B82F6',
+  'publie':          '#1D9E75',
+  'brouillon':       '#D4D4D4',
 }
 const STATUS_LABEL = {
-  'idee':      'Idée',
-  'a-tourner': 'À tourner',
-  'publie':    'Publié',
+  'idee':            'Idée',
+  'a-tourner':       'À tourner',
+  'pret-a-publier':  'Prêt à publier',
+  'publie':          'Publié',
+  'brouillon':       'Brouillon',
 }
 const STATUS_BG = {
-  'idee':      'bg-[#F5F5F5] text-pc-ink-4',
-  'a-tourner': 'bg-[#FEF3C7] text-[#92400E]',
-  'publie':    'bg-[#DCFCE7] text-[#14532D]',
+  'idee':            'bg-[#F5F5F5] text-pc-ink-4',
+  'a-tourner':       'bg-[#FEF3C7] text-[#92400E]',
+  'pret-a-publier':  'bg-[#EFF6FF] text-[#1D4ED8]',
+  'publie':          'bg-[#DCFCE7] text-[#14532D]',
+  'brouillon':       'bg-[#F5F5F5] text-pc-ink-4',
 }
 const PLATFORM_COLOR = {
   Instagram: 'text-pc-green',
