@@ -84,6 +84,16 @@ export async function requestClaudeChat({
   return postJson('/api/claude', { messages, system, maxTokens, model })
 }
 
+/**
+ * Chef IA avec tool-calling.
+ * messages: [{role: 'user'|'assistant', content: string}]
+ * system:   system prompt string
+ * Returns: { text, actions: [{type, data}] }
+ */
+export async function requestChefIA({ messages, system }) {
+  return postJson('/api/chef-ia', { messages, system })
+}
+
 export async function generateAiImage({
   prompt,
   size = '1024x1024',

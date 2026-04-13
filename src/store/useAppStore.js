@@ -174,6 +174,7 @@ const useAppStore = create(
       // ── Actions ideas ──
       setMenuPhoto:     (photo)   => set({ menuPhoto: photo }),
       setIdeas:         (ideas)   => set({ ideas }),
+      addIdea:          (idea)    => set((s) => ({ ideas: [idea, ...s.ideas] })),
       setIdeasLoading:  (loading) => set({ ideasLoading: loading }),
 
       // ── Actions studio ──
