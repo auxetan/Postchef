@@ -112,6 +112,10 @@ export default function Ideas() {
     const clientele   = onboarding.clientele
     const preferences = onboarding.preferences
 
+    const dishesLine = menuDishes.length
+      ? `Plats au menu : ${menuDishes.slice(0, 10).map((d) => d.name || d).join(', ')}`
+      : ''
+
     const prompt = `Tu es Chef, expert en marketing restaurant sur les réseaux sociaux.
 
 Restaurant : ${restaurant.name || 'Mon restaurant'}
@@ -119,12 +123,14 @@ Ville : ${restaurant.city || 'France'}
 Cuisine : ${(restaurant.cuisineTypes || []).join(', ') || 'Française'}
 Spécialité : ${restaurant.specialite || ''}
 Couverts : ${restaurant.couverts || ''}
+${dishesLine}
 Cible : ${(clientele.profils || []).join(', ')}
 Objectif : ${clientele.objectif || ''}
 Plateformes préférées : ${(preferences.plateformes || []).join(', ')}
 Fréquence : ${preferences.frequence || ''}
 
 Génère 8 idées de contenu percutantes et variées, vraiment adaptées à ce restaurant spécifique.
+${dishesLine ? 'Utilise les plats du menu comme base pour certaines idées.' : ''}
 Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
 [
   {

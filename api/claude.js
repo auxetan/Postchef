@@ -3,14 +3,33 @@ import { ApiError, createApiHandler } from './_lib/http.js'
 import { assertEnum, assertInteger, assertMediaPayload, assertString } from './_lib/validation.js'
 
 const DEFAULT_MODEL = 'claude-haiku-4-5-20251001'
-const ALLOWED_MODELS = [DEFAULT_MODEL]
+const ALLOWED_MODELS = [DEFAULT_MODEL, 'claude-sonnet-4-6']
+
+function buildMessages(body, image) {
+  // Multi-turn: body.messages = [{role, content}]
+  if (Array.isArray(body.messages) && body.messages.length > 0) {
+    return body.messages.map((m) => {
+      if (typeof m !== 'object' || !m.role || !m.content) throw new ApiError(400, 'INVALID_MESSAGES', 'messages mal formés')
+      if (!['user', 'assistant'].includes(m.role)) throw new ApiError(400, 'INVALID_ROLE', `role invalide: ${m.role}`)
+      return { role: m.role, content: String(m.content).slice(0, 4000) }
+    })
+  }
+  // Single-turn: body.prompt + optional image
+  const prompt = assertString(body.prompt, 'prompt', { min: 1, max: 8_000 })
+  const content = image
+    ? [
+        { type: 'image', source: { type: 'base64', media_type: image.mimeType, data: image.base64 } },
+        { type: 'text', text: prompt },
+      ]
+    : prompt
+  return [{ role: 'user', content }]
+}
 
 export default createApiHandler({
   routeName: 'claude',
-  rateLimit: { limit: 20, windowMs: 60_000 },
+  rateLimit: { limit: 30, windowMs: 60_000 },
   async handler({ body }) {
     const apiKey = requireEnv('ANTHROPIC_API_KEY')
-    const prompt = assertString(body.prompt, 'prompt', { min: 10, max: 8_000 })
     const model = body.model
       ? assertEnum(body.model, 'model', ALLOWED_MODELS)
       : DEFAULT_MODEL
@@ -24,19 +43,8 @@ export default createApiHandler({
         })
       : null
 
-    const content = image
-      ? [
-          {
-            type: 'image',
-            source: {
-              type: 'base64',
-              media_type: image.mimeType,
-              data: image.base64,
-            },
-          },
-          { type: 'text', text: prompt },
-        ]
-      : prompt
+    const messages = buildMessages(body, image)
+    const systemPrompt = body.system ? String(body.system).slice(0, 2000) : undefined
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -48,7 +56,8 @@ export default createApiHandler({
       body: JSON.stringify({
         model,
         max_tokens: maxTokens,
-        messages: [{ role: 'user', content }],
+        ...(systemPrompt ? { system: systemPrompt } : {}),
+        messages,
       }),
     })
 

@@ -70,6 +70,20 @@ export async function requestClaude({
   })
 }
 
+/**
+ * Multi-turn conversation with Claude.
+ * messages: [{role: 'user'|'assistant', content: string}]
+ * system:   optional system prompt string
+ */
+export async function requestClaudeChat({
+  messages,
+  system,
+  maxTokens = 1200,
+  model = 'claude-haiku-4-5-20251001',
+}) {
+  return postJson('/api/claude', { messages, system, maxTokens, model })
+}
+
 export async function generateAiImage({
   prompt,
   size = '1024x1024',

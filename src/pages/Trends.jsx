@@ -36,13 +36,15 @@ export default function Trends() {
       {/* ── Header ─────────────────────────────────────────────── */}
       <div className="bg-pc-surface border-b border-pc-border sticky top-0 z-30">
         <div className="px-6 pt-7 pb-0 max-w-2xl mx-auto">
-          <p className="pc-section-label mb-2">Cette semaine</p>
-          <div className="flex items-center gap-2 pb-4">
+          <div className="flex items-center gap-2 pb-1">
             <h1 className="text-[26px] font-black tracking-[-0.04em] text-pc-ink leading-none">
-              Tendances
+              Inspirations
             </h1>
-            <DemoBadge variant="beta" />
+            <DemoBadge variant="beta" label="Curatées" />
           </div>
+          <p className="text-[11px] text-pc-ink-4 mb-3 leading-snug">
+            Formats et sons sélectionnés manuellement · pas de données live
+          </p>
         </div>
 
         {/* Tabs */}
