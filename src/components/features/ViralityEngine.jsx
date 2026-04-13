@@ -15,6 +15,7 @@ import CaptionStylePicker from './CaptionStylePicker'
 import BrandKitPicker from './BrandKitPicker'
 import BRollSlots from './BRollSlots'
 import ViralityTips from './ViralityTips'
+import { requestClaude } from '../../utils/serverApi'
 
 const PLATFORMS = ['TikTok', 'Instagram']
 const OBJECTIVES = [
@@ -155,25 +156,11 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
         brandKit,
       })
 
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'x-api-key': import.meta.env.VITE_ANTHROPIC_KEY,
-          'anthropic-version': '2023-06-01',
-          'content-type': 'application/json',
-          'anthropic-dangerous-direct-browser-access': 'true',
-        },
-        body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: 2048,
-          messages: [{ role: 'user', content: prompt }],
-        }),
+      const data = await requestClaude({
+        prompt,
+        maxTokens: 2048,
       })
-
-      if (!res.ok) throw new Error(`API error: ${res.status}`)
-
-      const data = await res.json()
-      const text = data.content[0].text
+      const text = data.text
       const jsonMatch = text.match(/\{[\s\S]*\}/)
       const json = JSON.parse(jsonMatch ? jsonMatch[0] : text)
       setDirective(json)

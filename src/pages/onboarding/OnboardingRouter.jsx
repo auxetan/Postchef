@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import ProgressBar from '../../components/ui/ProgressBar.jsx'
@@ -30,10 +30,15 @@ const variants = {
 }
 
 export default function OnboardingRouter() {
-  const [step, setStep] = useState(1)
   const navigate = useNavigate()
+  const storedStep = useAppStore((s) => s.onboarding.step || 1)
+  const [step, setStep] = useState(storedStep)
   const setOnboardingStep = useAppStore((s) => s.setOnboardingStep)
   const completeOnboarding = useAppStore((s) => s.completeOnboarding)
+
+  useEffect(() => {
+    setStep(storedStep)
+  }, [storedStep])
 
   const goNext = () => {
     if (step < 8) {

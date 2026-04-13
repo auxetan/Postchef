@@ -4,8 +4,7 @@ import useAppStore from '../../store/useAppStore.js'
 import { getFeature } from '../../utils/plans.js'
 import { ShotIllustration } from '../ui/ShotGuide.jsx'
 import FilmingMode from './FilmingMode.jsx'
-
-const ANTHROPIC_KEY = import.meta.env.VITE_ANTHROPIC_KEY
+import { requestClaude } from '../../utils/serverApi.js'
 
 // ── Script generation (fallback local) ─────────────────────────────────────
 function generateScript(idea) {
@@ -95,8 +94,7 @@ export default function VideoScriptGenerator({ idea }) {
     if (quotaReached) return
     setState('loading')
 
-    if (ANTHROPIC_KEY) {
-      const prompt = `Tu es un expert en vidéo courte pour restaurants sur ${idea.plateforme}.
+    const prompt = `Tu es un expert en vidéo courte pour restaurants sur ${idea.plateforme}.
 
 Idée : "${idea.hook}"
 Format : ${idea.format}
@@ -117,31 +115,15 @@ Crée un script vidéo structuré en 5 étapes concrètes. Réponds UNIQUEMENT e
 
 Format durée : "2-3s", "5-8s", etc. Camera : "📱 Portrait" ou "📷 Paysage".`
 
-      try {
-        const res  = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': ANTHROPIC_KEY,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true',
-          },
-          body: JSON.stringify({
-            model: 'claude-haiku-4-5-20251001',
-            max_tokens: 900,
-            messages: [{ role: 'user', content: prompt }],
-          }),
-        })
-        const data   = await res.json()
-        const text   = data.content?.[0]?.text || ''
-        const match  = text.match(/\[[\s\S]*\]/)
-        const parsed = JSON.parse(match ? match[0] : text)
-        setScript(parsed)
-      } catch {
-        setScript(generateScript(idea))
-      }
-    } else {
-      await new Promise((r) => setTimeout(r, 1500))
+    try {
+      const data = await requestClaude({
+        prompt,
+        maxTokens: 900,
+      })
+      const match  = data.text.match(/\[[\s\S]*\]/)
+      const parsed = JSON.parse(match ? match[0] : data.text)
+      setScript(parsed)
+    } catch {
       setScript(generateScript(idea))
     }
 

@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import useToastStore from '../../store/useToastStore.js'
 import useAppStore from '../../store/useAppStore.js'
 import { getFeature } from '../../utils/plans.js'
-
-const ANTHROPIC_KEY = import.meta.env.VITE_ANTHROPIC_KEY
+import { requestClaude } from '../../utils/serverApi.js'
 
 // ── Caption generation ──────────────────────────────────────────────────────
 function generateCaption(restaurantName) {
@@ -67,10 +66,7 @@ export default function QuickCapture({ isOpen, onClose, restaurantName }) {
     if (quotaReached) return
     setLoading(true)
 
-    if (ANTHROPIC_KEY && imagePreview) {
-      const base64    = imagePreview.split(',')[1]
-      const mediaType = imagePreview.split(';')[0].split(':')[1] || 'image/jpeg'
-
+    if (imagePreview) {
       const prompt = `Tu es Chef, expert en marketing pour restaurants.
 
 Restaurant : ${restaurantName || 'ce restaurant'}
@@ -86,30 +82,13 @@ Réponds UNIQUEMENT en JSON valide :
 Mix hashtags : 50% populaires food/resto + 50% de niche (cuisine spécifique, ville, moment).`
 
       try {
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': ANTHROPIC_KEY,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true',
-          },
-          body: JSON.stringify({
-            model: 'claude-haiku-4-5-20251001',
-            max_tokens: 500,
-            messages: [{
-              role: 'user',
-              content: [
-                { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
-                { type: 'text', text: prompt },
-              ],
-            }],
-          }),
+        const data = await requestClaude({
+          prompt,
+          imageDataUrl: imagePreview,
+          maxTokens: 500,
         })
-        const data   = await res.json()
-        const text   = data.content?.[0]?.text || ''
-        const match  = text.match(/\{[\s\S]*\}/)
-        const parsed = JSON.parse(match ? match[0] : text)
+        const match  = data.text.match(/\{[\s\S]*\}/)
+        const parsed = JSON.parse(match ? match[0] : data.text)
         setCaption(parsed.caption)
         setHashtags(parsed.hashtags)
       } catch {
@@ -117,7 +96,6 @@ Mix hashtags : 50% populaires food/resto + 50% de niche (cuisine spécifique, vi
         setHashtags(HASHTAGS)
       }
     } else {
-      await new Promise((r) => setTimeout(r, 2000))
       setCaption(generateCaption(restaurantName))
       setHashtags(HASHTAGS)
     }

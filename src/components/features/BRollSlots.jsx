@@ -6,18 +6,19 @@ import { useState } from 'react'
 import useAppStore from '../../store/useAppStore'
 import useToastStore from '../../store/useToastStore'
 import { searchStockVideo } from '../../utils/pexels'
+import { generateAiImage, resolveImageSrc } from '../../utils/serverApi'
 
 async function generateDalleImage(prompt) {
-  const KEY = import.meta.env.VITE_OPENAI_KEY
-  if (!KEY) return null
-  const res = await fetch('https://api.openai.com/v1/images/generations', {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${KEY}` },
-    body:    JSON.stringify({ model: 'dall-e-3', prompt, n: 1, size: '1024x1792', quality: 'standard' }),
-  })
-  if (!res.ok) return null
-  const data = await res.json()
-  return data.data[0].url
+  try {
+    const data = await generateAiImage({
+      prompt,
+      size: '1024x1792',
+      quality: 'standard',
+    })
+    return resolveImageSrc(data)
+  } catch {
+    return null
+  }
 }
 
 export default function BRollSlots({ slots }) {

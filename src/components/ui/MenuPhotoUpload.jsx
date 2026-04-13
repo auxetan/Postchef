@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react'
-
-const ANTHROPIC_KEY = import.meta.env.VITE_ANTHROPIC_KEY
+import { requestClaude } from '../../utils/serverApi.js'
 
 const MOCK_RESULT = {
   dishes: ['Tartare de bœuf', 'Saint-Jacques poêlées', 'Risotto aux truffes', 'Moelleux chocolat'],
@@ -27,10 +26,7 @@ export default function MenuPhotoUpload({ value, onChange }) {
     setAnalyzing(true)
     setResult(null)
 
-    if (ANTHROPIC_KEY) {
-      const base64    = dataUrl.split(',')[1]
-      const mediaType = dataUrl.split(';')[0].split(':')[1] || 'image/jpeg'
-
+    if (dataUrl) {
       const prompt = `Analyse cette carte ou menu de restaurant.
 
 Réponds UNIQUEMENT en JSON valide :
@@ -43,36 +39,18 @@ Extrais les noms des plats principaux (max 8, noms seulement sans description ni
 Les insights doivent être concrets et actionables pour Instagram/TikTok.`
 
       try {
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': ANTHROPIC_KEY,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true',
-          },
-          body: JSON.stringify({
-            model: 'claude-haiku-4-5-20251001',
-            max_tokens: 500,
-            messages: [{
-              role: 'user',
-              content: [
-                { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
-                { type: 'text', text: prompt },
-              ],
-            }],
-          }),
+        const data = await requestClaude({
+          prompt,
+          imageDataUrl: dataUrl,
+          maxTokens: 500,
         })
-        const data   = await res.json()
-        const text   = data.content?.[0]?.text || ''
-        const match  = text.match(/\{[\s\S]*\}/)
-        const parsed = JSON.parse(match ? match[0] : text)
+        const match  = data.text.match(/\{[\s\S]*\}/)
+        const parsed = JSON.parse(match ? match[0] : data.text)
         setResult(parsed)
       } catch {
         setResult(MOCK_RESULT)
       }
     } else {
-      await new Promise((r) => setTimeout(r, 2200))
       setResult(MOCK_RESULT)
     }
 

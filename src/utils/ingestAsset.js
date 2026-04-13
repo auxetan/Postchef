@@ -5,13 +5,7 @@
  *   2. Cloudinary unsigned upload (fallback)
  * Lève une erreur si aucun CDN n'est configuré.
  */
-
-const SHOTSTACK_KEY  = import.meta.env.VITE_SHOTSTACK_KEY
-const SHOTSTACK_HOST = (import.meta.env.VITE_SHOTSTACK_HOST || 'https://api.shotstack.io/edit/stage')
-const INGEST_HOST    = SHOTSTACK_HOST.replace('/edit/', '/ingest/')
-
-const CLD_CLOUD  = import.meta.env.VITE_CLOUDINARY_CLOUD
-const CLD_PRESET = import.meta.env.VITE_CLOUDINARY_PRESET
+import { postJson } from './serverApi.js'
 
 /**
  * @param {Blob|string} blobOrDataUrl
@@ -23,40 +17,38 @@ export async function uploadToCdn(blobOrDataUrl, filename = 'asset') {
     ? await (await fetch(blobOrDataUrl)).blob()
     : blobOrDataUrl
 
-  // ── Option 1 : Shotstack Ingest ──────────────────────────────────────────
-  if (SHOTSTACK_KEY) {
-    try {
-      const initRes = await fetch(`${INGEST_HOST}/upload`, {
-        method:  'POST',
-        headers: { 'x-api-key': SHOTSTACK_KEY },
-      })
-      if (initRes.ok) {
-        const { data } = await initRes.json()
-        const uploadUrl = data?.attributes?.url
-        if (uploadUrl) {
-          await fetch(uploadUrl, { method: 'PUT', body: blob })
-          return data.attributes.sourceUrl || uploadUrl.split('?')[0]
-        }
-      }
-    } catch (e) {
-      console.warn('[ingestAsset] Shotstack Ingest failed, fallback Cloudinary', e)
+  const config = await postJson('/api/shotstack', {
+    action: 'prepare-upload',
+    filename: filename.replace(/\W+/g, '_'),
+    contentType: blob.type || 'application/octet-stream',
+  })
+
+  if (config.strategy === 'shotstack') {
+    const uploadResponse = await fetch(config.uploadUrl, {
+      method: 'PUT',
+      headers: config.contentType ? { 'Content-Type': config.contentType } : undefined,
+      body: blob,
+    })
+
+    if (!uploadResponse.ok) {
+      throw new Error(`Upload Shotstack impossible (${uploadResponse.status})`)
     }
+
+    return config.publicUrl
   }
 
-  // ── Option 2 : Cloudinary unsigned ──────────────────────────────────────
-  if (CLD_CLOUD && CLD_PRESET) {
+  if (config.strategy === 'cloudinary_unsigned') {
     const form = new FormData()
-    form.append('file',           blob)
-    form.append('upload_preset',  CLD_PRESET)
-    form.append('public_id',      `postchef/${filename.replace(/\W+/g, '_')}`)
-    const res = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLD_CLOUD}/auto/upload`,
-      { method: 'POST', body: form },
-    )
+    form.append('file', blob)
+    Object.entries(config.fields || {}).forEach(([key, value]) => {
+      form.append(key, value)
+    })
+
+    const res = await fetch(config.uploadUrl, { method: 'POST', body: form })
     if (!res.ok) throw new Error(`Cloudinary upload failed: ${res.status}`)
     const d = await res.json()
     return d.secure_url
   }
 
-  throw new Error('Aucun CDN configuré — ajoute VITE_SHOTSTACK_KEY ou VITE_CLOUDINARY_CLOUD + VITE_CLOUDINARY_PRESET')
+  throw new Error('Aucun CDN configuré côté serveur.')
 }

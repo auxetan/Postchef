@@ -1,15 +1,15 @@
 /**
  * DishPhotoGenerator — génère des photos de plats via IA.
  *
- * API d'image : brancher VITE_OPENAI_KEY pour DALL-E 3
- * ou VITE_STABILITY_KEY pour Stable Diffusion.
- * Sans clé → génère un prompt professionnel à copier-coller dans Midjourney/ChatGPT.
+ * Sans service image disponible côté serveur, génère un prompt
+ * professionnel à copier-coller dans ChatGPT / Midjourney / Firefly.
  */
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAppStore from '../../store/useAppStore.js'
 import useToastStore from '../../store/useToastStore.js'
 import { getFeature } from '../../utils/plans.js'
+import { generateAiImage, resolveImageSrc } from '../../utils/serverApi.js'
 
 const STYLES = [
   { id: 'overhead', label: 'Vue du dessus', desc: 'Flat lay, fond bois' },
@@ -38,9 +38,8 @@ export default function DishPhotoGenerator({ restaurantName, menuDishes = [] }) 
   const dishPhotoUsed           = useAppStore((s) => s.usage.dishPhotoUsedThisMonth ?? 0)
   const incrementDishPhotoUsed  = useAppStore((s) => s.incrementDishPhotoUsed)
 
-  const OPENAI_KEY  = import.meta.env.VITE_OPENAI_KEY
   const monthlyMax  = getFeature(plan, 'dishPhotoPerMonth') // 0 | 30 | Infinity
-  const isRealDalle = !!OPENAI_KEY && monthlyMax > 0
+  const isRealDalle = monthlyMax > 0
   // Quota atteint uniquement si c'est un vrai appel DALL-E (pas les prompts texte)
   const dalleQuotaReached = isRealDalle && monthlyMax !== Infinity && dishPhotoUsed >= monthlyMax
 
@@ -52,21 +51,22 @@ export default function DishPhotoGenerator({ restaurantName, menuDishes = [] }) 
 
     const prompt = buildPrompt(dish, style, mood, restaurantName)
 
-    if (OPENAI_KEY && monthlyMax > 0) {
+    if (monthlyMax > 0) {
       try {
-        const res = await fetch('https://api.openai.com/v1/images/generations', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${OPENAI_KEY}` },
-          body: JSON.stringify({ model: 'dall-e-3', prompt, n: 1, size: '1024x1024', quality: 'standard' }),
+        const data = await generateAiImage({
+          prompt,
+          size: '1024x1024',
+          quality: 'standard',
         })
-        const data = await res.json()
         incrementDishPhotoUsed()
-        setResult({ type: 'image', value: data.data[0].url })
+        setResult({
+          type: 'image',
+          value: resolveImageSrc(data),
+        })
       } catch {
         setResult({ type: 'prompt', value: prompt })
       }
     } else {
-      await new Promise((r) => setTimeout(r, 1000))
       setResult({ type: 'prompt', value: prompt })
     }
     setLoading(false)
@@ -187,11 +187,9 @@ export default function DishPhotoGenerator({ restaurantName, menuDishes = [] }) 
           )}
         </button>
 
-        {!import.meta.env.VITE_OPENAI_KEY && (
-          <div className="text-[11px] text-pc-ink-4 text-center">
-            Sans clé OpenAI → génère un prompt Midjourney/ChatGPT
-          </div>
-        )}
+        <div className="text-[11px] text-pc-ink-4 text-center">
+          Si le service image n'est pas disponible, PostChef te fournit automatiquement un prompt prêt à copier.
+        </div>
 
         {/* Result */}
         {result && (

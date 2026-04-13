@@ -1,5 +1,5 @@
-const CACHE = 'postchef-v1'
-const ASSETS = ['/', '/index.html']
+const CACHE = 'postchef-v2'
+const ASSETS = ['/', '/index.html', '/manifest.json', '/favicon.svg']
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)))
@@ -16,14 +16,23 @@ self.addEventListener('activate', (e) => {
 })
 
 self.addEventListener('fetch', (e) => {
+  const url = new URL(e.request.url)
   if (e.request.method !== 'GET') return
-  e.respondWith(
-    fetch(e.request)
-      .then((res) => {
-        const clone = res.clone()
-        caches.open(CACHE).then((c) => c.put(e.request, clone))
-        return res
-      })
-      .catch(() => caches.match(e.request))
-  )
+  if (url.origin !== self.location.origin) return
+  if (url.pathname.startsWith('/api/')) return
+
+  e.respondWith((async () => {
+    try {
+      const res = await fetch(e.request)
+      if (res.ok) {
+        const cache = await caches.open(CACHE)
+        cache.put(e.request, res.clone())
+      }
+      return res
+    } catch (error) {
+      const cached = await caches.match(e.request)
+      if (cached) return cached
+      throw error
+    }
+  })())
 })

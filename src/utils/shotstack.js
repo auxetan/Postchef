@@ -2,9 +2,7 @@
  * Shotstack — build edit JSON, POST /render, poll /render/:id
  * Doc : https://shotstack.io/docs/api/
  */
-
-const HOST = import.meta.env.VITE_SHOTSTACK_HOST || 'https://api.shotstack.io/edit/stage'
-const KEY  = import.meta.env.VITE_SHOTSTACK_KEY
+import { postJson } from './serverApi.js'
 
 const FONT_TO_STYLE = {
   sans:    'future',
@@ -163,26 +161,17 @@ function buildCaptionTrack({ style, wordTimings, textOverlays, brandKit }) {
 
 /** POST /render — retourne l'ID */
 export async function submitRender(edit) {
-  const res = await fetch(`${HOST}/render`, {
-    method:  'POST',
-    headers: { 'x-api-key': KEY, 'Content-Type': 'application/json' },
-    body:    JSON.stringify(edit),
+  const data = await postJson('/api/shotstack', {
+    action: 'submit-render',
+    edit,
   })
-  if (!res.ok) throw new Error(`Shotstack submit: ${res.status} ${await res.text()}`)
-  const data = await res.json()
-  return data.response.id
+  return data.renderId
 }
 
 /** GET /render/:id — retourne { status, url, error } */
 export async function pollRender(renderId) {
-  const res = await fetch(`${HOST}/render/${renderId}`, {
-    headers: { 'x-api-key': KEY },
+  return postJson('/api/shotstack', {
+    action: 'poll-render',
+    renderId,
   })
-  if (!res.ok) throw new Error(`Shotstack poll: ${res.status}`)
-  const data = await res.json()
-  return {
-    status: data.response.status,
-    url:    data.response.url   || null,
-    error:  data.response.error || null,
-  }
 }

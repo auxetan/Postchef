@@ -3,8 +3,7 @@
  * Retourne un tableau { word, start, end } avec timestamps absolus sur la timeline.
  */
 import { extractAudioFromVideo } from './extractAudio.js'
-
-const OPENAI_KEY = import.meta.env.VITE_OPENAI_KEY
+import { transcribeAudio } from './serverApi.js'
 
 /**
  * Transcrit un Blob audio avec timestamps par mot.
@@ -13,22 +12,10 @@ const OPENAI_KEY = import.meta.env.VITE_OPENAI_KEY
  * @returns {Promise<{ words: Array<{word,start,end}>, text: string }>}
  */
 export async function transcribeWithWords(audioBlob, language = 'fr') {
-  if (!OPENAI_KEY) throw new Error('VITE_OPENAI_KEY manquante')
-
-  const form = new FormData()
-  form.append('file', audioBlob, 'audio.wav')
-  form.append('model', 'whisper-1')
-  form.append('response_format', 'verbose_json')
-  form.append('timestamp_granularities[]', 'word')
-  if (language && language !== 'auto') form.append('language', language)
-
-  const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-    method:  'POST',
-    headers: { Authorization: `Bearer ${OPENAI_KEY}` },
-    body:    form,
+  const data = await transcribeAudio(audioBlob, {
+    language,
+    filename: 'audio.wav',
   })
-  if (!res.ok) throw new Error(`Whisper ${res.status}: ${await res.text()}`)
-  const data = await res.json()
 
   return {
     words: (data.words || []).map((w) => ({ word: w.word, start: w.start, end: w.end })),
