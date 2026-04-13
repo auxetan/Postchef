@@ -5,33 +5,47 @@ import useAppStore from '../../store/useAppStore.js'
 import { getFeature } from '../../utils/plans.js'
 import { requestClaude } from '../../utils/serverApi.js'
 
-// ── Caption generation ──────────────────────────────────────────────────────
-function generateCaption(restaurantName) {
+// ── Fallback caption si API indisponible ────────────────────────────────────
+function makeFallbackCaption(restaurant) {
   const hour = new Date().getHours()
-  const timeOfDay = hour < 12 ? 'matin' : hour < 18 ? 'midi' : 'soir'
-  const captions = {
-    matin: `Préparation du ${timeOfDay} en cuisine \u{1F468}\u200D\u{1F373} Chaque matin, on repart de zéro pour vous offrir le meilleur. Passez nous voir aujourd'hui !`,
-    midi: `Service du ${timeOfDay} lancé ! \u{1F37D}\uFE0F Notre équipe est prête à vous régaler. Réservez votre table dès maintenant.`,
-    soir: `Ambiance du ${timeOfDay} chez ${restaurantName} \u2728 La magie opère en cuisine. On vous attend ce soir !`,
+  const slot = hour < 12 ? 'matin' : hour < 18 ? 'midi' : 'soir'
+  const name = restaurant.name || 'notre restaurant'
+  const cuisine = (restaurant.cuisineTypes || [])[0] || ''
+  const specialite = restaurant.specialite || ''
+
+  const lines = {
+    matin: `La mise en place du ${slot} est lancée chez ${name} 👨‍🍳${specialite ? ` — ${specialite} au programme.` : ''} On vous attend !`,
+    midi:  `Service ${slot} en cours chez ${name} 🍽️${cuisine ? ` — cuisine ${cuisine.toLowerCase()}.` : ''} Dernières tables disponibles !`,
+    soir:  `Ambiance du ${slot} chez ${name} ✨ La magie opère en cuisine. Réservez votre table.`,
   }
-  return captions[timeOfDay]
+  return lines[slot]
 }
 
-const HASHTAGS = [
-  '#restaurant',
-  '#food',
-  '#foodie',
-  '#instafood',
-  '#chef',
-  '#platdujour',
-  '#cuisinemaison',
-]
+function makeFallbackHashtags(restaurant) {
+  const city = (restaurant.city || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '')
+  const cuisine = (restaurant.cuisineTypes || [])[0] || ''
+  const CUISINE_MAP = {
+    Italienne: ['#italianfood', '#pastalovers'],
+    Française: ['#cuisinefrancaise', '#gastronomie'],
+    Japonaise: ['#sushilovers', '#japanesefood'],
+    Burger:    ['#burgeroftheday', '#smashburger'],
+    Pizza:     ['#pizzalovers', '#pizzatime'],
+  }
+  return [
+    '#restaurant', '#food', '#foodie', '#instafood', '#platdujour',
+    ...(CUISINE_MAP[cuisine] || ['#cuisinemaison', '#cheflife']),
+    ...(city ? [`#${city}`, `#restaurant${city}`] : []),
+  ].slice(0, 10)
+}
 
 // ── Component ───────────────────────────────────────────────────────────────
 export default function QuickCapture({ isOpen, onClose, restaurantName }) {
   const navigate = useNavigate()
   const toast = useToastStore((s) => s.toast)
 
+  // Contexte restaurant complet depuis le store
+  const restaurant         = useAppStore((s) => s.onboarding.restaurant)
+  const preferences        = useAppStore((s) => s.onboarding.preferences)
   const plan               = useAppStore((s) => s.user.plan)
   const captionUsed        = useAppStore((s) => s.usage.captionUsedThisMonth ?? 0)
   const incrementCaptionUsed = useAppStore((s) => s.incrementCaptionUsed)
@@ -66,38 +80,51 @@ export default function QuickCapture({ isOpen, onClose, restaurantName }) {
     if (quotaReached) return
     setLoading(true)
 
+    const name      = restaurant.name || restaurantName || 'ce restaurant'
+    const city      = restaurant.city || ''
+    const cuisine   = (restaurant.cuisineTypes || []).join(', ') || ''
+    const specialite = restaurant.specialite || ''
+    const platforms = (preferences?.plateformes || []).join(', ') || 'Instagram, TikTok'
+
     if (imagePreview) {
       const prompt = `Tu es Chef, expert en marketing pour restaurants.
 
-Restaurant : ${restaurantName || 'ce restaurant'}
+Restaurant : ${name}${city ? ` · ${city}` : ''}
+Cuisine : ${cuisine || 'non précisée'}
+Spécialité : ${specialite || 'non précisée'}
+Plateformes cibles : ${platforms}
 
-Regarde cette photo et génère une légende authentique + hashtags viraux pour Instagram/TikTok.
+Regarde cette photo et génère une légende authentique + hashtags viraux adaptés à ce restaurant.
+
+Règles :
+- La légende doit mentionner un détail visuel concret de la photo
+- Ton chaleureux, direct, pas de "Nous sommes ravis de"
+- 2-3 phrases max, avec emojis pertinents
+- Les hashtags doivent mélanger : ville locale, type de cuisine, format (reel/photo), tendance food
 
 Réponds UNIQUEMENT en JSON valide :
 {
-  "caption": "légende avec emojis, 2-3 phrases max, ton chaleureux et authentique",
+  "caption": "légende avec emojis, 2-3 phrases max",
   "hashtags": ["#tag1", "#tag2", "#tag3", "#tag4", "#tag5", "#tag6", "#tag7", "#tag8", "#tag9", "#tag10"]
-}
-
-Mix hashtags : 50% populaires food/resto + 50% de niche (cuisine spécifique, ville, moment).`
+}`
 
       try {
         const data = await requestClaude({
           prompt,
           imageDataUrl: imagePreview,
-          maxTokens: 500,
+          maxTokens: 600,
         })
         const match  = data.text.match(/\{[\s\S]*\}/)
         const parsed = JSON.parse(match ? match[0] : data.text)
         setCaption(parsed.caption)
-        setHashtags(parsed.hashtags)
+        setHashtags(Array.isArray(parsed.hashtags) ? parsed.hashtags : makeFallbackHashtags(restaurant))
       } catch {
-        setCaption(generateCaption(restaurantName))
-        setHashtags(HASHTAGS)
+        setCaption(makeFallbackCaption(restaurant))
+        setHashtags(makeFallbackHashtags(restaurant))
       }
     } else {
-      setCaption(generateCaption(restaurantName))
-      setHashtags(HASHTAGS)
+      setCaption(makeFallbackCaption(restaurant))
+      setHashtags(makeFallbackHashtags(restaurant))
     }
 
     incrementCaptionUsed()

@@ -27,26 +27,39 @@ export default function MenuPhotoUpload({ value, onChange }) {
     setResult(null)
 
     if (dataUrl) {
-      const prompt = `Analyse cette carte ou menu de restaurant.
+      const prompt = `Tu es Chef, expert en marketing pour restaurants. Analyse cette image de carte ou menu.
+
+Si l'image n'est PAS une carte/menu, réponds avec dishes:[] et un insights adapté.
 
 Réponds UNIQUEMENT en JSON valide :
 {
-  "dishes": ["nom du plat 1", "nom du plat 2", ...],
-  "insights": "1-2 phrases sur les opportunités de contenu réseaux sociaux basées sur cette carte"
+  "dishes": ["Nom exact du plat 1", "Nom exact du plat 2"],
+  "starDish": "le plat qui a le plus fort potentiel viral (1 nom, ou null)",
+  "insights": "2 phrases concrètes : ce que cette carte révèle comme opportunité de contenu pour TikTok/Instagram",
+  "contentAngles": ["angle 1 court", "angle 2 court", "angle 3 court"]
 }
 
-Extrais les noms des plats principaux (max 8, noms seulement sans description ni prix).
-Les insights doivent être concrets et actionables pour Instagram/TikTok.`
+Règles :
+- dishes : max 8 plats, noms seuls sans prix ni description
+- starDish : le plat le plus photogénique, original ou signature
+- contentAngles : 3 angles de contenu vidéo/photo exploitables directement
+- insights : spécifiques à CE menu, pas génériques`
 
       try {
         const data = await requestClaude({
           prompt,
           imageDataUrl: dataUrl,
-          maxTokens: 500,
+          maxTokens: 700,
         })
         const match  = data.text.match(/\{[\s\S]*\}/)
         const parsed = JSON.parse(match ? match[0] : data.text)
-        setResult(parsed)
+        // Assure la compatibilité avec les anciens champs
+        setResult({
+          dishes: parsed.dishes || [],
+          starDish: parsed.starDish || null,
+          insights: parsed.insights || '',
+          contentAngles: parsed.contentAngles || [],
+        })
       } catch {
         setResult(MOCK_RESULT)
       }
@@ -133,27 +146,56 @@ Les insights doivent être concrets et actionables pour Instagram/TikTok.`
                 <span className="text-[13px] text-pc-ink-3">Chef analyse ta carte...</span>
               </div>
             ) : result ? (
-              <div className="space-y-2">
-                <div className="flex items-start gap-2">
-                  <div className="w-5 h-5 rounded-full bg-pc-green flex items-center justify-center flex-shrink-0 mt-[1px]">
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M2 5l2.5 2.5L8 2" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" />
-                    </svg>
+              <div className="space-y-3">
+                {/* Plats */}
+                {result.dishes.length > 0 && (
+                  <div className="flex items-start gap-2">
+                    <div className="w-5 h-5 rounded-full bg-pc-green flex items-center justify-center flex-shrink-0 mt-[1px]">
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M2 5l2.5 2.5L8 2" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-[11px] font-semibold text-pc-green-dark mb-1">
+                        {result.dishes.length} plat{result.dishes.length > 1 ? 's' : ''} détecté{result.dishes.length > 1 ? 's' : ''}
+                      </div>
+                      <div className="flex flex-wrap gap-[5px]">
+                        {result.dishes.map((d) => (
+                          <span
+                            key={d}
+                            className={`text-[11px] px-2 py-[3px] rounded-pill font-medium ${
+                              result.starDish === d
+                                ? 'bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]'
+                                : 'bg-pc-green-light text-pc-green-dark'
+                            }`}
+                          >
+                            {result.starDish === d ? '⭐ ' : ''}{d}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-[12px] font-semibold text-pc-green-dark mb-1">Plats détectés</div>
-                    <div className="flex flex-wrap gap-[5px]">
-                      {result.dishes.map((d) => (
-                        <span key={d} className="text-[11px] bg-pc-green-light text-pc-green-dark px-2 py-[3px] rounded-pill font-medium">
-                          {d}
-                        </span>
+                )}
+                {/* Insights */}
+                {result.insights && (
+                  <div className="text-[12px] text-pc-ink-3 leading-[1.5] pl-7">
+                    {result.insights}
+                  </div>
+                )}
+                {/* Angles de contenu */}
+                {result.contentAngles?.length > 0 && (
+                  <div className="pl-7">
+                    <div className="text-[10px] font-bold text-pc-ink-4 uppercase tracking-wider mb-1">Angles à filmer</div>
+                    <div className="space-y-[4px]">
+                      {result.contentAngles.map((a, i) => (
+                        <div key={i} className="flex items-center gap-2 text-[11px] text-pc-ink-2">
+                          <div className="w-[4px] h-[4px] rounded-full bg-pc-green flex-shrink-0" />
+                          {a}
+                        </div>
                       ))}
                     </div>
                   </div>
-                </div>
-                <div className="text-[12px] text-pc-ink-3 leading-[1.5] pl-7">
-                  {result.insights}
-                </div>
+                )}
               </div>
             ) : null}
           </div>
