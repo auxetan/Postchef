@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import usePWAInstall from '../hooks/usePWAInstall.js'
+import { LogoWordmark, LogoMark } from '../components/ui/LogoMark.jsx'
 
 /* ── Mock phone UI data ───────────────────────────────────────────── */
 const MOCK_POSTS = [
@@ -309,9 +310,7 @@ export default function Landing() {
           borderBottom: '1px solid rgba(0,0,0,0.06)',
         }}
       >
-        <span className="text-[18px] font-[800] text-pc-ink tracking-[-0.03em]">
-          Post<span className="text-pc-green">Chef</span>
-        </span>
+        <LogoWordmark iconSize={24} textSize={17} />
         <motion.button
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.96 }}
@@ -641,8 +640,8 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="px-5 py-6 bg-[#0A0A0A] border-t border-white/5 text-center">
-        <div className="text-[16px] font-[800] text-white tracking-[-0.03em] mb-2">
-          Post<span className="text-pc-green">Chef</span>
+        <div className="flex items-center justify-center mb-2">
+          <LogoWordmark iconSize={22} textSize={15} className="opacity-90" />
         </div>
         <div className="text-[12px] text-white/30">© 2026 PostChef · Marseille, France</div>
       </footer>

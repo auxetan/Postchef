@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { LogoWordmark } from '../components/ui/LogoMark.jsx'
 
 const DEMO_STEPS = [
   {
@@ -114,9 +115,7 @@ export default function Demo() {
           </svg>
           <span className="text-[13px] font-[600]">Retour</span>
         </button>
-        <span className="text-[16px] font-[800] text-pc-ink tracking-[-0.03em]">
-          Post<span className="text-pc-green">Chef</span>
-        </span>
+        <LogoWordmark iconSize={22} textSize={15} />
         <button
           onClick={() => navigate('/signup')}
           className="bg-pc-green text-white text-[12px] font-[700] px-4 py-[8px] rounded-pill"

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { LogoWordmark } from '../ui/LogoMark.jsx'
 
 export default function AuthShell({
   eyebrow = 'PostChef',
@@ -42,8 +43,8 @@ export default function AuthShell({
 
         <section className="bg-pc-surface border border-pc-border rounded-[28px] shadow-[0_24px_80px_rgba(0,0,0,0.08)] p-6 sm:p-8">
           <div className="flex items-center justify-between mb-8">
-            <Link to="/" className="text-[18px] font-[800] text-pc-ink tracking-[-0.03em]">
-              Post<span className="text-pc-green">Chef</span>
+            <Link to="/">
+              <LogoWordmark iconSize={24} textSize={17} />
             </Link>
             <Link to="/" className="text-[12px] font-semibold text-pc-ink-4 hover:text-pc-ink transition-colors">
               Retour accueil

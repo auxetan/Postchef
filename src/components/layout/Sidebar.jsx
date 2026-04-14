@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import useAppStore from '../../store/useAppStore.js'
 import { PLAN_DISPLAY_NAMES } from '../../utils/plans.js'
+import { LogoWordmark } from '../ui/LogoMark.jsx'
 
 const NAV = [
   {
@@ -113,11 +114,9 @@ export default function Sidebar() {
       className="hidden lg:flex flex-col w-[220px] h-screen fixed left-0 top-0 z-40"
       style={{ background: '#FFFFFF', borderRight: '1px solid rgba(0,0,0,0.06)' }}
     >
-      {/* Wordmark */}
-      <div className="px-6 pt-7 pb-6">
-        <span className="text-[18px] font-[800] tracking-[-0.03em] text-pc-ink">
-          Post<span className="text-pc-green">Chef</span>
-        </span>
+      {/* Logo */}
+      <div className="px-5 pt-6 pb-5">
+        <LogoWordmark iconSize={26} textSize={17} />
       </div>
 
       {/* Nav items */}
