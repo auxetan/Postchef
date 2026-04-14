@@ -32,13 +32,19 @@ export async function loadWorkspaceForUser(supabase, authUser) {
 export async function saveWorkspaceForUser(supabase, authUser, state) {
   const snapshot = createRemoteSnapshot(state, authUser)
 
-  const operations = await Promise.all([
-    supabase.from('profiles').upsert(snapshot.profile, { onConflict: 'user_id' }),
-    supabase.from('restaurants').upsert(snapshot.restaurant, { onConflict: 'user_id' }),
-    supabase.from('app_state').upsert(snapshot.appState, { onConflict: 'user_id' }),
-  ])
+  // Upserts séquentiels pour éviter un état incohérent si l'un échoue
+  const profileRes = await supabase
+    .from('profiles')
+    .upsert(snapshot.profile, { onConflict: 'user_id' })
+  if (profileRes.error) throw profileRes.error
 
-  operations.forEach(({ error }) => {
-    if (error) throw error
-  })
+  const restaurantRes = await supabase
+    .from('restaurants')
+    .upsert(snapshot.restaurant, { onConflict: 'user_id' })
+  if (restaurantRes.error) throw restaurantRes.error
+
+  const appStateRes = await supabase
+    .from('app_state')
+    .upsert(snapshot.appState, { onConflict: 'user_id' })
+  if (appStateRes.error) throw appStateRes.error
 }

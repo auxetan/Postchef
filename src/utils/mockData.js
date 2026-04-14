@@ -5,45 +5,6 @@ export const mockUser = {
   plan: 'pro_annual',
 }
 
-export const mockPosts = [
-  {
-    id: '1',
-    day: 'Lundi',
-    dayShort: 'LUN',
-    type: 'Plat du jour en vidéo',
-    description: 'Filme ton plat signature en 15s — lumière naturelle, sauce qui coule',
-    plateformes: ['Instagram', 'TikTok'],
-    status: 'a-tourner',
-    hook: 'POV : tu prépares le meilleur plat de ta vie',
-    legende: 'Voici notre spécialité du jour 🍝 Viens la goûter avant qu\'il n\'en reste plus ! #restaurant #marseille #foodie',
-    brief: 'Filme en portrait, lumière naturelle côté fenêtre. Commence par une vue d\'ensemble du plat, puis zoom sur les détails. 15 secondes max.',
-  },
-  {
-    id: '2',
-    day: 'Mercredi',
-    dayShort: 'MER',
-    type: 'Coulisses cuisine',
-    description: 'Prépa du matin, ambiance authentique',
-    plateformes: ['Instagram'],
-    status: 'idee',
-    hook: 'La vraie cuisine, ça ressemble à ça',
-    legende: 'Coulisses de notre cuisine ce matin 👨‍🍳 Chaque plat est préparé avec passion. #cuisiniers #restaurant #authentic',
-    brief: 'Caméra posée sur le plan de travail. Filme la préparation sans trop t\'arranger. L\'authenticité est la clé.',
-  },
-  {
-    id: '3',
-    day: 'Vendredi',
-    dayShort: 'VEN',
-    type: 'Avis client mis en avant',
-    description: 'Meilleur Google Review + photo du plat',
-    plateformes: ['Instagram', 'TikTok'],
-    status: 'publie',
-    hook: 'Ce que nos clients disent de nous',
-    legende: 'Merci à nos fidèles clients ❤️ C\'est pour vous qu\'on donne le meilleur chaque jour. #avis #restaurant #merci',
-    brief: 'Screenshot stylisé de l\'avis Google (utilise Canva) + photo du plat mentionné en split screen.',
-  },
-]
-
 export const mockIdeas = [
   {
     id: '1',

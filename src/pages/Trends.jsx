@@ -114,7 +114,7 @@ export default function Trends() {
 
                   {/* Idea */}
                   <div className="bg-pc-bg border border-pc-rule rounded-btn px-4 py-3 mb-4">
-                    <p className="pc-section-label mb-1">Idee resto</p>
+                    <p className="pc-section-label mb-1">Idée resto</p>
                     <p className="text-[13px] text-pc-ink-2 leading-[1.55]">{sound.idea}</p>
                   </div>
 
@@ -123,7 +123,7 @@ export default function Trends() {
                     onClick={() => navigate('/app/ideas')}
                     className="w-full text-[12px] font-bold text-white bg-pc-green rounded-btn py-[9px] hover:bg-pc-green-dark transition-colors"
                   >
-                    Utiliser cette idee
+                    Utiliser cette idée
                   </button>
                 </div>
               </div>
@@ -140,7 +140,7 @@ export default function Trends() {
                 onClick={() => setSoundFilter('Tous')}
                 className="text-[12px] font-semibold text-pc-green border-b border-pc-green hover:opacity-70 transition-opacity"
               >
-                Reinitialiser
+                Réinitialiser
               </button>
             </div>
           )}
@@ -221,7 +221,7 @@ export default function Trends() {
 
           {/* Section label */}
           <div className="flex items-center gap-3 mb-5">
-            <span className="pc-section-label">Evenements a venir</span>
+            <span className="pc-section-label">Événements à venir</span>
             <div className="flex-1 h-px bg-pc-rule" />
           </div>
 

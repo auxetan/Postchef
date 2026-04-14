@@ -9,7 +9,22 @@ import IdeasCounter from '../components/ui/IdeasCounter.jsx'
 import DishPhotoGenerator from '../components/features/DishPhotoGenerator.jsx'
 import VideoScriptGenerator from '../components/features/VideoScriptGenerator.jsx'
 import PlanningModal from '../components/ui/PlanningModal.jsx'
-import { requestClaude } from '../utils/serverApi.js'
+import { requestClaude, ServerApiError } from '../utils/serverApi.js'
+
+/** Parse la réponse Claude en JSON robuste — gère JSON pur, ```json...```, ```...``` */
+function parseClaudeJSON(text) {
+  // 1. JSON dans un bloc ```json ... ```
+  const fencedJson = text.match(/```json\s*([\s\S]*?)```/)
+  if (fencedJson) return JSON.parse(fencedJson[1].trim())
+  // 2. JSON dans un bloc ``` ... ```
+  const fenced = text.match(/```\s*([\s\S]*?)```/)
+  if (fenced) return JSON.parse(fenced[1].trim())
+  // 3. Tableau JSON direct [...]
+  const array = text.match(/\[[\s\S]*\]/)
+  if (array) return JSON.parse(array[0])
+  // 4. Texte brut JSON
+  return JSON.parse(text.trim())
+}
 
 const PLATFORMS = ['Tous', 'TikTok', 'Instagram', 'Facebook']
 const FORMATS   = ['Tous', 'Vidéo', 'Photo', 'Reel', 'Carrousel']
@@ -146,20 +161,27 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
 ]`
 
     try {
-      const data = await requestClaude({
-        prompt,
-        maxTokens: 600,
-      })
-      const match  = data.text.match(/\[[\s\S]*\]/)
-      const parsed = JSON.parse(match ? match[0] : data.text)
+      const data   = await requestClaude({ prompt, maxTokens: 600 })
+      const parsed = parseClaudeJSON(data.text)
       storeIdeas(parsed)
-    } catch {
-      storeIdeas([...mockIdeas].sort(() => Math.random() - 0.5))
+      incrementIdeasUsed()
+      toast('Nouvelles idées générées ✓')
+    } catch (err) {
+      if (err instanceof ServerApiError) {
+        if (err.code === 'RATE_LIMITED') {
+          toast('Trop de requêtes — réessaie dans quelques secondes')
+        } else {
+          toast(`Erreur serveur (${err.code}) — réessaie`)
+        }
+      } else if (err instanceof SyntaxError) {
+        toast('Erreur de format IA — réessaie')
+      } else {
+        toast('Erreur réseau — vérifie ta connexion')
+      }
+      // On ne fallback PAS sur mockIdeas : l'utilisateur ne doit pas croire que ce sont ses vraies idées
+    } finally {
+      setLoading(false)
     }
-
-    incrementIdeasUsed()
-    setLoading(false)
-    toast('Nouvelles idées générées ✓')
   }
 
   const handleBookmark = (idea, e) => {
