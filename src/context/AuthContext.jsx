@@ -1,5 +1,6 @@
 import { createContext, useEffect, useMemo, useRef, useState } from 'react'
 import useAppStore from '../store/useAppStore.js'
+import useToastStore from '../store/useToastStore.js'
 import { isSupabaseConfigured, supabase } from '../lib/supabaseClient.js'
 import { loadWorkspaceForUser, saveWorkspaceForUser } from '../services/supabaseWorkspace.js'
 
@@ -143,6 +144,7 @@ export function AuthProvider({ children }) {
             if (!active) return
             setSyncStatus('error')
             setSyncError(error.message || 'La sauvegarde distante a échoué.')
+            useToastStore.getState().toast('Sauvegarde impossible — vérifie ta connexion')
           }
         }, 800)
       })

@@ -68,6 +68,7 @@ export default function Account() {
     user.plan === 'pro_monthly' ? 'monthly' : 'annual'
   )
   const [logoutLoading, setLogoutLoading] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
 
   const currentPlan = user.plan || 'starter'
   const usage       = useAppStore((s) => s.usage)
@@ -124,9 +125,27 @@ export default function Account() {
     }
   }
 
+  // B2 — Upgrade plan : bloqué côté client jusqu'à intégration Stripe
+  const handleUpgradePlan = () => {
+    toast('Paiement bientôt disponible — contacte-nous à contact@postchef.fr pour activer ton plan')
+  }
+
   const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== 'SUPPRIMER') return
     setDeleteLoading(true)
     try {
+      // B3 — Supprimer toutes les données Supabase avant signOut
+      const { data: { session } } = await (await import('../lib/supabaseClient.js')).supabase.auth.getSession()
+      if (session?.access_token) {
+        await fetch('/api/delete-account', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({}),
+        })
+      }
       await signOut()
       resetSessionState()
       navigate('/', { replace: true })
@@ -263,7 +282,7 @@ export default function Account() {
               <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
                 {/* Pro */}
                 <button
-                  onClick={() => setPlan(billing === 'annual' ? 'pro_annual' : 'pro_monthly')}
+                  onClick={handleUpgradePlan}
                   className={`border-2 rounded-card px-3 py-4 text-left transition-all ${
                     (currentPlan === 'pro_monthly' || currentPlan === 'pro_annual')
                       ? 'border-pc-green bg-pc-green text-white'
@@ -285,7 +304,7 @@ export default function Account() {
 
                 {/* Premium */}
                 <button
-                  onClick={() => setPlan('premium')}
+                  onClick={handleUpgradePlan}
                   className="border-2 rounded-card px-3 py-4 text-left transition-all bg-pc-surface border-pc-border hover:border-[#7C3AED]/50 relative overflow-hidden"
                 >
                   <div className="absolute top-2 right-2 text-[8px] font-bold text-[#7C3AED] bg-[#7C3AED]/10 px-[5px] py-[2px] rounded-full">
@@ -376,7 +395,7 @@ export default function Account() {
                     Un assistant IA dédié à ton restaurant. Pose-lui toutes tes questions sur ta stratégie de contenu, tes hashtags, tes recettes ou ton menu.
                   </p>
                   <button
-                    onClick={() => setPlan('premium')}
+                    onClick={handleUpgradePlan}
                     className="text-[12px] font-bold text-white bg-[#7C3AED] px-4 py-[9px] rounded-btn hover:bg-[#6D28D9] transition-colors"
                   >
                     Passer au Premium — 99€/mois
@@ -520,20 +539,30 @@ export default function Account() {
         <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 px-5 pb-5 sm:pb-0">
           <div className="bg-pc-surface rounded-card p-6 max-w-sm w-full border border-pc-border">
             <h3 className="text-[18px] font-black tracking-[-0.03em] text-pc-ink mb-2">Supprimer le compte ?</h3>
-            <p className="text-[13px] text-pc-ink-3 leading-[1.6] mb-5">
-              Toutes tes données seront supprimées définitivement.
+            <p className="text-[13px] text-pc-ink-3 leading-[1.6] mb-4">
+              Toutes tes données seront supprimées définitivement et irrémédiablement — posts, idées, historique, compte.
             </p>
+            <p className="text-[12px] font-semibold text-pc-ink mb-2">
+              Tape <span className="font-black text-[#ef4444]">SUPPRIMER</span> pour confirmer
+            </p>
+            <input
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              placeholder="SUPPRIMER"
+              className="w-full bg-pc-bg border border-pc-border rounded-btn px-4 py-[10px] text-[13px] text-pc-ink placeholder:text-pc-ink-4 focus:outline-none focus:border-[#ef4444] transition-all mb-4"
+            />
             <div className="flex gap-3">
-              <button onClick={() => setShowDeleteModal(false)}
+              <button
+                onClick={() => { setShowDeleteModal(false); setDeleteConfirmText('') }}
                 className="flex-1 py-[11px] rounded-btn border border-pc-border text-[13px] font-semibold text-pc-ink-2 hover:bg-pc-bg transition-colors">
                 Annuler
               </button>
               <button
                 onClick={handleDeleteAccount}
-                disabled={deleteLoading}
-                className="flex-1 py-[11px] rounded-btn bg-[#ef4444] text-white text-[13px] font-bold hover:bg-[#dc2626] transition-colors disabled:opacity-50"
+                disabled={deleteLoading || deleteConfirmText !== 'SUPPRIMER'}
+                className="flex-1 py-[11px] rounded-btn bg-[#ef4444] text-white text-[13px] font-bold hover:bg-[#dc2626] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {deleteLoading ? 'Suppression...' : 'Supprimer'}
+                {deleteLoading ? 'Suppression...' : 'Supprimer définitivement'}
               </button>
             </div>
           </div>

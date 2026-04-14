@@ -243,14 +243,41 @@ const useAppStore = create(
         brandKit:   state.brandKit,
         menuPhoto:  state.menuPhoto,
       }),
-      // Migration : corriger les stores persistés sans user.id ou avec 'Marco'
+      // Migrations au rehydrate
       onRehydrateStorage: () => (state) => {
         if (!state) return
+
+        // Corriger user.id manquant ou prenom démo
         if (!state.user?.id) {
           state.user = { ...state.user, id: crypto.randomUUID() }
         }
         if (state.user?.prenom === 'Marco') {
           state.user = { ...state.user, prenom: '' }
+        }
+
+        // B1 — Migrer les posts legacy (day: "Lundi") vers ISO date
+        const DAY_TO_IDX = { Lundi: 0, Mardi: 1, Mercredi: 2, Jeudi: 3, Vendredi: 4, Samedi: 5, Dimanche: 6 }
+        const FR_DAYS    = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
+        const FR_SHORT   = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM']
+        if (Array.isArray(state.posts)) {
+          const todayDow = (new Date().getDay() + 6) % 7 // lundi = 0
+          const monday = new Date()
+          monday.setDate(new Date().getDate() - todayDow)
+          monday.setHours(12, 0, 0, 0)
+
+          state.posts = state.posts.map((p) => {
+            if (p.date) return p // déjà ISO — rien à faire
+            const dayIdx = DAY_TO_IDX[p.day] ?? 0
+            const d = new Date(monday)
+            d.setDate(monday.getDate() + dayIdx)
+            const iso = d.toISOString().split('T')[0]
+            return {
+              ...p,
+              date:     iso,
+              day:      FR_DAYS[d.getDay()],
+              dayShort: FR_SHORT[d.getDay()],
+            }
+          })
         }
       },
     }
