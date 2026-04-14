@@ -322,11 +322,10 @@ export default function Dashboard() {
             <div className="flex-1 h-px bg-pc-rule" />
             {!can('restaurantBrain') && <FeatureLock feature="restaurantBrain" compact />}
           </div>
-          {can('restaurantBrain') || feature('restaurantBrain') === 'basic' ? (
+          {can('restaurantBrain') ? (
             <RestaurantBrainPanel
               restaurantName={restaurantName}
               city={city}
-              basicOnly={feature('restaurantBrain') === 'basic'}
             />
           ) : (
             <FeatureLock
@@ -342,13 +341,13 @@ export default function Dashboard() {
 
       </motion.div>
 
-      {/* ── Speed Dial FAB ─────────────────────────────────────────── */}
+      {/* ── Speed Dial FAB — mobile uniquement ──────────────────────── */}
       {showFabMenu && (
-        <div className="fixed inset-0 z-30" onClick={() => setShowFabMenu(false)} />
+        <div className="fixed inset-0 z-30 lg:hidden" onClick={() => setShowFabMenu(false)} />
       )}
       {showFabMenu && (
         <div
-          className="fixed z-40 flex flex-col items-end gap-2"
+          className="fixed z-40 flex flex-col items-end gap-2 lg:hidden"
           style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 148px)', right: 20 }}
         >
           <button
@@ -380,7 +379,7 @@ export default function Dashboard() {
       <motion.button
         whileTap={{ scale: 0.92 }}
         onClick={() => setShowFabMenu((v) => !v)}
-        className="fixed z-40"
+        className="fixed z-40 lg:hidden"
         style={{
           bottom: 'calc(env(safe-area-inset-bottom, 0px) + 84px)',
           right: 20,

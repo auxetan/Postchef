@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAppStore from '../store/useAppStore.js'
+import useToastStore from '../store/useToastStore.js'
 import { PLANS, PLAN_DISPLAY_NAMES, getFeature } from '../utils/plans.js'
 import useAuth from '../hooks/useAuth.js'
 
@@ -54,12 +55,15 @@ export default function Account() {
   const onboarding = useAppStore((s) => s.onboarding)
   const updateRestaurant = useAppStore((s) => s.updateRestaurant)
   const setPlan = useAppStore((s) => s.setPlan)
+  const resetSessionState = useAppStore((s) => s.resetSessionState)
+  const toast = useToastStore((s) => s.toast)
 
   const [name, setName] = useState(onboarding.restaurant.name || '')
   const [city, setCity] = useState(onboarding.restaurant.city || '')
   const [saved, setSaved] = useState(false)
-  const [notifOn, setNotifOn] = useState(false)
+  const [notifOn, setNotifOn] = useState(() => localStorage.getItem('pc_notif') === '1')
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState(false)
   const [billing, setBilling] = useState(
     user.plan === 'pro_monthly' ? 'monthly' : 'annual'
   )
@@ -98,6 +102,38 @@ export default function Account() {
     await signOut()
     setLogoutLoading(false)
     navigate('/login', { replace: true })
+  }
+
+  const handleNotifToggle = async () => {
+    if (!notifOn) {
+      if (!('Notification' in window)) {
+        toast('Notifications non supportées sur ce navigateur')
+        return
+      }
+      const permission = await Notification.requestPermission()
+      if (permission === 'granted') {
+        setNotifOn(true)
+        localStorage.setItem('pc_notif', '1')
+        toast('Notifications activées ✓')
+      } else {
+        toast('Permission refusée — active-la dans les réglages du navigateur')
+      }
+    } else {
+      setNotifOn(false)
+      localStorage.removeItem('pc_notif')
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true)
+    try {
+      await signOut()
+      resetSessionState()
+      navigate('/', { replace: true })
+    } catch {
+      toast('Erreur lors de la suppression — réessaie')
+      setDeleteLoading(false)
+    }
   }
 
   const inputClass = 'w-full bg-pc-bg border border-pc-border rounded-btn px-4 py-[12px] text-[14px] text-pc-ink placeholder:text-pc-ink-4 focus:outline-none focus:border-pc-ink focus:bg-pc-surface transition-all'
@@ -454,7 +490,7 @@ export default function Account() {
                 <p className="text-[12px] text-pc-ink-4 mt-[2px]">{notifOn ? 'Rappel chaque lundi matin' : 'Désactivé'}</p>
               </div>
               <button
-                onClick={() => setNotifOn(!notifOn)}
+                onClick={handleNotifToggle}
                 className={`w-[44px] h-6 rounded-full transition-colors duration-150 relative flex-shrink-0 ${notifOn ? 'bg-pc-green' : 'bg-pc-border'}`}
               >
                 <span className={`w-[18px] h-[18px] bg-white rounded-full absolute top-[3px] shadow-sm transition-all duration-150 ${notifOn ? 'left-[23px]' : 'left-[3px]'}`} />
@@ -492,9 +528,12 @@ export default function Account() {
                 className="flex-1 py-[11px] rounded-btn border border-pc-border text-[13px] font-semibold text-pc-ink-2 hover:bg-pc-bg transition-colors">
                 Annuler
               </button>
-              <button onClick={() => setShowDeleteModal(false)}
-                className="flex-1 py-[11px] rounded-btn bg-[#ef4444] text-white text-[13px] font-bold hover:bg-[#dc2626] transition-colors">
-                Supprimer
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleteLoading}
+                className="flex-1 py-[11px] rounded-btn bg-[#ef4444] text-white text-[13px] font-bold hover:bg-[#dc2626] transition-colors disabled:opacity-50"
+              >
+                {deleteLoading ? 'Suppression...' : 'Supprimer'}
               </button>
             </div>
           </div>
