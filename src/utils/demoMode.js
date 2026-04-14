@@ -1,30 +1,21 @@
 /**
- * DEMO_MODE — true si les variables d'env réelles ne sont pas configurées.
- *
- * En production avec les bonnes clés, ce flag doit être false.
- * Il permet d'afficher des badges "Démo / Simulé" sur les features mockées,
- * et d'éviter de présenter des données fictives comme des données réelles.
+ * DEMO_MODE — les clés API sont côté serveur (pas de VITE_ prefix).
+ * Ces flags permettent d'afficher des badges "Démo / Simulé" sur les features mockées.
+ * En production avec les bonnes clés .env.local, tout est branché.
  */
-export const DEMO_MODE = !import.meta.env.VITE_OPENAI_KEY &&
-                         !import.meta.env.VITE_ANTHROPIC_KEY
+export const DEMO_MODE = false // Toutes les clés sont côté serveur — jamais VITE_
 
-/**
- * Retourne true si une feature spécifique est en mode démo.
- * Permet d'affiner le flag par feature si certaines sont branchées et d'autres non.
- */
 export function isDemo(feature) {
   switch (feature) {
     case 'analytics':
-      return true // toujours mock tant que pas branché
+      return true // réseaux sociaux non connectés — données illustratives
     case 'trends':
-      return true // toujours mock tant que pas branché
+      return true // contenu curatéé, pas de flux live
     case 'chef-ia':
-      return !import.meta.env.VITE_ANTHROPIC_KEY
     case 'ideas':
-      return !import.meta.env.VITE_ANTHROPIC_KEY
     case 'restaurant-brain':
-      return !import.meta.env.VITE_GOOGLE_PLACES_KEY
+      return false // branché via /api/* — clés côté serveur
     default:
-      return DEMO_MODE
+      return false
   }
 }

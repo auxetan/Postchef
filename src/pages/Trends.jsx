@@ -35,7 +35,7 @@ export default function Trends() {
 
       {/* ── Header ─────────────────────────────────────────────── */}
       <div className="bg-pc-surface border-b border-pc-border sticky top-0 z-30">
-        <div className="px-6 pt-7 pb-0 max-w-2xl mx-auto">
+        <div className="px-6 pt-7 pb-0 max-w-2xl mx-auto lg:max-w-5xl">
           <div className="flex items-center gap-2 pb-1">
             <h1 className="text-[26px] font-black tracking-[-0.04em] text-pc-ink leading-none">
               Inspirations
@@ -48,7 +48,7 @@ export default function Trends() {
         </div>
 
         {/* Tabs */}
-        <div className="flex max-w-2xl mx-auto border-t border-pc-rule">
+        <div className="flex max-w-2xl mx-auto lg:max-w-5xl border-t border-pc-rule">
           {TABS.map(([t, l]) => (
             <button
               key={t}
@@ -64,7 +64,7 @@ export default function Trends() {
 
       {/* ── Sons trending ──────────────────────────────────────── */}
       {tab === 'sounds' && (
-        <div className="px-6 py-6 max-w-2xl mx-auto space-y-5">
+        <div className="px-6 py-6 max-w-2xl mx-auto lg:max-w-5xl lg:px-8 space-y-5">
 
           {/* Platform filter */}
           <div className="flex gap-3 overflow-x-auto scrollbar-hide">
@@ -81,6 +81,7 @@ export default function Trends() {
           </div>
 
           {/* Sound cards */}
+          <div className="lg:grid lg:grid-cols-2 lg:gap-4 space-y-5 lg:space-y-0">
           {filteredSounds.map((sound) => {
             const pc = PLATFORM_COLOR[sound.platform] || { badge: 'bg-pc-bg border-pc-border text-pc-ink-3' }
             return (
@@ -129,6 +130,8 @@ export default function Trends() {
             )
           })}
 
+          </div>
+
           {/* Empty state */}
           {filteredSounds.length === 0 && (
             <div className="text-center py-14">
@@ -146,7 +149,8 @@ export default function Trends() {
 
       {/* ── Formats viraux ─────────────────────────────────────── */}
       {tab === 'formats' && (
-        <div className="px-6 py-6 max-w-2xl mx-auto space-y-5">
+        <div className="px-6 py-6 max-w-2xl mx-auto lg:max-w-5xl lg:px-8">
+          <div className="space-y-5 lg:grid lg:grid-cols-3 lg:gap-4 lg:space-y-0">
           {mockFormats.map((fmt) => {
             const pc = PLATFORM_COLOR[fmt.platform] || { badge: 'bg-pc-bg border-pc-border text-pc-ink-3' }
             return (
@@ -207,12 +211,13 @@ export default function Trends() {
               </div>
             )
           })}
+          </div>
         </div>
       )}
 
       {/* ── Calendrier saisonnier ──────────────────────────────── */}
       {tab === 'calendar' && (
-        <div className="px-6 py-6 max-w-2xl mx-auto space-y-0">
+        <div className="px-6 py-6 max-w-2xl mx-auto lg:max-w-5xl lg:px-8 space-y-0">
 
           {/* Section label */}
           <div className="flex items-center gap-3 mb-5">

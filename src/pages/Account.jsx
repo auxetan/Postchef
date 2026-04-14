@@ -108,7 +108,7 @@ export default function Account() {
 
       {/* Header */}
       <div className="bg-pc-surface border-b border-pc-border px-6 pt-7 pb-5 sticky top-0 z-30">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto lg:max-w-3xl">
           <h1 className="text-[26px] font-black tracking-[-0.04em] text-pc-ink leading-none">Compte</h1>
           <p className="text-[12px] text-pc-ink-4 mt-[6px] font-medium">
             {onboarding.restaurant.name || 'Ton restaurant'}
@@ -116,7 +116,7 @@ export default function Account() {
         </div>
       </div>
 
-      <div className="px-6 py-7 max-w-2xl mx-auto space-y-8">
+      <div className="px-6 py-7 max-w-2xl mx-auto lg:max-w-3xl lg:px-8 lg:py-8 space-y-8">
 
         {/* Profil */}
         <section>
@@ -224,7 +224,7 @@ export default function Account() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
                 {/* Pro */}
                 <button
                   onClick={() => setPlan(billing === 'annual' ? 'pro_annual' : 'pro_monthly')}

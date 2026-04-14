@@ -6,7 +6,6 @@ import useAppStore from '../store/useAppStore.js'
 import { mockStats } from '../utils/mockData.js'
 
 const WEEKS = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7']
-const maxViews = Math.max(...mockStats.weeklyViews)
 
 const HEATMAP_DAYS  = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 const SLOTS         = ['Matin', 'Midi', 'Soir', 'Nuit']
@@ -46,22 +45,34 @@ export default function Analytics() {
 
   const realStats = useMemo(() => {
     const published = posts.filter((p) => p.status === 'publie').length
-    const planned   = posts.filter((p) => p.status !== 'publie').length
     const byDay     = posts.reduce((acc, p) => {
       const d = p.day || p.dayShort || ''
       if (d) acc[d] = (acc[d] || 0) + 1
       return acc
     }, {})
     const bestDay = Object.entries(byDay).sort((a, b) => b[1] - a[1])[0]?.[0] || '—'
+
+    // Posts par semaine (7 dernières semaines) basés sur post.date
+    const now = new Date()
+    const weeklyPosts = Array(7).fill(0)
+    posts.forEach((p) => {
+      if (!p.date) return
+      const d    = new Date(p.date + 'T12:00:00')
+      const diff = Math.floor((now - d) / (7 * 24 * 3600 * 1000))
+      const idx  = 6 - diff // semaine la plus récente = index 6
+      if (idx >= 0 && idx < 7) weeklyPosts[idx]++
+    })
+
     return {
-      totalPosts:   posts.length,
+      totalPosts:  posts.length,
       published,
-      planned,
-      reels:        reels.length,
-      ideasUsed:    usage.ideasUsedThisWeek ?? 0,
-      captions:     usage.captionUsedThisMonth ?? 0,
-      savedIdeas:   savedIdeas.length,
+      planned:     posts.filter((p) => p.status !== 'publie').length,
+      reels:       reels.length,
+      ideasUsed:   usage.ideasUsedThisWeek ?? 0,
+      captions:    usage.captionUsedThisMonth ?? 0,
+      savedIdeas:  savedIdeas.length,
       bestDay,
+      weeklyPosts,
     }
   }, [posts, reels, usage, savedIdeas])
 
@@ -70,18 +81,18 @@ export default function Analytics() {
 
       {/* Header */}
       <div className="bg-pc-surface border-b border-pc-border px-6 pt-7 pb-5 sticky top-0 z-30">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto lg:max-w-5xl">
           <h1 className="text-[26px] font-black tracking-[-0.04em] text-pc-ink leading-none">Analytics</h1>
           <p className="text-[12px] text-pc-ink-4 mt-[6px] font-medium">Activité PostChef en temps réel · réseaux sociaux à venir</p>
         </div>
       </div>
 
-      <div className="px-6 py-7 max-w-3xl mx-auto space-y-8">
+      <div className="px-6 py-7 max-w-3xl mx-auto lg:max-w-5xl space-y-8">
 
         {/* ── Section 1 : VRAIES données PostChef ─────────────────────────── */}
         <div>
           <Rule>Activité PostChef</Rule>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
             {[
               { val: realStats.totalPosts,  lbl: 'Posts créés',         sub: `${realStats.published} publiés` },
               { val: realStats.reels,       lbl: 'Reels Studio',        sub: 'générés' },
@@ -108,7 +119,7 @@ export default function Analytics() {
             <div>
               <Rule action={<DemoBadge variant="simule" label="Simulé" />}>Réseaux sociaux</Rule>
               <p className="text-[11px] text-pc-ink-4 mb-3">Connexion TikTok/Instagram à venir — chiffres illustratifs.</p>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
                 {[
                   { val: mockStats.postsThisMonth,                lbl: 'Posts ce mois',      delta: '+3',       up: true  },
                   { val: mockStats.totalViews.toLocaleString('fr'), lbl: 'Vues estimées',     delta: '+18%',     up: true  },
@@ -129,30 +140,35 @@ export default function Analytics() {
               </div>
             </div>
 
-            {/* Bar chart */}
+            {/* Bar chart — posts créés par semaine (vraies données) */}
             <div>
-              <Rule>Vues par semaine</Rule>
+              <Rule>Posts créés par semaine</Rule>
               <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-5">
-                <div className="flex items-end gap-2 h-[100px]">
-                  {mockStats.weeklyViews.map((v, i) => {
-                    const pct  = (v / maxViews) * 100
-                    const isHi = v === maxViews
-                    return (
-                      <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                        <div className="w-full relative" style={{ height: '80px' }}>
-                          <div
-                            className="absolute bottom-0 left-0 right-0 rounded-t-[4px] transition-all duration-500"
-                            style={{
-                              height: `${pct}%`,
-                              backgroundColor: isHi ? '#0A0A0A' : '#E8E8E6',
-                            }}
-                          />
+                {realStats.weeklyPosts.every((v) => v === 0) ? (
+                  <p className="text-[12px] text-pc-ink-4 text-center py-6">Crée tes premiers posts pour voir les stats ici.</p>
+                ) : (
+                  <div className="flex items-end gap-2 h-[100px]">
+                    {realStats.weeklyPosts.map((v, i) => {
+                      const maxV = Math.max(...realStats.weeklyPosts, 1)
+                      const pct  = (v / maxV) * 100
+                      const isHi = v === maxV && v > 0
+                      return (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                          <div className="w-full relative" style={{ height: '80px' }}>
+                            <div
+                              className="absolute bottom-0 left-0 right-0 rounded-t-[4px] transition-all duration-500"
+                              style={{
+                                height: `${Math.max(pct, v > 0 ? 8 : 0)}%`,
+                                backgroundColor: isHi ? '#0A0A0A' : '#E8E8E6',
+                              }}
+                            />
+                          </div>
+                          <span className="text-[9px] font-bold text-pc-ink-4 uppercase">{WEEKS[i]}</span>
                         </div>
-                        <span className="text-[9px] font-bold text-pc-ink-4 uppercase">{WEEKS[i]}</span>
-                      </div>
-                    )
-                  })}
-                </div>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
             </div>
 

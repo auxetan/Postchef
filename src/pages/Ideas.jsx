@@ -185,7 +185,7 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
           borderBottom: '1px solid rgba(0,0,0,0.06)',
         }}
       >
-        <div className="px-5 pt-7 pb-4 flex items-center justify-between max-w-2xl mx-auto">
+        <div className="px-5 pt-7 pb-4 flex items-center justify-between max-w-2xl mx-auto lg:max-w-5xl lg:mx-auto">
           <h1 className="text-[28px] font-[800] tracking-[-0.03em] text-pc-ink leading-none">
             Idées IA
           </h1>
@@ -215,7 +215,7 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
         </div>
 
         {/* Tabs */}
-        <div className="flex max-w-2xl mx-auto px-5 gap-6">
+        <div className="flex max-w-2xl mx-auto px-5 gap-6 lg:max-w-5xl lg:gap-8">
           {[['ideas', 'Idées IA'], ['bibliotheque', 'Bibliothèque']].map(([t, l]) => (
             <button
               key={t}
@@ -237,7 +237,7 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
 
       {/* ── Bibliothèque ─────────────────────────────────────────── */}
       {tab === 'bibliotheque' && (
-        <div className="px-6 py-7 max-w-2xl mx-auto">
+        <div className="px-6 py-7 max-w-2xl mx-auto lg:max-w-5xl lg:px-8">
           {savedIdeas.length === 0 ? (
             <div className="text-center py-16">
               <div className="w-12 h-12 rounded-full bg-pc-bg border border-pc-border flex items-center justify-center mx-auto mb-4">
@@ -249,7 +249,7 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
               <div className="text-[12px] text-pc-ink-3 leading-[1.6] max-w-[200px] mx-auto">Appuie sur l'icône signet d'une idée pour la sauvegarder ici.</div>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
               {savedIdeas.map((idea) => (
                 <IdeaCard key={idea.id} idea={idea} isSaved={true} expanded={expanded} hashtagsFor={hashtagsFor}
                   restaurant={onboarding.restaurant} onExpand={setExpanded} onBookmark={handleBookmark}
@@ -263,7 +263,7 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
 
       {/* ── Idées ─────────────────────────────────────────────────── */}
       {tab === 'ideas' && (
-        <div className="px-6 py-6 max-w-2xl mx-auto space-y-5">
+        <div className="px-6 py-6 max-w-2xl mx-auto space-y-5 lg:max-w-5xl lg:px-8 lg:py-8">
 
           {/* Credits */}
           <IdeasCounter used={ideasUsed} max={ideasMax} plan={plan} />
@@ -347,14 +347,18 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
           )}
 
           {/* Ideas */}
-          {!loading && filtered.map((idea) => (
-            <IdeaCard key={idea.id} idea={idea}
-              isSaved={savedIdeas.some((i) => i.id === idea.id)}
-              expanded={expanded} hashtagsFor={hashtagsFor} restaurant={onboarding.restaurant}
-              onExpand={setExpanded} onBookmark={handleBookmark} onSchedule={setPlanningIdea}
-              onHashtags={setHashtagsFor} onCopyLegend={handleCopyLegend}
-              onCopyHashtags={handleCopyHashtags} canBrief={can('briefVisuel')} />
-          ))}
+          {!loading && (
+            <div className="space-y-5 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+              {filtered.map((idea) => (
+                <IdeaCard key={idea.id} idea={idea}
+                  isSaved={savedIdeas.some((i) => i.id === idea.id)}
+                  expanded={expanded} hashtagsFor={hashtagsFor} restaurant={onboarding.restaurant}
+                  onExpand={setExpanded} onBookmark={handleBookmark} onSchedule={setPlanningIdea}
+                  onHashtags={setHashtagsFor} onCopyLegend={handleCopyLegend}
+                  onCopyHashtags={handleCopyHashtags} canBrief={can('briefVisuel')} />
+              ))}
+            </div>
+          )}
 
           {/* Empty state */}
           {!loading && filtered.length === 0 && (

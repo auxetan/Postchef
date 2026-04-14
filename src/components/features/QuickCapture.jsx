@@ -113,7 +113,6 @@ Réponds UNIQUEMENT en JSON valide :
           prompt,
           imageDataUrl: imagePreview,
           maxTokens: 280,
-          maxTokens: 600,
         })
         const match  = data.text.match(/\{[\s\S]*\}/)
         const parsed = JSON.parse(match ? match[0] : data.text)

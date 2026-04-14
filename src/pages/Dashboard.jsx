@@ -66,7 +66,7 @@ export default function Dashboard() {
   const initials = restaurantName.split(' ').slice(0, 2).map(w => w[0]?.toUpperCase()).join('')
 
   return (
-    <div className="min-h-screen bg-pc-bg pb-32">
+    <div className="min-h-screen bg-pc-bg pb-32 lg:pb-10">
 
       {/* ── Header ────────────────────────────────────────────────── */}
       <div
@@ -78,7 +78,7 @@ export default function Dashboard() {
           borderBottom: '1px solid rgba(0,0,0,0.05)',
         }}
       >
-        <div className="max-w-xl mx-auto">
+        <div className="max-w-xl mx-auto lg:max-w-6xl">
           <p className="pc-section-label mb-[10px]">{dateStr}</p>
           <div className="flex items-center justify-between">
             <div>
@@ -108,14 +108,14 @@ export default function Dashboard() {
       </div>
 
       <motion.div
-        className="px-5 py-6 max-w-xl mx-auto space-y-7"
+        className="px-5 py-6 max-w-xl mx-auto space-y-7 lg:px-8 lg:py-8 lg:max-w-6xl lg:space-y-0"
         variants={containerVariants}
         initial="hidden"
         animate="show"
       >
 
         {/* ── Stat Cards ────────────────────────────────────────────── */}
-        <motion.div variants={itemVariants}>
+        <motion.div variants={itemVariants} className="lg:mb-8">
           <div className="flex items-center justify-between mb-4">
             <span className="pc-section-label">Cette semaine</span>
             <button
@@ -126,7 +126,7 @@ export default function Dashboard() {
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M2.5 6H9.5M6.5 3L9.5 6L6.5 9"/></svg>
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
             <motion.div
               whileHover={{ y: -2 }}
               transition={{ duration: 0.18 }}
@@ -170,6 +170,12 @@ export default function Dashboard() {
             </motion.div>
           </div>
         </motion.div>
+
+        {/* ── Desktop 2-col layout: left = posts + ideas, right = brain ── */}
+        <div className="mt-7 lg:mt-0 lg:grid lg:grid-cols-[1fr_340px] lg:gap-8 lg:items-start">
+
+        {/* ── Left column (posts + ideas) ──────────────────────────── */}
+        <div className="space-y-7">
 
         {/* ── Prochains Posts ───────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
@@ -304,6 +310,11 @@ export default function Dashboard() {
           )}
         </motion.div>
 
+        </div>{/* end left column */}
+
+        {/* ── Right column (brain + quick capture) ─────────────────── */}
+        <div className="space-y-7 mt-7 lg:mt-0">
+
         {/* ── Restaurant Brain ─────────────────────────────────────── */}
         <motion.div variants={itemVariants}>
           <div className="flex items-center gap-3 mb-4">
@@ -325,6 +336,9 @@ export default function Dashboard() {
             />
           )}
         </motion.div>
+
+        </div>{/* end right column */}
+        </div>{/* end desktop 2-col */}
 
       </motion.div>
 

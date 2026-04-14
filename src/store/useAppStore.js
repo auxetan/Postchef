@@ -174,7 +174,11 @@ const useAppStore = create(
       // ── Actions ideas ──
       setMenuPhoto:     (photo)   => set({ menuPhoto: photo }),
       setIdeas:         (ideas)   => set({ ideas }),
-      addIdea:          (idea)    => set((s) => ({ ideas: [idea, ...s.ideas] })),
+      addIdea:          (idea)    => set((s) => (
+        s.ideas.some((i) => i.id === idea.id)
+          ? {}
+          : { ideas: [idea, ...s.ideas] }
+      )),
       setIdeasLoading:  (loading) => set({ ideasLoading: loading }),
 
       // ── Actions studio ──
@@ -237,6 +241,7 @@ const useAppStore = create(
         savedIdeas: state.savedIdeas,
         reels:      state.reels,
         brandKit:   state.brandKit,
+        menuPhoto:  state.menuPhoto,
       }),
       // Migration : corriger les stores persistés sans user.id ou avec 'Marco'
       onRehydrateStorage: () => (state) => {

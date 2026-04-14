@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react'
-import { mockPosts } from '../utils/mockData.js'
 import useAppStore from '../store/useAppStore.js'
 import useToastStore from '../store/useToastStore.js'
 import PlanningModal from '../components/ui/PlanningModal.jsx'
@@ -73,14 +72,7 @@ export default function Calendar() {
   const monday = new Date(today)
   monday.setDate(today.getDate() - todayDow)
 
-  const mockPostsWithDates = mockPosts.map((p) => {
-    const dayIdx = DAY_INDEX[p.day] ?? 0
-    const d = new Date(monday)
-    d.setDate(monday.getDate() + dayIdx)
-    return { ...p, dateNum: d.getDate(), postMonth: d.getMonth(), postYear: d.getFullYear(), _mock: true }
-  })
-
-  const storePostsWithDates = storePosts.map((p) => {
+  const allPosts = storePosts.map((p) => {
     if (p.date) {
       const d = new Date(p.date + 'T12:00:00')
       return { ...p, dateNum: d.getDate(), postMonth: d.getMonth(), postYear: d.getFullYear() }
@@ -90,8 +82,6 @@ export default function Calendar() {
     d.setDate(monday.getDate() + dayIdx)
     return { ...p, dateNum: d.getDate(), postMonth: d.getMonth(), postYear: d.getFullYear() }
   })
-
-  const allPosts = [...mockPostsWithDates, ...storePostsWithDates]
 
   const filteredAll = statusFilter === 'Tous'
     ? allPosts
@@ -134,7 +124,7 @@ export default function Calendar() {
 
   // ── Status toggle ─────────────────────────────────────────────────────────
   const handleStatusChange = (post) => {
-    if (post._mock) return // mock posts are read-only
+
     const next = STATUS_NEXT[post.status]
     updatePostStatus(post.id, next)
     toast(`Statut → ${STATUS_LABEL[next]}`)
@@ -166,16 +156,18 @@ export default function Calendar() {
     <div className="min-h-screen bg-pc-bg">
       {/* Header */}
       <div className="bg-pc-surface border-b border-pc-border px-6 pt-7 pb-5 sticky top-0 z-30">
-        <div className="max-w-lg mx-auto">
+        <div className="max-w-lg mx-auto lg:max-w-5xl">
           <h1 className="text-[26px] font-black tracking-[-0.04em] text-pc-ink leading-none">Calendrier</h1>
           <p className="text-[12px] text-pc-ink-4 mt-[6px] font-medium">{MONTH_NAMES[viewMonth]} {viewYear}</p>
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-6 py-7 pb-28">
+      <div className="max-w-lg mx-auto px-6 py-7 pb-28 lg:max-w-5xl lg:mx-auto lg:px-8 lg:py-8">
 
+        {/* ── Desktop: calendar + day panel side by side ── */}
+        <div className="lg:grid lg:grid-cols-[1fr_380px] lg:gap-8">
         {/* ── Calendar card ── */}
-        <div className="bg-pc-surface rounded-card border border-pc-border p-5 mb-4">
+        <div className="bg-pc-surface rounded-card border border-pc-border p-5 mb-4 lg:mb-0">
 
           {/* Month navigation */}
           <div className="flex items-center justify-between mb-5">
@@ -247,8 +239,11 @@ export default function Calendar() {
           </div>
         </div>
 
+        {/* ── Right panel: filters + legend + posts ── */}
+        <div>
+
         {/* ── Status filters ── */}
-        <div className="flex gap-3 mb-4 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-3 mb-4 overflow-x-auto scrollbar-hide lg:flex-row lg:items-center">
           {STATUS_FILTERS.map((f) => (
             <button
               key={f}
@@ -337,6 +332,9 @@ export default function Calendar() {
             />
           </div>
         )}
+
+        </div>{/* end right panel */}
+        </div>{/* end lg:grid */}
       </div>
 
       {/* Planning modal */}

@@ -295,15 +295,15 @@ export default function AiChat() {
     setError(null)
 
     const userMsg = { role: 'user', content }
-    const nextMessages = [...messages, userMsg]
-    setMessages(nextMessages)
+    setMessages((prev) => [...prev, userMsg])
     setIsTyping(true)
 
     try {
-      // Build history for API: only role/content pairs (skip action entries)
-      const history = nextMessages
+      // Build history for API: only role/content pairs (skip action entries), max 20 derniers
+      const history = [...messages, userMsg]
         .filter((m) => m.role === 'user' || m.role === 'assistant')
-        .slice(1) // skip initial greeting
+        .slice(1)   // skip initial greeting
+        .slice(-20) // max 20 messages pour limiter les tokens
 
       const data = await requestChefIA({ messages: history, system: systemPrompt })
 
@@ -316,17 +316,14 @@ export default function AiChat() {
 
       // Build new entries: text reply + action cards
       const newEntries = []
-      if (data.text) {
-        newEntries.push({ role: 'assistant', content: data.text })
-      }
-      for (const action of data.actions || []) {
-        newEntries.push({ role: 'action', action })
-      }
+      if (data.text) newEntries.push({ role: 'assistant', content: data.text })
+      for (const action of data.actions || []) newEntries.push({ role: 'action', action })
 
       setMessages((prev) => [...prev, ...newEntries])
     } catch {
       setError('Chef IA est momentanément indisponible. Réessaie dans un instant.')
-      setMessages((prev) => prev.filter((m) => m !== userMsg || m.role !== 'user'))
+      // Retire le dernier message user (toujours en dernière position)
+      setMessages((prev) => prev.slice(0, -1))
     } finally {
       setIsTyping(false)
     }
@@ -346,7 +343,7 @@ export default function AiChat() {
 
       {/* Header */}
       <div className="bg-pc-surface border-b border-pc-border px-6 pt-7 pb-4 sticky top-0 z-30">
-        <div className="max-w-2xl mx-auto flex items-center gap-3">
+        <div className="max-w-2xl mx-auto lg:max-w-3xl flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="text-pc-ink-4 hover:text-pc-ink transition-colors">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M12 4l-7 6 7 6"/>
@@ -367,7 +364,7 @@ export default function AiChat() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-5 py-5 pb-32 max-w-2xl mx-auto w-full">
+      <div className="flex-1 overflow-y-auto px-5 py-5 pb-32 max-w-2xl mx-auto w-full lg:max-w-3xl">
         {messages.map((msg, i) => {
           if (msg.role === 'action') {
             return <ActionCard key={i} action={msg.action} onNavigate={navigate} />
@@ -387,7 +384,7 @@ export default function AiChat() {
 
       {/* Suggestions — affichées uniquement au démarrage */}
       {messages.length === 1 && !isTyping && (
-        <div className="fixed bottom-[72px] left-0 right-0 px-5 pb-3 max-w-2xl mx-auto">
+        <div className="fixed bottom-[72px] left-0 right-0 px-5 pb-3 max-w-2xl mx-auto lg:max-w-3xl">
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {SUGGESTIONS.map((s) => (
               <button
@@ -404,7 +401,7 @@ export default function AiChat() {
 
       {/* Input */}
       <div
-        className="fixed bottom-0 left-0 right-0 bg-pc-surface border-t border-pc-border px-4 py-3 max-w-2xl mx-auto w-full"
+        className="fixed bottom-0 left-0 right-0 bg-pc-surface border-t border-pc-border px-4 py-3 max-w-2xl mx-auto w-full lg:max-w-3xl"
         style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
       >
         <div className="flex items-end gap-2">
