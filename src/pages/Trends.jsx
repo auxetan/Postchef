@@ -18,7 +18,7 @@ const PLATFORM_COLOR = {
 
 const DIFF_COLOR = {
   Facile: 'text-[#059669]',
-  Moyen:  'text-[#d97706]',
+  Moyen:  'text-pc-amber-dark',
 }
 
 export default function Trends() {

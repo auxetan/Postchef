@@ -8,7 +8,7 @@ const LETTERS = ['A', 'B', 'C']
 
 function scoreColor(score) {
   if (score > 80) return 'text-pc-green'
-  if (score >= 60) return 'text-[#D97706]'
+  if (score >= 60) return 'text-pc-amber-dark'
   return 'text-pc-ink-3'
 }
 

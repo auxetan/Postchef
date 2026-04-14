@@ -1,4 +1,5 @@
 import Button from '../../components/ui/Button.jsx'
+import { PC_GREEN } from '../../utils/colors.js'
 
 export default function Step7Notifications({ onNext }) {
   const requestNotifications = () => {
@@ -13,8 +14,8 @@ export default function Step7Notifications({ onNext }) {
         {/* Icon */}
         <div className="w-[72px] h-[72px] rounded-[22px] bg-pc-green-light flex items-center justify-center mb-8">
           <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
-            <path d="M17 4a10 10 0 0110 10v5l2 3H5l2-3v-5A10 10 0 0117 4z" stroke="#1D9E75" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M14 26a3 3 0 006 0" stroke="#1D9E75" strokeWidth="2" strokeLinecap="round"/>
+            <path d="M17 4a10 10 0 0110 10v5l2 3H5l2-3v-5A10 10 0 0117 4z" stroke={PC_GREEN} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M14 26a3 3 0 006 0" stroke={PC_GREEN} strokeWidth="2" strokeLinecap="round"/>
           </svg>
         </div>
 

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import usePWAInstall from '../hooks/usePWAInstall.js'
 import { LogoWordmark, LogoMark } from '../components/ui/LogoMark.jsx'
+import { PC_AMBER, PC_GREEN, PC_INK } from '../utils/colors.js'
 
 /* ── Mock phone UI data ───────────────────────────────────────────── */
 const MOCK_POSTS = [
@@ -42,7 +43,7 @@ function PhoneMockup() {
       <div
         className="relative w-full h-full rounded-[44px] overflow-hidden"
         style={{
-          background: '#0A0A0A',
+          background: PC_INK,
           boxShadow: '0 32px 80px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.12)',
         }}
       >
@@ -59,23 +60,23 @@ function PhoneMockup() {
         />
 
         {/* Screen */}
-        <div className="absolute inset-[3px] rounded-[42px] overflow-hidden bg-[#F7F7F5]">
+        <div className="absolute inset-[3px] rounded-[42px] overflow-hidden bg-pc-bg">
           {/* App header */}
-          <div className="bg-[#F7F7F5] pt-[56px] px-4 pb-3">
-            <div className="text-[8px] font-[700] uppercase tracking-[0.08em] text-[#A3A3A3] mb-1">Samedi 11 Avril</div>
-            <div className="text-[16px] font-[800] text-[#0A0A0A] leading-tight tracking-[-0.03em]">La Trattoria</div>
+          <div className="bg-pc-bg pt-[56px] px-4 pb-3">
+            <div className="text-[8px] font-[700] uppercase tracking-[0.08em] text-pc-ink-4 mb-1">Samedi 11 Avril</div>
+            <div className="text-[16px] font-[800] text-pc-ink leading-tight tracking-[-0.03em]">La Trattoria</div>
             <div className="flex items-center gap-1 mt-1">
-              <div className="w-[5px] h-[5px] rounded-full bg-[#F59E0B]" />
-              <span className="text-[8px] text-[#737373] font-[600]">2 posts en attente</span>
+              <div className="w-[5px] h-[5px] rounded-full bg-pc-amber" />
+              <span className="text-[8px] text-pc-ink-3 font-[600]">2 posts en attente</span>
             </div>
           </div>
 
           {/* Divider */}
-          <div className="h-px bg-[#E8E8E6] mx-4" />
+          <div className="h-px bg-pc-border mx-4" />
 
           {/* Posts list */}
           <div className="px-4 py-3">
-            <div className="text-[7px] font-[700] uppercase tracking-[0.08em] text-[#A3A3A3] mb-2">Cette semaine</div>
+            <div className="text-[7px] font-[700] uppercase tracking-[0.08em] text-pc-ink-4 mb-2">Cette semaine</div>
             <div className="space-y-[6px]">
               {MOCK_POSTS.map((p, i) => (
                 <div
@@ -85,11 +86,11 @@ function PhoneMockup() {
                 >
                   <div
                     className="w-[5px] h-[5px] rounded-full flex-shrink-0"
-                    style={{ backgroundColor: p.status === 'publie' ? '#1D9E75' : p.status === 'a-tourner' ? '#F59E0B' : '#D4D4D4' }}
+                    style={{ backgroundColor: p.status === 'publie' ? PC_GREEN : p.status === 'a-tourner' ? PC_AMBER : '#D4D4D4' }}
                   />
-                  <span className="text-[7px] font-[700] text-[#A3A3A3] w-[18px]">{p.day}</span>
-                  <span className="text-[8px] font-[600] text-[#0A0A0A] flex-1 truncate">{p.title}</span>
-                  <span className="text-[7px] font-[700] text-[#1D9E75]">{p.platform}</span>
+                  <span className="text-[7px] font-[700] text-pc-ink-4 w-[18px]">{p.day}</span>
+                  <span className="text-[8px] font-[600] text-pc-ink flex-1 truncate">{p.title}</span>
+                  <span className="text-[7px] font-[700] text-pc-green">{p.platform}</span>
                 </div>
               ))}
             </div>
@@ -97,13 +98,13 @@ function PhoneMockup() {
 
           {/* Ideas section */}
           <div className="px-4">
-            <div className="text-[7px] font-[700] uppercase tracking-[0.08em] text-[#A3A3A3] mb-2">Idée du moment</div>
-            <div className="bg-[#0A0A0A] rounded-[12px] p-3">
+            <div className="text-[7px] font-[700] uppercase tracking-[0.08em] text-pc-ink-4 mb-2">Idée du moment</div>
+            <div className="bg-pc-ink rounded-[12px] p-3">
               <div className="text-[7px] text-white/40 font-[600] mb-1">VIDÉO · TIKTOK</div>
               <div className="text-[9px] text-white font-[700] leading-[1.4]">"Touristes vs locaux — ce qu'ils commandent"</div>
               <div className="mt-2 flex items-center gap-1">
-                <div className="w-[4px] h-[4px] rounded-full bg-[#1D9E75]" />
-                <span className="text-[7px] text-[#1D9E75] font-[700]">Fort potentiel</span>
+                <div className="w-[4px] h-[4px] rounded-full bg-pc-green" />
+                <span className="text-[7px] text-pc-green font-[700]">Fort potentiel</span>
               </div>
             </div>
           </div>
@@ -131,7 +132,7 @@ function PhoneMockup() {
       >
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-[8px] bg-pc-green-light flex items-center justify-center flex-shrink-0">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1D9E75" strokeWidth="2" strokeLinecap="round">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke={PC_GREEN} strokeWidth="2" strokeLinecap="round">
               <path d="M7 1a4 4 0 012.8 6.8V9a.8.8 0 01-.8.8H5a.8.8 0 01-.8-.8V7.8A4 4 0 017 1z"/>
             </svg>
           </div>
@@ -148,7 +149,7 @@ function PhoneMockup() {
         className="-left-8 bottom-44"
       >
         <div className="flex items-center gap-2">
-          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#1D9E75" strokeWidth="2" strokeLinecap="round"><path d="M2 6L5 9L10 3"/></svg>
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke={PC_GREEN} strokeWidth="2" strokeLinecap="round"><path d="M2 6L5 9L10 3"/></svg>
           <span className="text-[9px] font-[700] text-pc-ink">Sans CB</span>
         </div>
       </FloatingPill>
@@ -160,7 +161,7 @@ function PhoneMockup() {
 const FEATURES = [
   {
     icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="4" width="16" height="14" rx="3"/>
         <path d="M6 2v3M14 2v3M2 9h16"/>
       </svg>
@@ -170,7 +171,7 @@ const FEATURES = [
   },
   {
     icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M10 2a6 6 0 014 10.47V14.5a1 1 0 01-1 1H7a1 1 0 01-1-1V12.47A6 6 0 0110 2z"/>
         <path d="M7.5 17h5M8 18.5h4"/>
       </svg>
@@ -180,7 +181,7 @@ const FEATURES = [
   },
   {
     icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="10" cy="10" r="8"/>
         <path d="M10 6v4l2.5 2.5"/>
       </svg>
@@ -190,9 +191,9 @@ const FEATURES = [
   },
   {
     icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="4" width="16" height="12" rx="2.5"/>
-        <path d="M8 8l5 2.5L8 13V8z" fill="#1D9E75" stroke="none"/>
+        <path d="M8 8l5 2.5L8 13V8z" fill={PC_GREEN} stroke="none"/>
       </svg>
     ),
     title: 'Studio Reels',
@@ -206,7 +207,7 @@ const USE_CASES = [
     situation: 'Tu veux remplir le service du midi',
     result: 'PostChef génère une idée de story "table dispo → viens" + 3 légendes prêtes à publier en 2 minutes.',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M10 2v4M4.93 4.93l2.83 2.83M2 10h4M4.93 15.07l2.83-2.83M10 14v4M15.07 15.07l-2.83-2.83M18 10h-4M15.07 4.93l-2.83 2.83"/>
       </svg>
     ),
@@ -215,7 +216,7 @@ const USE_CASES = [
     situation: 'Tu veux vendre ton plat signature',
     result: 'PostChef identifie ton plat le plus cité dans les avis et crée un script de Reel qui déclenche des réservations.',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 10c0-4 3.5-7 7-7s7 3 7 7-3.5 7-7 7"/>
         <path d="M10 6v4l3 2"/>
       </svg>
@@ -225,7 +226,7 @@ const USE_CASES = [
     situation: 'Tu veux poster sans y passer 2h',
     result: 'Un calendrier complet, des captions corrigées et tes hashtags locaux — sans ouvrir ChatGPT.',
     icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="20 6 9 17 4 12"/>
       </svg>
     ),
@@ -240,7 +241,7 @@ const PROOF_CARDS = [
     result: '3 Reels générés le lundi matin, 1 table complète vendue le midi le vendredi.',
     metric: '+340 vues organiques',
     color: '#FEF3C7',
-    dot: '#F59E0B',
+    dot: PC_AMBER,
   },
   {
     emoji: '🍜',
@@ -393,7 +394,7 @@ export default function Landing() {
           >
             {['Sans CB', '7 jours offerts', 'Annulez à tout moment'].map((b) => (
               <span key={b} className="text-[11px] font-[600] text-pc-ink-4 flex items-center gap-1">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#1D9E75" strokeWidth="2" strokeLinecap="round"><path d="M2 6L5 9L10 3"/></svg>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke={PC_GREEN} strokeWidth="2" strokeLinecap="round"><path d="M2 6L5 9L10 3"/></svg>
                 {b}
               </span>
             ))}
@@ -575,7 +576,7 @@ export default function Landing() {
                 <div className="space-y-[6px] mb-4">
                   {plan.features.map((f) => (
                     <div key={f} className="flex items-start gap-2 text-[12px] text-pc-ink-2">
-                      <svg className="flex-shrink-0 mt-[2px]" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1D9E75" strokeWidth="2" strokeLinecap="round"><path d="M2.5 7L5.5 10L11.5 4"/></svg>
+                      <svg className="flex-shrink-0 mt-[2px]" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke={PC_GREEN} strokeWidth="2" strokeLinecap="round"><path d="M2.5 7L5.5 10L11.5 4"/></svg>
                       {f}
                     </div>
                   ))}
@@ -639,7 +640,7 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="px-5 py-6 bg-[#0A0A0A] border-t border-white/5 text-center">
+      <footer className="px-5 py-6 bg-pc-ink border-t border-white/5 text-center">
         <div className="flex items-center justify-center mb-2">
           <LogoWordmark iconSize={22} textSize={15} className="opacity-90" />
         </div>

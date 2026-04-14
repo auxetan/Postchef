@@ -4,6 +4,7 @@ import useAppStore from '../store/useAppStore.js'
 import useToastStore from '../store/useToastStore.js'
 import { PLANS, PLAN_DISPLAY_NAMES, getFeature } from '../utils/plans.js'
 import useAuth from '../hooks/useAuth.js'
+import { PC_PREMIUM } from '../utils/colors.js'
 
 const PRO_FEATURES = [
   'Idées IA illimitées · toutes plateformes',
@@ -305,12 +306,12 @@ export default function Account() {
                 {/* Premium */}
                 <button
                   onClick={handleUpgradePlan}
-                  className="border-2 rounded-card px-3 py-4 text-left transition-all bg-pc-surface border-pc-border hover:border-[#7C3AED]/50 relative overflow-hidden"
+                  className="border-2 rounded-card px-3 py-4 text-left transition-all bg-pc-surface border-pc-border hover:border-pc-premium/50 relative overflow-hidden"
                 >
-                  <div className="absolute top-2 right-2 text-[8px] font-bold text-[#7C3AED] bg-[#7C3AED]/10 px-[5px] py-[2px] rounded-full">
+                  <div className="absolute top-2 right-2 text-[8px] font-bold text-pc-premium bg-pc-premium/10 px-[5px] py-[2px] rounded-full">
                     IA
                   </div>
-                  <div className="text-[11px] font-bold leading-tight mb-1 text-[#7C3AED]">Premium</div>
+                  <div className="text-[11px] font-bold leading-tight mb-1 text-pc-premium">Premium</div>
                   <div className="text-[16px] font-black tracking-[-0.03em] text-pc-ink">99€</div>
                   <div className="text-[9px] font-medium mt-[1px] text-pc-ink-4">/mois</div>
                 </button>
@@ -352,7 +353,7 @@ export default function Account() {
           {currentPlan === 'premium' ? (
             <button
               onClick={() => navigate('/app/chef-ia')}
-              className="w-full bg-gradient-to-br from-[#7C3AED] to-[#5B21B6] rounded-card px-5 py-5 text-left active:scale-[0.99] transition-transform"
+              className="w-full bg-gradient-to-br from-pc-premium to-[#5B21B6] rounded-card px-5 py-5 text-left active:scale-[0.99] transition-transform"
               style={{ boxShadow: '0 4px 20px rgba(124,58,237,0.25)' }}
             >
               <div className="flex items-center gap-3 mb-3">
@@ -378,10 +379,10 @@ export default function Account() {
             </button>
           ) : (
             <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-5 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#7C3AED]/5 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-br from-pc-premium/5 to-transparent pointer-events-none" />
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-[#7C3AED]/10 flex items-center justify-center flex-shrink-0">
-                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#7C3AED" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <div className="w-10 h-10 rounded-full bg-pc-premium/10 flex items-center justify-center flex-shrink-0">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke={PC_PREMIUM} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M10 2C6.13 2 3 5.13 3 9c0 2.39 1.19 4.5 3 5.74V17a1 1 0 001 1h6a1 1 0 001-1v-2.26C15.81 13.5 17 11.39 17 9c0-3.87-3.13-7-7-7z"/>
                     <path d="M7.5 17.5h5"/>
                   </svg>
@@ -389,14 +390,14 @@ export default function Account() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-[6px]">
                     <p className="text-[14px] font-black text-pc-ink">Chef IA</p>
-                    <span className="text-[9px] font-bold text-[#7C3AED] border border-[#7C3AED]/30 bg-[#7C3AED]/8 px-[8px] py-[2px] rounded-full">Premium</span>
+                    <span className="text-[9px] font-bold text-pc-premium border border-pc-premium/30 bg-pc-premium/8 px-[8px] py-[2px] rounded-full">Premium</span>
                   </div>
                   <p className="text-[12px] text-pc-ink-3 leading-[1.6] mb-4">
                     Un assistant IA dédié à ton restaurant. Pose-lui toutes tes questions sur ta stratégie de contenu, tes hashtags, tes recettes ou ton menu.
                   </p>
                   <button
                     onClick={handleUpgradePlan}
-                    className="text-[12px] font-bold text-white bg-[#7C3AED] px-4 py-[9px] rounded-btn hover:bg-[#6D28D9] transition-colors"
+                    className="text-[12px] font-bold text-white bg-pc-premium px-4 py-[9px] rounded-btn hover:bg-pc-premium-dark transition-colors"
                   >
                     Passer au Premium — 99€/mois
                   </button>
@@ -488,7 +489,7 @@ export default function Account() {
                   </div>
                 </div>
                 {p.soon ? (
-                  <span className="text-[10px] font-bold bg-[#fef3c7] text-[#92400e] px-[10px] py-[4px] rounded-[6px]">Bientôt</span>
+                  <span className="text-[10px] font-bold bg-pc-amber-light text-pc-amber-text px-[10px] py-[4px] rounded-[6px]">Bientôt</span>
                 ) : (
                   <button className="text-[12px] font-bold text-pc-ink border border-pc-border rounded-btn px-4 py-[6px] hover:bg-pc-bg transition-colors">
                     Connecter
@@ -521,12 +522,12 @@ export default function Account() {
         {/* Danger zone */}
         <section>
           <Rule>Zone dangereuse</Rule>
-          <div className="bg-pc-surface border border-[#fecaca] rounded-card px-5 py-5">
+          <div className="bg-pc-surface border border-pc-danger-light rounded-card px-5 py-5">
             <p className="text-[13px] text-pc-ink-2 mb-4 leading-relaxed">
               La suppression de ton compte est définitive et irréversible. Toutes tes données seront effacées.
             </p>
             <button onClick={() => setShowDeleteModal(true)}
-              className="text-[13px] font-bold text-[#ef4444] border border-[#fecaca] rounded-btn px-4 py-[9px] hover:bg-[#fef2f2] transition-colors">
+              className="text-[13px] font-bold text-pc-danger border border-pc-danger-light rounded-btn px-4 py-[9px] hover:bg-pc-danger-bg transition-colors">
               Supprimer mon compte
             </button>
           </div>
@@ -543,13 +544,13 @@ export default function Account() {
               Toutes tes données seront supprimées définitivement et irrémédiablement — posts, idées, historique, compte.
             </p>
             <p className="text-[12px] font-semibold text-pc-ink mb-2">
-              Tape <span className="font-black text-[#ef4444]">SUPPRIMER</span> pour confirmer
+              Tape <span className="font-black text-pc-danger">SUPPRIMER</span> pour confirmer
             </p>
             <input
               value={deleteConfirmText}
               onChange={(e) => setDeleteConfirmText(e.target.value)}
               placeholder="SUPPRIMER"
-              className="w-full bg-pc-bg border border-pc-border rounded-btn px-4 py-[10px] text-[13px] text-pc-ink placeholder:text-pc-ink-4 focus:outline-none focus:border-[#ef4444] transition-all mb-4"
+              className="w-full bg-pc-bg border border-pc-border rounded-btn px-4 py-[10px] text-[13px] text-pc-ink placeholder:text-pc-ink-4 focus:outline-none focus:border-pc-danger transition-all mb-4"
             />
             <div className="flex gap-3">
               <button
@@ -560,7 +561,7 @@ export default function Account() {
               <button
                 onClick={handleDeleteAccount}
                 disabled={deleteLoading || deleteConfirmText !== 'SUPPRIMER'}
-                className="flex-1 py-[11px] rounded-btn bg-[#ef4444] text-white text-[13px] font-bold hover:bg-[#dc2626] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex-1 py-[11px] rounded-btn bg-pc-danger text-white text-[13px] font-bold hover:bg-pc-danger-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {deleteLoading ? 'Suppression...' : 'Supprimer définitivement'}
               </button>
@@ -609,11 +610,11 @@ function UsageMeter({ label, sub, used, max, noBar = false }) {
 
   return (
     <div className={`bg-pc-surface border rounded-elem px-4 py-3
-      ${exhausted ? 'border-[#fca5a5]' : almostOut ? 'border-[#fde68a]' : 'border-pc-border'}`}>
+      ${exhausted ? 'border-[#fca5a5]' : almostOut ? 'border-pc-amber-border' : 'border-pc-border'}`}>
       <div className="flex items-center justify-between mb-1">
         <span className="text-[12px] font-semibold text-pc-ink">{label}</span>
         <span className={`text-[11px] font-bold pc-num
-          ${exhausted ? 'text-[#ef4444]' : almostOut ? 'text-[#d97706]' : 'text-pc-ink-4'}`}>
+          ${exhausted ? 'text-pc-danger' : almostOut ? 'text-pc-amber-dark' : 'text-pc-ink-4'}`}>
           {isUnlimited ? (
             <span className="text-pc-green">∞ illimité</span>
           ) : (
@@ -625,7 +626,7 @@ function UsageMeter({ label, sub, used, max, noBar = false }) {
         <div className="h-[3px] bg-pc-rule rounded-full overflow-hidden mb-1">
           <div
             className={`h-full rounded-full transition-all duration-500
-              ${exhausted ? 'bg-[#ef4444]' : almostOut ? 'bg-[#f59e0b]' : 'bg-pc-green'}`}
+              ${exhausted ? 'bg-pc-danger' : almostOut ? 'bg-pc-amber' : 'bg-pc-green'}`}
             style={{ width: `${pct}%` }}
           />
         </div>

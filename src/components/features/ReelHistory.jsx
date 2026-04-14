@@ -35,7 +35,7 @@ export default function ReelHistory() {
         const dateLabel = date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })
         const score = reel.directive?.virality_score
         const scoreColor =
-          score > 80 ? 'text-pc-green' : score >= 60 ? 'text-[#D97706]' : 'text-pc-ink-3'
+          score > 80 ? 'text-pc-green' : score >= 60 ? 'text-pc-amber-dark' : 'text-pc-ink-3'
 
         return (
           <div

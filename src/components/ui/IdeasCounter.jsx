@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { PC_AMBER, PC_DANGER, PC_GREEN, PC_INK } from '../../utils/colors.js'
 
 export default function IdeasCounter({ used, max }) {
   const navigate = useNavigate()
@@ -10,7 +11,7 @@ export default function IdeasCounter({ used, max }) {
   const exhausted = remaining <= 0
   const almostOut = !exhausted && remaining <= 1
 
-  const barColor  = exhausted ? '#EF4444' : almostOut ? '#F59E0B' : '#1D9E75'
+  const barColor  = exhausted ? PC_DANGER : almostOut ? PC_AMBER : PC_GREEN
   const bgColor   = exhausted ? 'rgba(239,68,68,0.06)' : almostOut ? 'rgba(245,158,11,0.06)' : 'rgba(29,158,117,0.05)'
   const borderColor = exhausted ? 'rgba(239,68,68,0.20)' : almostOut ? 'rgba(245,158,11,0.20)' : 'rgba(0,0,0,0.06)'
 
@@ -23,7 +24,7 @@ export default function IdeasCounter({ used, max }) {
         <div className="flex items-baseline gap-[6px]">
           <span
             className="text-[28px] font-[800] tracking-[-0.04em] leading-none pc-num"
-            style={{ color: exhausted ? '#EF4444' : almostOut ? '#D97706' : '#0A0A0A' }}
+            style={{ color: exhausted ? PC_DANGER : almostOut ? '#D97706' : PC_INK }}
           >
             {used}
           </span>
@@ -49,20 +50,20 @@ export default function IdeasCounter({ used, max }) {
 
       {exhausted ? (
         <div className="flex items-center justify-between">
-          <span className="text-[12px] font-[500]" style={{ color: '#EF4444' }}>
+          <span className="text-[12px] font-[500]" style={{ color: PC_DANGER }}>
             Quota épuisé · réinitialisation lundi
           </span>
           <button
             onClick={() => navigate('/app/account')}
             className="text-[12px] font-[700] text-white px-3 py-[5px] rounded-pill transition-colors"
-            style={{ background: '#0A0A0A' }}
+            style={{ background: PC_INK }}
           >
             Upgrade
           </button>
         </div>
       ) : almostOut ? (
         <div className="flex items-center justify-between">
-          <span className="text-[12px] font-[500] text-[#D97706]">Plus qu&apos;une idée cette semaine</span>
+          <span className="text-[12px] font-[500] text-pc-amber-dark">Plus qu&apos;une idée cette semaine</span>
           <button
             onClick={() => navigate('/app/account')}
             className="text-[12px] font-[600] text-pc-green hover:opacity-70 transition-opacity"

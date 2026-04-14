@@ -57,7 +57,7 @@ export default function ViralityTips({ axes }) {
           <li key={i} className="flex items-start gap-2">
             <span
               className={`mt-0.5 text-[10px] font-black uppercase tracking-[0.08em] shrink-0 ${
-                tip.severity === 'high' ? 'text-[#DC2626]' : 'text-[#D97706]'
+                tip.severity === 'high' ? 'text-pc-danger-dark' : 'text-pc-amber-dark'
               }`}
             >
               {tip.axis}

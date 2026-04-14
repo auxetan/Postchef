@@ -11,7 +11,7 @@ export default function AuthShell({
   return (
     <div className="min-h-screen bg-white hero-mesh flex items-center justify-center px-5 py-10">
       <div className="w-full max-w-[1040px] grid lg:grid-cols-[1.05fr_0.95fr] gap-6 items-stretch">
-        <section className="hidden lg:flex flex-col justify-between rounded-[32px] border border-pc-border bg-[#0A0A0A] text-white p-10 overflow-hidden relative">
+        <section className="hidden lg:flex flex-col justify-between rounded-[32px] border border-pc-border bg-pc-ink text-white p-10 overflow-hidden relative">
           <div className="absolute inset-0 opacity-80 pointer-events-none" style={{
             background: 'radial-gradient(circle at top right, rgba(29,158,117,0.35), transparent 35%), radial-gradient(circle at bottom left, rgba(255,255,255,0.08), transparent 28%)',
           }} />

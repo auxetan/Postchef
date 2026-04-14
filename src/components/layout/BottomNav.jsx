@@ -3,6 +3,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import useAppStore from '../../store/useAppStore.js'
 import { canAccess } from '../../utils/plans.js'
+import { PC_GREEN, PC_INK_4, PC_PREMIUM } from '../../utils/colors.js'
 
 // ── Onglets gauche ────────────────────────────────────────────────────────────
 const TABS_LEFT = [
@@ -105,12 +106,12 @@ function NavTab({ tab }) {
               transition={{ type: 'spring', stiffness: 380, damping: 30 }}
             />
           )}
-          <span className="relative z-10" style={{ color: isActive ? '#1D9E75' : '#A3A3A3' }}>
+          <span className="relative z-10" style={{ color: isActive ? PC_GREEN : PC_INK_4 }}>
             {tab.icon(isActive)}
           </span>
           <span
             className="relative z-10 text-[9.5px] font-[700] tracking-[0.02em] whitespace-nowrap"
-            style={{ color: isActive ? '#1D9E75' : '#A3A3A3' }}
+            style={{ color: isActive ? PC_GREEN : PC_INK_4 }}
           >
             {tab.label}
           </span>
@@ -183,13 +184,13 @@ export default function BottomNav() {
                     border: hasChatIA ? 'none' : '1.5px solid rgba(124,58,237,0.25)',
                   }}
                 >
-                  <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke={hasChatIA ? 'white' : '#7C3AED'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke={hasChatIA ? 'white' : PC_PREMIUM} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M10 2C6.13 2 3 5.13 3 9c0 2.39 1.19 4.5 3 5.74V17a1 1 0 001 1h6a1 1 0 001-1v-2.26C15.81 13.5 17 11.39 17 9c0-3.87-3.13-7-7-7z"/>
                   </svg>
                 </div>
                 <div>
                   <p className="text-[13px] font-bold text-pc-ink leading-none">Chef IA</p>
-                  {!hasChatIA && <p className="text-[10px] text-[#7C3AED] mt-[2px]">Premium</p>}
+                  {!hasChatIA && <p className="text-[10px] text-pc-premium mt-[2px]">Premium</p>}
                 </div>
               </button>
 
@@ -205,7 +206,7 @@ export default function BottomNav() {
                     onClick={() => { setShowPlus(false); navigate(item.to) }}
                     aria-label={item.label}
                   >
-                    <span style={{ color: isActive ? '#1D9E75' : '#6B7280' }}>{item.icon}</span>
+                    <span style={{ color: isActive ? PC_GREEN : '#6B7280' }}>{item.icon}</span>
                     <span className={`text-[13px] font-semibold ${isActive ? 'text-pc-green' : 'text-pc-ink'}`}>{item.label}</span>
                   </button>
                 )
@@ -246,19 +247,19 @@ export default function BottomNav() {
                 <div
                   className="w-11 h-11 rounded-full flex items-center justify-center transition-all duration-150"
                   style={{
-                    background: isActive ? '#7C3AED' : hasChatIA ? 'rgba(124,58,237,0.88)' : 'rgba(124,58,237,0.10)',
+                    background: isActive ? PC_PREMIUM : hasChatIA ? 'rgba(124,58,237,0.88)' : 'rgba(124,58,237,0.10)',
                     boxShadow: (isActive || hasChatIA) ? '0 4px 16px rgba(124,58,237,0.35)' : 'none',
                     border: (!isActive && !hasChatIA) ? '1.5px solid rgba(124,58,237,0.25)' : 'none',
                   }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={hasChatIA || isActive ? 'white' : '#7C3AED'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={hasChatIA || isActive ? 'white' : PC_PREMIUM} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M10 2C6.13 2 3 5.13 3 9c0 2.39 1.19 4.5 3 5.74V17a1 1 0 001 1h6a1 1 0 001-1v-2.26C15.81 13.5 17 11.39 17 9c0-3.87-3.13-7-7-7z"/>
                     <path d="M7.5 17.5h5"/>
                   </svg>
                 </div>
                 <span
                   className="text-[9.5px] font-[700] tracking-[0.02em] whitespace-nowrap"
-                  style={{ color: isActive ? '#7C3AED' : hasChatIA ? '#7C3AED' : '#A3A3A3' }}
+                  style={{ color: isActive ? PC_PREMIUM : hasChatIA ? PC_PREMIUM : PC_INK_4 }}
                 >
                   Chef IA
                 </span>
@@ -281,7 +282,7 @@ export default function BottomNav() {
             aria-label="Plus"
             aria-expanded={showPlus}
           >
-            <span style={{ color: (showPlus || plusActive) ? '#1D9E75' : '#A3A3A3' }}>
+            <span style={{ color: (showPlus || plusActive) ? PC_GREEN : PC_INK_4 }}>
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
                 <circle cx="5" cy="10" r="1.5" fill="currentColor"/>
                 <circle cx="10" cy="10" r="1.5" fill="currentColor"/>
@@ -290,7 +291,7 @@ export default function BottomNav() {
             </span>
             <span
               className="text-[9.5px] font-[700] tracking-[0.02em] whitespace-nowrap"
-              style={{ color: (showPlus || plusActive) ? '#1D9E75' : '#A3A3A3' }}
+              style={{ color: (showPlus || plusActive) ? PC_GREEN : PC_INK_4 }}
             >
               Plus
             </span>

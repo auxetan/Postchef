@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import useAppStore from '../../store/useAppStore.js'
 import useAuth from '../../hooks/useAuth.js'
+import { PC_GREEN } from '../../utils/colors.js'
 
 function AuthLoader({ label = 'Chargement de ton espace...' }) {
   return (
@@ -8,7 +9,7 @@ function AuthLoader({ label = 'Chargement de ton espace...' }) {
       <div className="max-w-sm w-full text-center">
         <div
           className="w-12 h-12 rounded-full mx-auto mb-4 animate-spin"
-          style={{ border: '2px solid #E8E8E6', borderTopColor: '#1D9E75' }}
+          style={{ border: '2px solid #E8E8E6', borderTopColor: PC_GREEN }}
         />
         <p className="text-[15px] font-bold text-pc-ink">{label}</p>
         <p className="text-[12px] text-pc-ink-4 mt-1">PostChef prépare ton espace sécurisé.</p>

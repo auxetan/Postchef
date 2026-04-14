@@ -12,7 +12,7 @@ export default function Button({
 
   const variants = {
     primary: 'bg-pc-green text-white hover:bg-pc-green-dark px-7 py-[15px]',
-    ghost: 'bg-white text-[#374151] border-[1.5px] border-pc-border hover:bg-pc-bg px-7 py-[15px]',
+    ghost: 'bg-white text-pc-ink-2 border-[1.5px] border-pc-border hover:bg-pc-bg px-7 py-[15px]',
   }
 
   return (

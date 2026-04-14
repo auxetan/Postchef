@@ -10,6 +10,7 @@ import useAppStore from '../../store/useAppStore.js'
 import useToastStore from '../../store/useToastStore.js'
 import { getFeature } from '../../utils/plans.js'
 import { generateAiImage, resolveImageSrc } from '../../utils/serverApi.js'
+import { PC_GREEN } from '../../utils/colors.js'
 
 const STYLES = [
   { id: 'overhead', label: 'Vue du dessus', desc: 'Flat lay, fond bois' },
@@ -77,7 +78,7 @@ export default function DishPhotoGenerator({ restaurantName, menuDishes = [] }) 
       {/* Header */}
       <div className="px-4 py-3 border-b border-pc-border flex items-center gap-3">
         <div className="w-8 h-8 rounded-[10px] bg-pc-green-light flex items-center justify-center">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round">
             <rect x="1" y="3" width="14" height="11" rx="2" />
             <circle cx="5.5" cy="7.5" r="1.5" />
             <path d="M15 10l-3-3-4 4-2-2-3 3" />
@@ -153,7 +154,7 @@ export default function DishPhotoGenerator({ restaurantName, menuDishes = [] }) 
         {/* Quota restant (Pro Annual avec DALL-E) */}
         {isRealDalle && monthlyMax !== Infinity && (
           <div className={`flex items-center justify-between text-[11px] font-medium px-1
-            ${dalleQuotaReached ? 'text-[#ef4444]' : 'text-pc-ink-4'}`}>
+            ${dalleQuotaReached ? 'text-pc-danger' : 'text-pc-ink-4'}`}>
             <span>{dishPhotoUsed}/{monthlyMax} photos ce mois</span>
             {dalleQuotaReached && (
               <button onClick={() => navigate('/app/account')} className="font-bold text-pc-green underline">

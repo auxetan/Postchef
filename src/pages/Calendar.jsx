@@ -3,17 +3,18 @@ import useAppStore from '../store/useAppStore.js'
 import useToastStore from '../store/useToastStore.js'
 import PlanningModal from '../components/ui/PlanningModal.jsx'
 import EmptyState from '../components/ui/EmptyState.jsx'
+import { PC_INK_4 } from '../utils/colors.js'
 
 const DAY_HEADERS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 const MONTH_NAMES = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
 const DAY_INDEX = { Lundi: 0, Mardi: 1, Mercredi: 2, Jeudi: 3, Vendredi: 4, Samedi: 5, Dimanche: 6 }
 
 const STATUS_COLOR = {
-  idee:             'bg-[#f3f4f6] text-[#374151] border-[#e5e7eb]',
-  'a-tourner':      'bg-[#fef3c7] text-[#92400e] border-[#fde68a]',
-  'pret-a-publier': 'bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]',
+  idee:             'bg-pc-bg text-pc-ink-2 border-pc-border',
+  'a-tourner':      'bg-pc-amber-light text-pc-amber-text border-pc-amber-border',
+  'pret-a-publier': 'bg-pc-blue-light text-pc-blue-dark border-pc-blue-border',
   publie:           'bg-pc-green-light text-pc-green-dark border-pc-green-mid',
-  brouillon:        'bg-[#f3f4f6] text-[#374151] border-[#e5e7eb]',
+  brouillon:        'bg-pc-bg text-pc-ink-2 border-pc-border',
 }
 const STATUS_LABEL = {
   idee:             'Idée',
@@ -32,8 +33,8 @@ const STATUS_NEXT  = {
 
 const PLATFORM_PILL = {
   Instagram: 'bg-pc-green-light text-pc-green-dark',
-  TikTok:    'bg-[#f3f4f6] text-[#374151]',
-  Facebook:  'bg-[#eff6ff] text-[#1d4ed8]',
+  TikTok:    'bg-pc-bg text-pc-ink-2',
+  Facebook:  'bg-pc-blue-light text-pc-blue-dark',
 }
 
 const STATUS_FILTERS = ['Tous', 'Idée', 'À tourner', 'Prêt', 'Publié']
@@ -359,7 +360,7 @@ function PostList({ posts, expandedPost, setExpandedPost, showDay, storePostIds,
       <EmptyState
         compact
         icon={
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#A3A3A3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={PC_INK_4} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="4" width="16" height="14" rx="3"/>
             <path d="M6.5 2.5V5.5M13.5 2.5V5.5M2 8.5H18"/>
           </svg>
@@ -460,7 +461,7 @@ function PostList({ posts, expandedPost, setExpandedPost, showDay, storePostIds,
                   <div className="pt-1 border-t border-pc-rule">
                     <button
                       onClick={(e) => { e.stopPropagation(); onDelete(post.id) }}
-                      className="text-[12px] font-semibold text-[#ef4444] border border-[#fecaca] rounded-pill px-3 py-[5px] hover:bg-[#fef2f2] transition-colors flex items-center gap-1"
+                      className="text-[12px] font-semibold text-pc-danger border border-pc-danger-light rounded-pill px-3 py-[5px] hover:bg-pc-danger-bg transition-colors flex items-center gap-1"
                     >
                       <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                         <path d="M1.5 3h8M4 3V2h3v1M9 3l-.7 6H2.7L2 3" />

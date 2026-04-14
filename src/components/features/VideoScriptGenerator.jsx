@@ -5,6 +5,7 @@ import { getFeature } from '../../utils/plans.js'
 import { ShotIllustration } from '../ui/ShotGuide.jsx'
 import FilmingMode from './FilmingMode.jsx'
 import { requestClaude } from '../../utils/serverApi.js'
+import { PC_GREEN } from '../../utils/colors.js'
 
 // ── Script generation (fallback local) ─────────────────────────────────────
 function generateScript(idea) {
@@ -178,7 +179,7 @@ Format durée : "2-3s", "5-8s", etc. Camera : "📱 Portrait" ou "📷 Paysage".
       <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-8 text-center">
         <div
           className="w-10 h-10 rounded-full mx-auto mb-4 animate-spin"
-          style={{ border: '2px solid #E8E8E6', borderTopColor: '#1D9E75' }}
+          style={{ border: '2px solid #E8E8E6', borderTopColor: PC_GREEN }}
         />
         <div className="text-[14px] font-bold text-pc-ink">
           Création du script...

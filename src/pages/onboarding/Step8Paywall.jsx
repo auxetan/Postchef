@@ -132,23 +132,23 @@ export default function Step8Paywall({ onNext }) {
             onClick={() => setSelected('premium')}
             className={`relative rounded-card border-[1.5px] cursor-pointer transition-all duration-150 px-5 py-5 overflow-hidden ${
               selected === 'premium'
-                ? 'border-[#7C3AED] ring-2 ring-[#7C3AED]/15 bg-[#7C3AED]/[0.03]'
-                : 'border-pc-border hover:border-[#7C3AED]/40 bg-pc-surface'
+                ? 'border-pc-premium ring-2 ring-pc-premium/15 bg-pc-premium/[0.03]'
+                : 'border-pc-border hover:border-pc-premium/40 bg-pc-surface'
             }`}
           >
             <div className="flex justify-between items-start mb-3">
               <div>
                 <div className="flex items-center gap-2 mb-[2px]">
                   <div className="text-[13px] font-semibold text-pc-ink-3">Premium</div>
-                  <span className="text-[9px] font-bold text-[#7C3AED] bg-[#7C3AED]/10 px-2 py-[2px] rounded-full">Chef IA inclus</span>
+                  <span className="text-[9px] font-bold text-pc-premium bg-pc-premium/10 px-2 py-[2px] rounded-full">Chef IA inclus</span>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-[30px] font-black tracking-[-0.04em] leading-none text-[#7C3AED]">99€</span>
+                  <span className="text-[30px] font-black tracking-[-0.04em] leading-none text-pc-premium">99€</span>
                   <span className="text-[13px] font-normal text-pc-ink-4">/mois</span>
                 </div>
               </div>
               <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1 transition-all border-[1.5px] ${
-                selected === 'premium' ? 'bg-[#7C3AED] border-[#7C3AED]' : 'border-pc-border'
+                selected === 'premium' ? 'bg-pc-premium border-pc-premium' : 'border-pc-border'
               }`}>
                 {selected === 'premium' && (
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -160,7 +160,7 @@ export default function Step8Paywall({ onNext }) {
             <div className="space-y-[6px]">
               {PREMIUM_FEATURES.map((f) => (
                 <div key={f} className="flex items-center gap-2 text-[12px]">
-                  <div className="w-[5px] h-[5px] rounded-full bg-[#7C3AED] flex-shrink-0" />
+                  <div className="w-[5px] h-[5px] rounded-full bg-pc-premium flex-shrink-0" />
                   <span className="text-pc-ink-2">{f}</span>
                 </div>
               ))}

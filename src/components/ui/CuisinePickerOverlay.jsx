@@ -138,7 +138,7 @@ export default function CuisinePickerOverlay({ selected = [], onChange, onClose 
                       key={c}
                       onClick={() => toggle(c)}
                       className={`px-4 py-[9px] rounded-pill border-[1.5px] text-[13px] font-medium transition-all
-                        ${local.includes(c) ? 'bg-pc-green text-white border-pc-green' : 'bg-white text-[#374151] border-pc-border hover:border-pc-green-mid'}`}
+                        ${local.includes(c) ? 'bg-pc-green text-white border-pc-green' : 'bg-white text-pc-ink-2 border-pc-border hover:border-pc-green-mid'}`}
                     >
                       {c}
                     </button>
@@ -156,7 +156,7 @@ export default function CuisinePickerOverlay({ selected = [], onChange, onClose 
                       key={c}
                       onClick={() => toggle(c)}
                       className={`px-4 py-[9px] rounded-pill border-[1.5px] text-[13px] font-medium transition-all duration-100
-                        ${local.includes(c) ? 'bg-pc-green text-white border-pc-green' : 'bg-white text-[#374151] border-pc-border hover:border-pc-green-mid'}`}
+                        ${local.includes(c) ? 'bg-pc-green text-white border-pc-green' : 'bg-white text-pc-ink-2 border-pc-border hover:border-pc-green-mid'}`}
                     >
                       {c}
                     </button>

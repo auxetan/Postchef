@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import { requestClaude } from '../../utils/serverApi.js'
+import { PC_GREEN } from '../../utils/colors.js'
 
 const MOCK_RESULT = {
   dishes: ['Tartare de bœuf', 'Saint-Jacques poêlées', 'Risotto aux truffes', 'Moelleux chocolat'],
@@ -89,7 +90,7 @@ Règles :
             ${dragging ? 'border-pc-green bg-pc-green-light' : 'border-pc-border bg-pc-bg hover:border-pc-green-mid hover:bg-pc-green-light/30'}`}
         >
           <div className="w-12 h-12 rounded-[14px] bg-pc-green-light mx-auto mb-3 flex items-center justify-center">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round">
               <path d="M11 14V4M7 8l4-4 4 4" />
               <path d="M3 17v1a2 2 0 002 2h12a2 2 0 002-2v-1" />
             </svg>
@@ -141,7 +142,7 @@ Règles :
               <div className="flex items-center gap-3 py-2">
                 <div
                   className="w-5 h-5 rounded-full flex-shrink-0 animate-spin"
-                  style={{ border: '2.5px solid #E1F5EE', borderTopColor: '#1D9E75' }}
+                  style={{ border: '2.5px solid #E1F5EE', borderTopColor: PC_GREEN }}
                 />
                 <span className="text-[13px] text-pc-ink-3">Chef analyse ta carte...</span>
               </div>
@@ -165,7 +166,7 @@ Règles :
                             key={d}
                             className={`text-[11px] px-2 py-[3px] rounded-pill font-medium ${
                               result.starDish === d
-                                ? 'bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]'
+                                ? 'bg-pc-amber-light text-pc-amber-text border border-pc-amber-border'
                                 : 'bg-pc-green-light text-pc-green-dark'
                             }`}
                           >

@@ -45,7 +45,7 @@ export default function Login() {
       }
     >
       {!isConfigured && isDemoMode && (
-        <div className="rounded-card border border-[#FDE68A] bg-[#FFFBEB] px-4 py-3 text-[12px] text-[#92400E] leading-[1.6]">
+        <div className="rounded-card border border-pc-amber-border bg-pc-amber-light px-4 py-3 text-[12px] text-pc-amber-text leading-[1.6]">
           Supabase n’est pas encore configuré. Le formulaire fonctionne en mode démo local pour continuer le chantier sans bloquer l’app.
         </div>
       )}
@@ -81,7 +81,7 @@ export default function Login() {
         </div>
 
         {error && (
-          <div className="rounded-elem border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-[12px] text-[#b91c1c]">
+          <div className="rounded-elem border border-pc-danger-light bg-pc-danger-bg px-4 py-3 text-[12px] text-pc-danger-dark">
             {error}
           </div>
         )}

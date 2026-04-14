@@ -6,12 +6,13 @@ import QuickCapture from '../components/features/QuickCapture.jsx'
 import FeatureLock from '../components/ui/FeatureLock.jsx'
 import useAppStore from '../store/useAppStore.js'
 import useFeatureAccess from '../hooks/useFeatureAccess.js'
+import { PC_AMBER, PC_GREEN } from '../utils/colors.js'
 
 const STATUS_DOT = {
   'idee':            '#D4D4D4',
-  'a-tourner':       '#F59E0B',
+  'a-tourner':       PC_AMBER,
   'pret-a-publier':  '#3B82F6',
-  'publie':          '#1D9E75',
+  'publie':          PC_GREEN,
   'brouillon':       '#D4D4D4',
 }
 const STATUS_LABEL = {
@@ -23,15 +24,15 @@ const STATUS_LABEL = {
 }
 const STATUS_BG = {
   'idee':            'bg-[#F5F5F5] text-pc-ink-4',
-  'a-tourner':       'bg-[#FEF3C7] text-[#92400E]',
-  'pret-a-publier':  'bg-[#EFF6FF] text-[#1D4ED8]',
+  'a-tourner':       'bg-pc-amber-light text-pc-amber-text',
+  'pret-a-publier':  'bg-pc-blue-light text-pc-blue-dark',
   'publie':          'bg-[#DCFCE7] text-[#14532D]',
   'brouillon':       'bg-[#F5F5F5] text-pc-ink-4',
 }
 const PLATFORM_COLOR = {
   Instagram: 'text-pc-green',
   TikTok:    'text-pc-ink-2',
-  Facebook:  'text-[#2563eb]',
+  Facebook:  'text-pc-blue',
 }
 
 const containerVariants = {
@@ -89,7 +90,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-[6px] mt-2">
                   <div
                     className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: '#F59E0B', boxShadow: '0 0 0 2px rgba(245,158,11,0.2)' }}
+                    style={{ backgroundColor: PC_AMBER, boxShadow: '0 0 0 2px rgba(245,158,11,0.2)' }}
                   />
                   <span className="text-[12px] text-pc-ink-3 font-[600]">
                     {postsATourner} post{postsATourner > 1 ? 's' : ''} en attente
@@ -135,7 +136,7 @@ export default function Dashboard() {
               onClick={() => navigate('/app/calendar')}
             >
               <div className="w-8 h-8 rounded-[10px] bg-pc-green-light flex items-center justify-center mb-4">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1D9E75" strokeWidth="2" strokeLinecap="round">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke={PC_GREEN} strokeWidth="2" strokeLinecap="round">
                   <rect x="1" y="3" width="14" height="12" rx="2.5"/>
                   <path d="M5 1v3M11 1v3M1 7h14"/>
                 </svg>
@@ -256,7 +257,7 @@ export default function Dashboard() {
               onClick={() => navigate('/app/ideas')}
             >
               <div className="w-10 h-10 rounded-full bg-pc-green/10 flex items-center justify-center mx-auto mb-3">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="2" strokeLinecap="round">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={PC_GREEN} strokeWidth="2" strokeLinecap="round">
                   <path d="M10 2a6 6 0 014.24 10.24V14a1 1 0 01-1 1H6.76a1 1 0 01-1-1v-1.76A6 6 0 0110 2z"/>
                   <path d="M7.5 16.5h5M8 18.5h4"/>
                 </svg>

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { LogoWordmark } from '../components/ui/LogoMark.jsx'
+import { PC_AMBER, PC_GREEN } from '../utils/colors.js'
 
 const DEMO_STEPS = [
   {
@@ -55,9 +56,9 @@ const DEMO_STEPS = [
     visual: (
       <div className="bg-white rounded-[16px] border border-pc-border overflow-hidden">
         {[
-          { day: 'LUN 14', title: 'Touristes vs locaux', platform: 'TikTok', color: '#1D9E75' },
+          { day: 'LUN 14', title: 'Touristes vs locaux', platform: 'TikTok', color: PC_GREEN },
           { day: 'MER 16', title: 'Pasta maison · stats', platform: 'Instagram', color: '#3B82F6' },
-          { day: 'VEN 18', title: 'Terrasse midi', platform: 'Instagram', color: '#F59E0B' },
+          { day: 'VEN 18', title: 'Terrasse midi', platform: 'Instagram', color: PC_AMBER },
         ].map((p, i) => (
           <div key={i} className={`flex items-center gap-3 px-4 py-3 ${i > 0 ? 'border-t border-pc-rule' : ''}`}>
             <div className="w-[5px] h-[5px] rounded-full flex-shrink-0" style={{ background: p.color }} />
@@ -74,7 +75,7 @@ const DEMO_STEPS = [
     title: 'Studio génère ton Reel',
     desc: 'Importe ton clip, Chef IA écrit le script, Monte et sous-titre. Prêt en 60 secondes.',
     visual: (
-      <div className="bg-[#0A0A0A] rounded-[16px] p-4">
+      <div className="bg-pc-ink rounded-[16px] p-4">
         <div className="text-[9px] text-white/40 font-[700] uppercase tracking-wider mb-2">Script généré</div>
         <div className="text-[11px] text-white/80 font-[500] leading-[1.7] mb-3">
           "38 personnes ont commandé cette pasta cette semaine. Voici pourquoi elle revient toutes les tables..."

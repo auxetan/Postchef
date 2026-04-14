@@ -2,7 +2,7 @@ import useToastStore from '../../store/useToastStore.js'
 
 const TYPE_STYLES = {
   success: 'bg-pc-ink text-white',
-  error:   'bg-[#ef4444] text-white',
+  error:   'bg-pc-danger text-white',
   info:    'bg-pc-green text-white',
 }
 

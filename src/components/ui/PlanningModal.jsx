@@ -146,7 +146,7 @@ export default function PlanningModal({ idea, defaultDate, onClose }) {
         {/* Quota calendrier */}
         {weekMax !== Infinity && date && (
           <div className={`text-[11px] font-medium mb-4 flex items-center justify-between
-            ${weekQuotaReached ? 'text-[#ef4444]' : 'text-pc-ink-4'}`}>
+            ${weekQuotaReached ? 'text-pc-danger' : 'text-pc-ink-4'}`}>
             <span>
               {weekQuotaReached
                 ? `Limite atteinte : ${weekMax} posts/semaine sur ce plan`

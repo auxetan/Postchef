@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import useAppStore from '../../store/useAppStore.js'
+import { PC_GREEN } from '../../utils/colors.js'
 
 export default function Step6Loading({ onNext }) {
   const restaurant = useAppStore((s) => s.onboarding.restaurant)
@@ -46,12 +47,12 @@ export default function Step6Loading({ onNext }) {
         <div className="relative w-[72px] h-[72px]">
           <div
             className="absolute inset-0 rounded-full animate-spin"
-            style={{ border: '4px solid #E1F5EE', borderTopColor: '#1D9E75' }}
+            style={{ border: '4px solid #E1F5EE', borderTopColor: PC_GREEN }}
           />
           <div className="absolute inset-0 flex items-center justify-center">
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-              <circle cx="14" cy="10" r="5" fill="#1D9E75"/>
-              <path d="M4 26c0-5.52 4.48-10 10-10s10 4.48 10 10" stroke="#1D9E75" strokeWidth="2" strokeLinecap="round"/>
+              <circle cx="14" cy="10" r="5" fill={PC_GREEN}/>
+              <path d="M4 26c0-5.52 4.48-10 10-10s10 4.48 10 10" stroke={PC_GREEN} strokeWidth="2" strokeLinecap="round"/>
             </svg>
           </div>
         </div>

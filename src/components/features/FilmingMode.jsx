@@ -4,6 +4,7 @@
  * compte le temps à la place du resto, indique quand passer à l'étape suivante.
  */
 import { useState, useEffect, useRef } from 'react'
+import { PC_DANGER, PC_GREEN } from '../../utils/colors.js'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -26,7 +27,7 @@ function CountdownRing({ total, remaining, onTap }) {
         <circle cx="28" cy="28" r={r} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="3.5"/>
         <circle
           cx="28" cy="28" r={r} fill="none"
-          stroke={urgent ? '#ef4444' : '#1D9E75'}
+          stroke={urgent ? PC_DANGER : PC_GREEN}
           strokeWidth="3.5"
           strokeDasharray={circ}
           strokeDashoffset={offset}
@@ -34,7 +35,7 @@ function CountdownRing({ total, remaining, onTap }) {
           style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s' }}
         />
       </svg>
-      <span className={`font-black text-[22px] z-10 leading-none ${urgent ? 'text-[#ef4444]' : 'text-white'}`}>
+      <span className={`font-black text-[22px] z-10 leading-none ${urgent ? 'text-pc-danger' : 'text-white'}`}>
         {remaining}
       </span>
     </button>
@@ -42,7 +43,7 @@ function CountdownRing({ total, remaining, onTap }) {
 }
 
 // ── Corner brackets div helper ────────────────────────────────────────────────
-function Brackets({ sz = 22, color = '#1D9E75', opacity = 1 }) {
+function Brackets({ sz = 22, color = PC_GREEN, opacity = 1 }) {
   const s = { position: 'absolute', background: color, opacity }
   return (
     <>
@@ -67,7 +68,7 @@ function FrameGuide({ stepNum }) {
   if (stepNum === 1) return (
     // Plan large — grand rectangle, coins en bas
     <div className="absolute rounded-[14px]" style={{ top: '10%', left: '4%', right: '4%', height: '58%' }}>
-      <div className="absolute inset-0 rounded-[14px] border border-[#1D9E75] opacity-50" />
+      <div className="absolute inset-0 rounded-[14px] border border-pc-green opacity-50" />
       <Brackets sz={28} />
     </div>
   )
@@ -75,13 +76,13 @@ function FrameGuide({ stepNum }) {
   if (stepNum === 2) return (
     // Plan centré — cadre centré + croix de mise au point
     <div className="absolute rounded-[12px]" style={{ top: '16%', left: '12%', right: '12%', height: '54%' }}>
-      <div className="absolute inset-0 rounded-[12px] border border-[#1D9E75] opacity-50" />
+      <div className="absolute inset-0 rounded-[12px] border border-pc-green opacity-50" />
       <Brackets sz={24} />
       {/* Croix centrale */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div style={{ position: 'absolute', width: 32, height: 1.5, background: '#1D9E75', opacity: 0.6 }} />
-        <div style={{ position: 'absolute', width: 1.5, height: 32, background: '#1D9E75', opacity: 0.6 }} />
-        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#1D9E75', opacity: 0.8 }} />
+        <div style={{ position: 'absolute', width: 32, height: 1.5, background: PC_GREEN, opacity: 0.6 }} />
+        <div style={{ position: 'absolute', width: 1.5, height: 32, background: PC_GREEN, opacity: 0.6 }} />
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: PC_GREEN, opacity: 0.8 }} />
       </div>
     </div>
   )
@@ -95,12 +96,12 @@ function FrameGuide({ stepNum }) {
       {/* Zoom lines depuis les coins de l'écran */}
       <svg className="absolute" style={{ top: '-80%', left: '-25%', width: '150%', height: '160%', overflow: 'visible' }}
         viewBox="0 0 150 160" fill="none">
-        <line x1="0" y1="0" x2="30" y2="60" stroke="#1D9E75" strokeWidth="0.8" strokeOpacity="0.3"/>
-        <line x1="150" y1="0" x2="120" y2="60" stroke="#1D9E75" strokeWidth="0.8" strokeOpacity="0.3"/>
+        <line x1="0" y1="0" x2="30" y2="60" stroke={PC_GREEN} strokeWidth="0.8" strokeOpacity="0.3"/>
+        <line x1="150" y1="0" x2="120" y2="60" stroke={PC_GREEN} strokeWidth="0.8" strokeOpacity="0.3"/>
       </svg>
       {/* Point central */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#1D9E75', opacity: 0.7 }} />
+        <div style={{ width: 8, height: 8, borderRadius: '50%', background: PC_GREEN, opacity: 0.7 }} />
       </div>
     </div>
   )
@@ -108,7 +109,7 @@ function FrameGuide({ stepNum }) {
   if (stepNum === 4) return (
     // Résultat — ovale arrondi + brackets
     <div className="absolute rounded-[80px]" style={{ top: '18%', left: '8%', right: '8%', height: '54%' }}>
-      <div className="absolute inset-0 rounded-[80px] border border-[#1D9E75] opacity-55" />
+      <div className="absolute inset-0 rounded-[80px] border border-pc-green opacity-55" />
       <Brackets sz={20} />
       {/* Icône plat au centre */}
       <div className="absolute inset-0 flex items-center justify-center">
@@ -132,9 +133,9 @@ function FrameGuide({ stepNum }) {
       <div className="absolute rounded-[10px]" style={{ bottom: '8%', left: '8%', right: '8%', height: '13%', border: '2px solid #1D9E75', opacity: 0.85 }}>
         {/* Arrow inside CTA zone */}
         <div className="absolute inset-0 flex items-center justify-center gap-2">
-          <div style={{ width: 28, height: 2, background: '#1D9E75', borderRadius: 1, opacity: 0.7 }} />
+          <div style={{ width: 28, height: 2, background: PC_GREEN, borderRadius: 1, opacity: 0.7 }} />
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M9 3L12 6L9 9M1 6h11" stroke="#1D9E75" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M9 3L12 6L9 9M1 6h11" stroke={PC_GREEN} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
       </div>
@@ -268,8 +269,8 @@ export default function FilmingMode({ script, onClose }) {
             <div className="space-y-[10px] mb-8">
               {script.map((s) => (
                 <div key={s.step} className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-[#1D9E75]/20 border border-[#1D9E75]/40 flex items-center justify-center flex-shrink-0">
-                    <span className="text-[10px] font-black text-[#1D9E75]">{s.step}</span>
+                  <div className="w-6 h-6 rounded-full bg-pc-green/20 border border-pc-green/40 flex items-center justify-center flex-shrink-0">
+                    <span className="text-[10px] font-black text-pc-green">{s.step}</span>
                   </div>
                   <span className="text-[13px] text-white/80 font-medium flex-1">{s.action}</span>
                   <span className="text-[11px] text-white/35 font-medium">{s.duration}</span>
@@ -289,7 +290,7 @@ export default function FilmingMode({ script, onClose }) {
           <div className="px-6 pb-14">
             <button
               onClick={startFilming}
-              className="w-full bg-[#1D9E75] text-white font-black text-[15px] py-[15px] rounded-btn hover:bg-[#0F6E56] transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-pc-green text-white font-black text-[15px] py-[15px] rounded-btn hover:bg-pc-green-dark transition-colors flex items-center justify-center gap-2"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <polygon points="3,1 15,8 3,15" fill="white"/>
@@ -331,7 +332,7 @@ export default function FilmingMode({ script, onClose }) {
             ) : (
               <button
                 onClick={startCountdown}
-                className="w-14 h-14 rounded-full border-2 border-white/25 flex items-center justify-center hover:border-[#1D9E75] transition-colors flex-shrink-0"
+                className="w-14 h-14 rounded-full border-2 border-white/25 flex items-center justify-center hover:border-pc-green transition-colors flex-shrink-0"
               >
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.8" strokeLinecap="round">
                   <circle cx="9" cy="10" r="7"/>
@@ -380,7 +381,7 @@ export default function FilmingMode({ script, onClose }) {
             {phase === 'ready' ? (
               <button
                 onClick={startCountdown}
-                className="w-full bg-[#1D9E75] text-white font-black text-[14px] py-[14px] rounded-btn flex items-center justify-center gap-2 hover:bg-[#0F6E56] transition-colors"
+                className="w-full bg-pc-green text-white font-black text-[14px] py-[14px] rounded-btn flex items-center justify-center gap-2 hover:bg-pc-green-dark transition-colors"
               >
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <polygon points="2,1 13,7 2,13" fill="white"/>
@@ -442,7 +443,7 @@ export default function FilmingMode({ script, onClose }) {
                   Prochaine étape
                 </div>
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-7 h-7 rounded-full bg-[#1D9E75] flex items-center justify-center flex-shrink-0">
+                  <div className="w-7 h-7 rounded-full bg-pc-green flex items-center justify-center flex-shrink-0">
                     <span className="text-[12px] font-black text-white">{nextStep.step}</span>
                   </div>
                   <span className="text-white font-black text-[16px] tracking-[-0.02em] flex-1">{nextStep.action}</span>
@@ -452,7 +453,7 @@ export default function FilmingMode({ script, onClose }) {
 
                 {/* Tip */}
                 <div className="mt-3 pl-10">
-                  <p className="text-[11px] text-[#1D9E75] leading-[1.5]">💡 {nextStep.tip}</p>
+                  <p className="text-[11px] text-pc-green leading-[1.5]">💡 {nextStep.tip}</p>
                 </div>
               </div>
             )}
@@ -462,14 +463,14 @@ export default function FilmingMode({ script, onClose }) {
             {isLast ? (
               <button
                 onClick={() => setPhase('done')}
-                className="w-full bg-[#1D9E75] text-white font-black text-[15px] py-[15px] rounded-btn flex items-center justify-center gap-2"
+                className="w-full bg-pc-green text-white font-black text-[15px] py-[15px] rounded-btn flex items-center justify-center gap-2"
               >
                 Terminer le tournage 🎬
               </button>
             ) : (
               <button
                 onClick={goNextStep}
-                className="w-full bg-[#1D9E75] text-white font-black text-[15px] py-[15px] rounded-btn flex items-center justify-center gap-2 hover:bg-[#0F6E56] transition-colors"
+                className="w-full bg-pc-green text-white font-black text-[15px] py-[15px] rounded-btn flex items-center justify-center gap-2 hover:bg-pc-green-dark transition-colors"
               >
                 Étape suivante
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -499,7 +500,7 @@ export default function FilmingMode({ script, onClose }) {
           <div className="w-full space-y-2 mb-10">
             {script.map((s) => (
               <div key={s.step} className="flex items-center gap-3 bg-white/5 rounded-elem px-4 py-3">
-                <div className="w-6 h-6 rounded-full bg-[#1D9E75] flex items-center justify-center flex-shrink-0">
+                <div className="w-6 h-6 rounded-full bg-pc-green flex items-center justify-center flex-shrink-0">
                   <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
                     <path d="M1 4l3 3 5-6" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
@@ -511,7 +512,7 @@ export default function FilmingMode({ script, onClose }) {
 
           <button
             onClick={onClose}
-            className="w-full bg-[#1D9E75] text-white font-black text-[15px] py-[14px] rounded-btn hover:bg-[#0F6E56] transition-colors"
+            className="w-full bg-pc-green text-white font-black text-[15px] py-[14px] rounded-btn hover:bg-pc-green-dark transition-colors"
           >
             Retour au script
           </button>

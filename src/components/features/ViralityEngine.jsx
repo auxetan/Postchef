@@ -56,7 +56,7 @@ function BenchmarkLine({ score, city, cuisine }) {
 
 function ScoreBadge({ score, city, cuisine }) {
   const color =
-    score > 80 ? 'text-pc-green' : score >= 60 ? 'text-[#D97706]' : 'text-pc-ink-3'
+    score > 80 ? 'text-pc-green' : score >= 60 ? 'text-pc-amber-dark' : 'text-pc-ink-3'
   const label =
     score > 80
       ? 'Potentiel viral élevé'

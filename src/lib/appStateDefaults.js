@@ -1,3 +1,4 @@
+import { PC_GREEN } from '../utils/colors.js'
 export function getThisMonday() {
   const d = new Date()
   const day = d.getDay()
@@ -72,7 +73,7 @@ export function createDefaultStudio() {
 export function createDefaultBrandKit() {
   return {
     logoDataUrl: null,
-    primaryColor: '#1D9E75',
+    primaryColor: PC_GREEN,
     accentColor: '#0F172A',
     fontFamily: 'sans',
   }

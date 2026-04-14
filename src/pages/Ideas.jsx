@@ -10,6 +10,7 @@ import DishPhotoGenerator from '../components/features/DishPhotoGenerator.jsx'
 import VideoScriptGenerator from '../components/features/VideoScriptGenerator.jsx'
 import PlanningModal from '../components/ui/PlanningModal.jsx'
 import { requestClaude, ServerApiError } from '../utils/serverApi.js'
+import { PC_AMBER, PC_GREEN, PC_INK, PC_INK_4 } from '../utils/colors.js'
 
 /** Parse la réponse Claude en JSON robuste — gère JSON pur, ```json...```, ```...``` */
 function parseClaudeJSON(text) {
@@ -32,12 +33,12 @@ const FORMATS   = ['Tous', 'Vidéo', 'Photo', 'Reel', 'Carrousel']
 const PLATFORM_COLOR = {
   TikTok:    { text: 'text-pc-ink-2',    badge: 'bg-pc-bg border-pc-border text-pc-ink-2' },
   Instagram: { text: 'text-pc-green',    badge: 'bg-pc-green-light border-pc-green text-pc-green' },
-  Facebook:  { text: 'text-[#2563eb]',   badge: 'bg-[#eff6ff] border-[#93c5fd] text-[#2563eb]' },
+  Facebook:  { text: 'text-pc-blue',   badge: 'bg-pc-blue-light border-pc-blue-border text-pc-blue' },
 }
 
 const DIFF_COLOR = {
   Facile: 'text-[#059669]',
-  Moyen:  'text-[#d97706]',
+  Moyen:  'text-pc-amber-dark',
 }
 
 // ── Hashtag generation ──────────────────────────────────────────────────────
@@ -217,8 +218,8 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
               disabled={loading || !canGenerateMore}
               className="flex items-center gap-[7px] px-4 py-[9px] rounded-pill text-[13px] font-[700] transition-all disabled:opacity-50"
               style={isExhausted
-                ? { background: 'rgba(0,0,0,0.05)', color: '#A3A3A3', cursor: 'not-allowed' }
-                : { background: '#1D9E75', color: 'white', boxShadow: '0 4px 14px rgba(29,158,117,0.28)' }
+                ? { background: 'rgba(0,0,0,0.05)', color: PC_INK_4, cursor: 'not-allowed' }
+                : { background: PC_GREEN, color: 'white', boxShadow: '0 4px 14px rgba(29,158,117,0.28)' }
               }
             >
               {loading ? (
@@ -263,7 +264,7 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
           {savedIdeas.length === 0 ? (
             <div className="text-center py-16">
               <div className="w-12 h-12 rounded-full bg-pc-bg border border-pc-border flex items-center justify-center mx-auto mb-4">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#A3A3A3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={PC_INK_4} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 2h10a1 1 0 011 1v14l-6-3-6 3V3a1 1 0 011-1z"/>
                 </svg>
               </div>
@@ -333,7 +334,7 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
                   onClick={() => setPlatform(p)}
                   className="whitespace-nowrap flex-shrink-0 text-[12px] font-[600] px-[14px] py-[6px] rounded-pill transition-all duration-150 press-scale"
                   style={platform === p
-                    ? { background: '#0A0A0A', color: 'white' }
+                    ? { background: PC_INK, color: 'white' }
                     : { background: 'rgba(0,0,0,0.05)', color: '#737373' }
                   }
                 >
@@ -348,7 +349,7 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
                   onClick={() => setFormat(f)}
                   className="whitespace-nowrap flex-shrink-0 text-[12px] font-[600] px-[14px] py-[6px] rounded-pill transition-all duration-150 press-scale"
                   style={format === f
-                    ? { background: '#1D9E75', color: 'white' }
+                    ? { background: PC_GREEN, color: 'white' }
                     : { background: 'rgba(0,0,0,0.05)', color: '#737373' }
                   }
                 >
@@ -362,7 +363,7 @@ Réponds UNIQUEMENT en JSON valide (tableau sans commentaires) :
           {loading && (
             <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-8 text-center">
               <div className="w-10 h-10 rounded-full mx-auto mb-4 animate-spin"
-                style={{ border: '2px solid #E8E8E6', borderTopColor: '#1D9E75' }} />
+                style={{ border: '2px solid #E8E8E6', borderTopColor: PC_GREEN }} />
               <div className="text-[14px] font-bold text-pc-ink">Analyse en cours…</div>
               <div className="text-[12px] text-pc-ink-4 mt-1">Chef personnalise les idées pour ton restaurant</div>
             </div>
@@ -431,7 +432,7 @@ function IdeaCard({ idea, isSaved, expanded, hashtagsFor, restaurant,
   const hashtags    = showHashtags ? generateHashtags(idea, restaurant) : []
   const pc = PLATFORM_COLOR[idea.plateforme] || { text: 'text-pc-ink-3', badge: 'bg-pc-bg border-pc-border text-pc-ink-3' }
 
-  const scoreColor = idea.score >= 80 ? '#1D9E75' : idea.score >= 60 ? '#F59E0B' : '#A3A3A3'
+  const scoreColor = idea.score >= 80 ? PC_GREEN : idea.score >= 60 ? PC_AMBER : PC_INK_4
 
   return (
     <div
@@ -446,9 +447,9 @@ function IdeaCard({ idea, isSaved, expanded, hashtagsFor, restaurant,
               className="text-[10px] font-[700] px-[9px] py-[4px] rounded-pill"
               style={
                 idea.plateforme === 'TikTok'
-                  ? { background: 'rgba(10,10,10,0.07)', color: '#0A0A0A' }
+                  ? { background: 'rgba(10,10,10,0.07)', color: PC_INK }
                   : idea.plateforme === 'Instagram'
-                  ? { background: 'rgba(29,158,117,0.10)', color: '#1D9E75' }
+                  ? { background: 'rgba(29,158,117,0.10)', color: PC_GREEN }
                   : { background: 'rgba(37,99,235,0.08)', color: '#2563eb' }
               }
             >
@@ -471,8 +472,8 @@ function IdeaCard({ idea, isSaved, expanded, hashtagsFor, restaurant,
               style={{ background: isSaved ? 'rgba(29,158,117,0.10)' : 'rgba(0,0,0,0.04)' }}
             >
               <svg width="14" height="14" viewBox="0 0 14 14"
-                fill={isSaved ? '#1D9E75' : 'none'}
-                stroke={isSaved ? '#1D9E75' : '#A3A3A3'}
+                fill={isSaved ? PC_GREEN : 'none'}
+                stroke={isSaved ? PC_GREEN : PC_INK_4}
                 strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M2.5 2h9a1 1 0 011 1v9l-5-3-5 3V3a1 1 0 011-1z"/>
               </svg>
@@ -492,7 +493,7 @@ function IdeaCard({ idea, isSaved, expanded, hashtagsFor, restaurant,
               onClick={() => onExpand(isExpanded ? null : idea.id)}
               className="flex-1 text-[12px] font-[600] py-[9px] rounded-pill transition-all press-scale"
               style={isExpanded
-                ? { background: '#0A0A0A', color: 'white' }
+                ? { background: PC_INK, color: 'white' }
                 : { background: 'rgba(0,0,0,0.05)', color: '#404040' }
               }
             >
@@ -506,7 +507,7 @@ function IdeaCard({ idea, isSaved, expanded, hashtagsFor, restaurant,
           <button
             onClick={() => onSchedule(idea)}
             className="flex-1 text-[12px] font-[700] text-white rounded-pill py-[9px] transition-colors flex items-center justify-center gap-[6px] press-scale"
-            style={{ background: '#1D9E75', boxShadow: '0 2px 10px rgba(29,158,117,0.25)' }}
+            style={{ background: PC_GREEN, boxShadow: '0 2px 10px rgba(29,158,117,0.25)' }}
           >
             <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <rect x="1" y="2" width="9" height="8" rx="1.5"/>
@@ -544,7 +545,7 @@ function IdeaCard({ idea, isSaved, expanded, hashtagsFor, restaurant,
                     <span
                       key={tag}
                       className="text-[11px] font-[600] px-[10px] py-[4px] rounded-pill"
-                      style={{ background: 'rgba(29,158,117,0.10)', color: '#1D9E75' }}
+                      style={{ background: 'rgba(29,158,117,0.10)', color: PC_GREEN }}
                     >
                       {tag}
                     </span>

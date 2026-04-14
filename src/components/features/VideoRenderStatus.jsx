@@ -164,7 +164,7 @@ export default function VideoRenderStatus({ onNewVideo }) {
                 directive.virality_score > 80
                   ? 'text-pc-green'
                   : directive.virality_score >= 60
-                    ? 'text-[#D97706]'
+                    ? 'text-pc-amber-dark'
                     : 'text-pc-ink-3'
               }`}
             >

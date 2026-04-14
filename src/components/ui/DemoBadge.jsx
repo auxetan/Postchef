@@ -1,3 +1,4 @@
+import { PC_AMBER } from '../../utils/colors.js'
 /**
  * DemoBadge — badge discret signalant qu'une feature est simulée / en bêta.
  *
@@ -8,9 +9,9 @@
  */
 export default function DemoBadge({ label, variant = 'demo', className = '' }) {
   const VARIANTS = {
-    demo:   { bg: 'bg-[#FEF3C7]', text: 'text-[#92400E]', dot: '#F59E0B' },
-    beta:   { bg: 'bg-[#EFF6FF]', text: 'text-[#1D4ED8]', dot: '#3B82F6' },
-    simule: { bg: 'bg-[#F5F5F5]', text: 'text-[#6B7280]', dot: '#9CA3AF' },
+    demo:   { bg: 'bg-pc-amber-light', text: 'text-pc-amber-text', dot: PC_AMBER },
+    beta:   { bg: 'bg-pc-blue-light', text: 'text-pc-blue-dark', dot: '#3B82F6' },
+    simule: { bg: 'bg-[#F5F5F5]', text: 'text-pc-ink-3', dot: '#9CA3AF' },
   }
   const style = VARIANTS[variant] || VARIANTS.demo
   const displayLabel = label || { demo: 'Démo', beta: 'Bêta', simule: 'Simulé' }[variant]

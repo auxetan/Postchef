@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { useRestaurantBrain } from '../../hooks/useRestaurantBrain.js'
 import DemoBadge from '../ui/DemoBadge.jsx'
+import { PC_AMBER, PC_GREEN } from '../../utils/colors.js'
 
 const STARS = (n) => '★'.repeat(Math.round(n)) + '☆'.repeat(5 - Math.round(n))
 
 const PLATFORM_COLOR = {
-  TikTok:    'bg-[#f3f4f6] text-[#374151]',
+  TikTok:    'bg-pc-bg text-pc-ink-2',
   Instagram: 'bg-pc-green-light text-pc-green-dark',
-  Story:     'bg-[#fef3c7] text-[#92400e]',
+  Story:     'bg-pc-amber-light text-pc-amber-text',
 }
 
 export default function RestaurantBrainPanel({ restaurantName, city }) {
@@ -24,7 +25,7 @@ export default function RestaurantBrainPanel({ restaurantName, city }) {
       <div className="bg-pc-surface rounded-card border border-pc-border p-4">
         <div className="flex items-start gap-3 mb-4">
           <div className="w-10 h-10 rounded-[12px] bg-pc-green-light flex items-center justify-center flex-shrink-0">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round">
               <circle cx="10" cy="10" r="8" />
               <path d="M10 6v4l2.5 2.5" />
             </svg>
@@ -49,7 +50,7 @@ export default function RestaurantBrainPanel({ restaurantName, city }) {
 
         {/* Quota restant */}
         {monthlyMax !== Infinity && monthlyMax > 0 && (
-          <div className={`text-[11px] font-medium text-center mb-2 ${quotaReached ? 'text-[#ef4444]' : 'text-pc-ink-4'}`}>
+          <div className={`text-[11px] font-medium text-center mb-2 ${quotaReached ? 'text-pc-danger' : 'text-pc-ink-4'}`}>
             {quotaReached
               ? `Quota atteint ce mois (${monthlyMax} analyses/mois)`
               : `${remaining} analyse${remaining > 1 ? 's' : ''} restante${remaining > 1 ? 's' : ''} ce mois`}
@@ -99,7 +100,7 @@ export default function RestaurantBrainPanel({ restaurantName, city }) {
               {!step.done && (
                 <span
                   className="w-3 h-3 rounded-full ml-auto flex-shrink-0 animate-spin"
-                  style={{ border: '2px solid #E1F5EE', borderTopColor: '#1D9E75' }}
+                  style={{ border: '2px solid #E1F5EE', borderTopColor: PC_GREEN }}
                 />
               )}
             </div>
@@ -122,7 +123,7 @@ export default function RestaurantBrainPanel({ restaurantName, city }) {
               {isMock
                 ? <DemoBadge variant="demo" label="Aperçu démo" />
                 : (
-                  <span className="inline-flex items-center gap-[4px] text-[10px] font-semibold text-[#1D4ED8] bg-[#EFF6FF] px-2 py-[2px] rounded-full">
+                  <span className="inline-flex items-center gap-[4px] text-[10px] font-semibold text-pc-blue-dark bg-pc-blue-light px-2 py-[2px] rounded-full">
                     <svg width="10" height="10" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2C5.6 2 2 5.6 2 10s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm1 11H9V9h2v4zm0-6H9V5h2v2z"/></svg>
                     Google Places
                   </span>
@@ -131,7 +132,7 @@ export default function RestaurantBrainPanel({ restaurantName, city }) {
             </div>
             <div className="text-[12px] text-pc-ink-3">{place.address}</div>
             {isMock && (
-              <div className="text-[11px] text-[#92400E] mt-[4px]">
+              <div className="text-[11px] text-pc-amber-text mt-[4px]">
                 Google Places non configuré — données d'exemple
               </div>
             )}
@@ -144,7 +145,7 @@ export default function RestaurantBrainPanel({ restaurantName, city }) {
         <div className="flex items-center gap-3 mb-3">
           <div className="flex items-center gap-1">
             <span className="text-[16px] font-extrabold text-pc-ink">{place.rating}</span>
-            <span className="text-[#f59e0b] text-[13px]">{STARS(place.rating)}</span>
+            <span className="text-pc-amber text-[13px]">{STARS(place.rating)}</span>
           </div>
           <span className="text-[12px] text-pc-ink-4">{place.totalRatings} avis</span>
           {place.phone && <span className="text-[12px] text-pc-ink-4">{place.phone}</span>}
@@ -159,7 +160,7 @@ export default function RestaurantBrainPanel({ restaurantName, city }) {
                 <span className="text-[12px] font-semibold text-pc-ink">{r.author}</span>
                 <span className="text-[10px] text-pc-ink-4">{r.date}</span>
               </div>
-              <div className="text-[#f59e0b] text-[10px] mb-1">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</div>
+              <div className="text-pc-amber text-[10px] mb-1">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</div>
               <div className="text-[12px] text-pc-ink-3 leading-[1.5] line-clamp-2">{r.text}</div>
             </div>
           ))}
@@ -174,7 +175,7 @@ export default function RestaurantBrainPanel({ restaurantName, city }) {
             <div className="flex items-center gap-2 mb-3">
               <div className="w-6 h-6 rounded-full bg-pc-green-light flex items-center justify-center">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M2 6l3 3 5-5" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" />
+                  <path d="M2 6l3 3 5-5" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round" />
                 </svg>
               </div>
               <div className="text-[13px] font-bold text-pc-ink">Tes points forts</div>
@@ -192,9 +193,9 @@ export default function RestaurantBrainPanel({ restaurantName, city }) {
           {/* Opportunities */}
           <div className="bg-pc-surface rounded-card border border-pc-border p-4">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 rounded-full bg-[#fef3c7] flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full bg-pc-amber-light flex items-center justify-center">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M6 2v5M6 9v1" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M6 2v5M6 9v1" stroke={PC_AMBER} strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </div>
               <div className="text-[13px] font-bold text-pc-ink">Opportunités de contenu</div>
@@ -202,7 +203,7 @@ export default function RestaurantBrainPanel({ restaurantName, city }) {
             <div className="space-y-2">
               {insights.opportunities.map((o, i) => (
                 <div key={i} className="flex items-start gap-2 text-[13px] text-pc-ink-2">
-                  <div className="w-[5px] h-[5px] rounded-full bg-[#f59e0b] flex-shrink-0 mt-[6px]" />
+                  <div className="w-[5px] h-[5px] rounded-full bg-pc-amber flex-shrink-0 mt-[6px]" />
                   {o}
                 </div>
               ))}

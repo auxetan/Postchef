@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { PC_GREEN } from '../../utils/colors.js'
 
 const SUGGESTIONS = [
   // Plats emblématiques
@@ -61,7 +62,7 @@ export default function SpecialitePickerOverlay({ value = '', onChange, onClose 
         {/* Input */}
         <div className="px-5 pb-4 flex-shrink-0">
           <div className="flex items-center gap-3 bg-white rounded-[14px] px-4 py-[11px] border-2 border-pc-green ring-2 ring-pc-green/20">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round">
               <circle cx="6" cy="6" r="5" />
               <path d="M10.5 10.5l3 3" />
             </svg>
@@ -117,7 +118,7 @@ export default function SpecialitePickerOverlay({ value = '', onChange, onClose 
                 <button
                   key={s}
                   onClick={() => handleSelect(s)}
-                  className="px-4 py-[9px] rounded-pill border border-pc-border bg-white text-[13px] font-medium text-[#374151] hover:border-pc-green hover:bg-pc-green-light transition-all"
+                  className="px-4 py-[9px] rounded-pill border border-pc-border bg-white text-[13px] font-medium text-pc-ink-2 hover:border-pc-green hover:bg-pc-green-light transition-all"
                 >
                   {s}
                 </button>

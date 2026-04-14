@@ -115,7 +115,7 @@ export default function BRollSlots({ slots }) {
                   </span>
                   {slot.source && (
                     <span className={`text-[9px] font-bold px-1 py-px rounded-[3px] shrink-0 ${
-                      slot.source === 'pexels' ? 'bg-[#07a081]/15 text-[#07a081]' : 'bg-pc-green/15 text-pc-green'
+                      slot.source === 'pexels' ? 'bg-pc-green-dark/15 text-[#07a081]' : 'bg-pc-green/15 text-pc-green'
                     }`}>
                       {slot.source === 'pexels' ? 'Pexels' : 'AI'}
                     </span>

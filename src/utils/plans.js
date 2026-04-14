@@ -1,3 +1,4 @@
+import { PC_GREEN, PC_GREEN_DARK, PC_PREMIUM } from './colors.js'
 /**
  * Définition des 3 plans PostChef et des features associées.
  * Source de vérité unique — tout le système de gates s'appuie dessus.
@@ -20,7 +21,7 @@ export const PLANS = {
     priceSub: '/mois',
     monthly: 29,
     badge: null,
-    color: '#1D9E75',
+    color: PC_GREEN,
   },
   pro_annual: {
     id: 'pro_annual',
@@ -29,7 +30,7 @@ export const PLANS = {
     priceSub: '/mois',
     monthly: 19,
     badge: 'Recommandé · -35%',
-    color: '#0F6E56',
+    color: PC_GREEN_DARK,
   },
   premium: {
     id: 'premium',
@@ -38,7 +39,7 @@ export const PLANS = {
     priceSub: '/mois',
     monthly: 99,
     badge: 'Tout illimité · Chef IA',
-    color: '#7C3AED',
+    color: PC_PREMIUM,
   },
 }
 

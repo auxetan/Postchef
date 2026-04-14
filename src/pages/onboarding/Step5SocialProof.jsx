@@ -79,7 +79,7 @@ export default function Step5SocialProof({ onNext }) {
               <div className="text-[13px] font-bold text-pc-ink leading-none">Sophie R.</div>
               <div className="text-[11px] text-pc-ink-4 mt-[2px]">Chez Sophie · Aix-en-Provence</div>
             </div>
-            <div className="ml-auto text-[#f59e0b] text-[12px] tracking-[1px]">★★★★★</div>
+            <div className="ml-auto text-pc-amber text-[12px] tracking-[1px]">★★★★★</div>
           </div>
           <p className="text-[13px] text-pc-ink-2 leading-[1.65]">
             "En 3 semaines, mes Reels ont doublé ma file d'attente le vendredi soir."

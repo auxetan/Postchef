@@ -4,12 +4,13 @@
  */
 import { useRef } from 'react'
 import useAppStore from '../../store/useAppStore'
+import { PC_DANGER_DARK, PC_GREEN, PC_PREMIUM } from '../../utils/colors.js'
 
 const PRESET_COLORS = [
-  '#1D9E75', // pc-green
-  '#DC2626', // rouge
+  PC_GREEN, // pc-green
+  PC_DANGER_DARK, // rouge
   '#D97706', // ambre
-  '#7C3AED', // violet
+  PC_PREMIUM, // violet
   '#0EA5E9', // bleu
   '#0F172A', // ink
 ]

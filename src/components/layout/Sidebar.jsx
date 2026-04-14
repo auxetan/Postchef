@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import useAppStore from '../../store/useAppStore.js'
 import { PLAN_DISPLAY_NAMES } from '../../utils/plans.js'
 import { LogoWordmark } from '../ui/LogoMark.jsx'
+import { PC_GREEN } from '../../utils/colors.js'
 
 const NAV = [
   {
@@ -99,8 +100,8 @@ const NAV = [
 const PLAN_CONFIG = {
   starter:     { label: 'Starter',     bg: 'rgba(0,0,0,0.05)',        color: '#737373' },
   pro_monthly: { label: 'Pro Mensuel', bg: 'rgba(37,99,235,0.08)',    color: '#2563eb' },
-  pro_annual:  { label: 'Pro Annuel',  bg: 'rgba(29,158,117,0.10)',   color: '#1D9E75' },
-  pro:         { label: 'Pro',         bg: 'rgba(29,158,117,0.10)',   color: '#1D9E75' },
+  pro_annual:  { label: 'Pro Annuel',  bg: 'rgba(29,158,117,0.10)',   color: PC_GREEN },
+  pro:         { label: 'Pro',         bg: 'rgba(29,158,117,0.10)',   color: PC_GREEN },
 }
 
 export default function Sidebar() {
@@ -145,7 +146,7 @@ export default function Sidebar() {
                       : 'text-pc-ink-3 hover:text-pc-ink hover:bg-[rgba(0,0,0,0.03)]'
                   }`}
                 >
-                  <span style={{ color: isActive ? '#1D9E75' : 'inherit' }}>
+                  <span style={{ color: isActive ? PC_GREEN : 'inherit' }}>
                     {item.icon(isActive)}
                   </span>
                   <span className={isActive ? 'font-[700]' : 'font-[500]'}>

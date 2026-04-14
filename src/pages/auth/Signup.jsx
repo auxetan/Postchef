@@ -57,7 +57,7 @@ export default function Signup() {
       }
     >
       {!isConfigured && isDemoMode && (
-        <div className="rounded-card border border-[#FDE68A] bg-[#FFFBEB] px-4 py-3 text-[12px] text-[#92400E] leading-[1.6]">
+        <div className="rounded-card border border-pc-amber-border bg-pc-amber-light px-4 py-3 text-[12px] text-pc-amber-text leading-[1.6]">
           Supabase n’est pas encore configuré. L’inscription crée une session de démo locale pour continuer le développement.
         </div>
       )}
@@ -101,7 +101,7 @@ export default function Signup() {
         </div>
 
         {error && (
-          <div className="rounded-elem border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-[12px] text-[#b91c1c]">
+          <div className="rounded-elem border border-pc-danger-light bg-pc-danger-bg px-4 py-3 text-[12px] text-pc-danger-dark">
             {error}
           </div>
         )}

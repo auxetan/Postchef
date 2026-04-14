@@ -3,6 +3,7 @@
  * Doc : https://shotstack.io/docs/api/
  */
 import { postJson } from './serverApi.js'
+import { PC_GREEN } from './colors.js'
 
 const FONT_TO_STYLE = {
   sans:    'future',
@@ -97,7 +98,7 @@ export function buildShotstackEdit({ directive, clips, wordTimings = [], brollVi
 }
 
 function buildCaptionTrack({ style, wordTimings, textOverlays, brandKit }) {
-  const primary   = brandKit?.primaryColor || '#1D9E75'
+  const primary   = brandKit?.primaryColor || PC_GREEN
   const fontStyle = FONT_TO_STYLE[brandKit?.fontFamily] || 'future'
 
   if (style === 'none') return []

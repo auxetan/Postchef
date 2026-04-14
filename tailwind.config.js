@@ -28,6 +28,33 @@ export default {
         'glass-border': 'rgba(255,255,255,0.50)',
         'glass-dark':   'rgba(10,10,10,0.08)',
 
+        // Premium (violet)
+        'pc-premium':        '#7C3AED',
+        'pc-premium-dark':   '#6D28D9',
+        'pc-premium-light':  '#F5F3FF',
+
+        // Danger (rouge)
+        'pc-danger':         '#EF4444',
+        'pc-danger-dark':    '#DC2626',
+        'pc-danger-light':   '#FECACA',
+        'pc-danger-bg':      '#FEF2F2',
+
+        // Amber / avertissement
+        'pc-amber':          '#F59E0B',
+        'pc-amber-dark':     '#D97706',
+        'pc-amber-text':     '#92400E',
+        'pc-amber-light':    '#FEF3C7',
+        'pc-amber-border':   '#FDE68A',
+
+        // Blue / info (Facebook, statuts)
+        'pc-blue':           '#2563EB',
+        'pc-blue-dark':      '#1D4ED8',
+        'pc-blue-light':     '#EFF6FF',
+        'pc-blue-border':    '#BFDBFE',
+
+        // Green statut (success / publié)
+        'pc-success':        '#16A34A',
+
         // Legacy aliases
         'pc-text':  '#0A0A0A',
         'pc-body':  '#0A0A0A',

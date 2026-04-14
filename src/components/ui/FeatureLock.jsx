@@ -2,9 +2,9 @@ import { useNavigate } from 'react-router-dom'
 import { PLAN_DISPLAY_NAMES, requiredPlanFor } from '../../utils/plans.js'
 
 const PLAN_COLORS = {
-  pro_monthly: { bg: 'bg-[#eff6ff]', border: 'border-[#3b82f6]', badge: 'bg-[#3b82f6]', text: 'text-[#1d4ed8]' },
+  pro_monthly: { bg: 'bg-pc-blue-light', border: 'border-[#3b82f6]', badge: 'bg-[#3b82f6]', text: 'text-pc-blue-dark' },
   pro_annual:  { bg: 'bg-pc-green-light', border: 'border-pc-green', badge: 'bg-pc-green', text: 'text-pc-green-dark' },
-  premium:     { bg: 'bg-[#7C3AED]/10', border: 'border-[#7C3AED]', badge: 'bg-[#7C3AED]', text: 'text-[#7C3AED]' },
+  premium:     { bg: 'bg-pc-premium/10', border: 'border-pc-premium', badge: 'bg-pc-premium', text: 'text-pc-premium' },
 }
 
 /**

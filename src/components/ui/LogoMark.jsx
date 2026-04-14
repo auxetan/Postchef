@@ -1,3 +1,4 @@
+import { PC_GREEN } from '../../utils/colors.js'
 /**
  * LogoMark — icône PostChef (toque + bulle) en SVG inline.
  * Usage : <LogoMark size={28} /> ou <LogoMark className="h-8 w-8" />
@@ -24,9 +25,9 @@ export function LogoMark({ size = 28, className = '' }) {
       {/* Bandeau de toque */}
       <rect x="5" y="16" width="22" height="5" rx="1.5" fill="#1C1C1A" />
       {/* Bulle de discours — vert PostChef */}
-      <rect x="6" y="19" width="20" height="11" rx="2.5" fill="#1D9E75" />
+      <rect x="6" y="19" width="20" height="11" rx="2.5" fill={PC_GREEN} />
       {/* Queue de bulle */}
-      <path d="M10 30 L7.5 34 L14 30Z" fill="#1D9E75" />
+      <path d="M10 30 L7.5 34 L14 30Z" fill={PC_GREEN} />
     </svg>
   )
 }

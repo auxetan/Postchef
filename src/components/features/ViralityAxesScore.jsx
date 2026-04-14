@@ -32,7 +32,7 @@ const AXES = [
 
 function axisColor(score) {
   if (score >= 80) return { bar: 'bg-pc-green', text: 'text-pc-green' }
-  if (score >= 60) return { bar: 'bg-[#D97706]', text: 'text-[#D97706]' }
+  if (score >= 60) return { bar: 'bg-pc-amber-dark', text: 'text-pc-amber-dark' }
   return { bar: 'bg-pc-ink-3', text: 'text-pc-ink-3' }
 }
 

@@ -66,26 +66,26 @@ export default function Step2Restaurant({ onNext }) {
 
           {/* Nom */}
           <div>
-            <SectionLabel>Nom du restaurant <span className="text-[#ef4444] normal-case font-normal">*</span></SectionLabel>
+            <SectionLabel>Nom du restaurant <span className="text-pc-danger normal-case font-normal">*</span></SectionLabel>
             <input
-              className={`${inputClass} ${errors.name ? 'border-[#ef4444] focus:border-[#ef4444]' : ''}`}
+              className={`${inputClass} ${errors.name ? 'border-pc-danger focus:border-pc-danger' : ''}`}
               placeholder="Ex : La Trattoria"
               value={name}
               onChange={(e) => { setName(e.target.value); if (errors.name) setErrors((p) => ({ ...p, name: undefined })) }}
             />
-            {errors.name && <p className="text-[12px] text-[#ef4444] mt-[6px] font-medium">{errors.name}</p>}
+            {errors.name && <p className="text-[12px] text-pc-danger mt-[6px] font-medium">{errors.name}</p>}
           </div>
 
           {/* Ville */}
           <div>
-            <SectionLabel>Ville <span className="text-[#ef4444] normal-case font-normal">*</span></SectionLabel>
+            <SectionLabel>Ville <span className="text-pc-danger normal-case font-normal">*</span></SectionLabel>
             <input
-              className={`${inputClass} ${errors.city ? 'border-[#ef4444] focus:border-[#ef4444]' : ''}`}
+              className={`${inputClass} ${errors.city ? 'border-pc-danger focus:border-pc-danger' : ''}`}
               placeholder="Ex : Marseille"
               value={city}
               onChange={(e) => { setCity(e.target.value); if (errors.city) setErrors((p) => ({ ...p, city: undefined })) }}
             />
-            {errors.city && <p className="text-[12px] text-[#ef4444] mt-[6px] font-medium">{errors.city}</p>}
+            {errors.city && <p className="text-[12px] text-pc-danger mt-[6px] font-medium">{errors.city}</p>}
           </div>
 
           {/* Cuisine */}

@@ -4,6 +4,7 @@ import FeatureLock from '../components/ui/FeatureLock.jsx'
 import DemoBadge from '../components/ui/DemoBadge.jsx'
 import useAppStore from '../store/useAppStore.js'
 import { mockStats } from '../utils/mockData.js'
+import { PC_INK } from '../utils/colors.js'
 
 const WEEKS = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7']
 
@@ -159,7 +160,7 @@ export default function Analytics() {
                               className="absolute bottom-0 left-0 right-0 rounded-t-[4px] transition-all duration-500"
                               style={{
                                 height: `${Math.max(pct, v > 0 ? 8 : 0)}%`,
-                                backgroundColor: isHi ? '#0A0A0A' : '#E8E8E6',
+                                backgroundColor: isHi ? PC_INK : '#E8E8E6',
                               }}
                             />
                           </div>
@@ -255,7 +256,7 @@ export default function Analytics() {
                         className="rounded-[5px] h-8 flex items-center justify-center text-[10px] font-bold"
                         style={{
                           backgroundColor: `rgba(29, 158, 117, ${heatOpacity(v)})`,
-                          color: v >= 3 ? 'white' : '#0A0A0A',
+                          color: v >= 3 ? 'white' : PC_INK,
                         }}
                       >
                         {v}

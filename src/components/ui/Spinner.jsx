@@ -1,3 +1,4 @@
+import { PC_GREEN } from '../../utils/colors.js'
 /**
  * Spinner — indicateur de chargement cohérent.
  *
@@ -6,7 +7,7 @@
  *   color   : couleur CSS du spinner (défaut: pc-green)
  *   label   : texte aria pour l'accessibilité
  */
-export default function Spinner({ size = 'md', color = '#1D9E75', label = 'Chargement…' }) {
+export default function Spinner({ size = 'md', color = PC_GREEN, label = 'Chargement…' }) {
   const sizes = { sm: 'w-4 h-4', md: 'w-7 h-7', lg: 'w-10 h-10' }
   return (
     <div

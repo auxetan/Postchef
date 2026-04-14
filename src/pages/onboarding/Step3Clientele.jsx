@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Button from '../../components/ui/Button.jsx'
 import ScaleSelector from '../../components/ui/ScaleSelector.jsx'
 import useAppStore from '../../store/useAppStore.js'
+import { PC_GREEN } from '../../utils/colors.js'
 
 const COUVERTS = [
   { value: '-20', label: '-20', sub: 'petit' },
@@ -55,7 +56,7 @@ const MOTIFS = [
   {
     value: 'nouveaux-clients', name: 'Nouveaux clients', desc: 'Attirer des inconnus',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M11 2C6.03 2 2 6.03 2 11s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9z"/>
         <path d="M11 7v4l3 2"/>
       </svg>
@@ -64,7 +65,7 @@ const MOTIFS = [
   {
     value: 'fideliser', name: 'Fidéliser', desc: 'Garder les habitués',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M11 19s-8-5-8-11a5 5 0 0 1 8-4 5 5 0 0 1 8 4c0 6-8 11-8 11z"/>
       </svg>
     ),
@@ -72,7 +73,7 @@ const MOTIFS = [
   {
     value: 'evenements', name: 'Événements', desc: 'Soirées spéciales',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="5" width="16" height="15" rx="2"/>
         <path d="M16 3v4M6 3v4M3 9h16"/>
       </svg>
@@ -81,7 +82,7 @@ const MOTIFS = [
   {
     value: 'coulisses', name: 'Coulisses', desc: "Montrer l'équipe",
     icon: (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={PC_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="11" cy="8" r="3.5"/>
         <path d="M4 20c0-3.87 3.13-7 7-7h0c3.87 0 7 3.13 7 7"/>
       </svg>
