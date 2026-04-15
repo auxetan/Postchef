@@ -22,23 +22,6 @@ const PLAN_FEATURES = {
   premium:     ['Tout illimité sans exception', 'Photos DALL-E illimitées', 'Reels Studio illimités', 'Chef IA — assistant conversationnel', 'Support dédié 7j/7'],
 }
 
-const PLATFORMS_CONNECT = [
-  { name: 'TikTok', soon: false, icon: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 000 12.68 6.34 6.34 0 006.33-6.34V8.69a8.26 8.26 0 004.84 1.55V6.79a4.85 4.85 0 01-1.07-.1z"/>
-    </svg>
-  )},
-  { name: 'Instagram', soon: false, icon: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-    </svg>
-  )},
-  { name: 'Facebook', soon: true, icon: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-    </svg>
-  )},
-]
 
 function Rule({ children }) {
   return (
@@ -473,31 +456,29 @@ export default function Account() {
           </div>
         </section>
 
-        {/* Plateformes */}
+        {/* Réseaux sociaux */}
         <section>
-          <Rule>Plateformes</Rule>
-          <div className="bg-pc-surface border border-pc-border rounded-card divide-y divide-pc-rule">
-            {PLATFORMS_CONNECT.map((p) => (
-              <div key={p.name} className="flex items-center justify-between px-5 py-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-[8px] bg-pc-bg border border-pc-rule flex items-center justify-center text-pc-ink-2">
-                    {p.icon}
-                  </div>
-                  <div>
-                    <p className="text-[13px] font-semibold text-pc-ink">{p.name}</p>
-                    <p className="text-[11px] text-pc-ink-4">{p.soon ? 'Bientôt disponible' : 'Non connecté'}</p>
-                  </div>
-                </div>
-                {p.soon ? (
-                  <span className="text-[10px] font-bold bg-pc-amber-light text-pc-amber-text px-[10px] py-[4px] rounded-[6px]">Bientôt</span>
-                ) : (
-                  <button className="text-[12px] font-bold text-pc-ink border border-pc-border rounded-btn px-4 py-[6px] hover:bg-pc-bg transition-colors">
-                    Connecter
-                  </button>
-                )}
+          <Rule>Réseaux sociaux</Rule>
+          <button
+            onClick={() => navigate('/app/connect-socials')}
+            className="w-full bg-pc-surface border border-pc-border rounded-card px-5 py-4 flex items-center justify-between hover:border-pc-green transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-[10px] bg-pc-green-light flex items-center justify-center flex-shrink-0">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-pc-green">
+                  <circle cx="5" cy="10" r="2.5"/><circle cx="15" cy="5" r="2.5"/><circle cx="15" cy="15" r="2.5"/>
+                  <path d="M7.5 8.75l5-2.5M7.5 11.25l5 2.5"/>
+                </svg>
               </div>
-            ))}
-          </div>
+              <div className="text-left">
+                <p className="text-[13px] font-semibold text-pc-ink">Connecter mes réseaux</p>
+                <p className="text-[11px] text-pc-ink-4 mt-[2px]">Instagram, TikTok, Facebook via Ayrshare</p>
+              </div>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-pc-ink-4 group-hover:text-pc-green transition-colors flex-shrink-0">
+              <path d="M5 2l5 5-5 5"/>
+            </svg>
+          </button>
         </section>
 
         {/* Notifications */}

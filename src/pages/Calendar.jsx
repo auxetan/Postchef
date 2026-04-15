@@ -1,9 +1,11 @@
 import { useState, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import useAppStore from '../store/useAppStore.js'
 import useToastStore from '../store/useToastStore.js'
 import PlanningModal from '../components/ui/PlanningModal.jsx'
 import EmptyState from '../components/ui/EmptyState.jsx'
 import { PC_INK_4 } from '../utils/colors.js'
+import { supabase } from '../lib/supabaseClient.js'
 
 const DAY_HEADERS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 const MONTH_NAMES = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
@@ -57,6 +59,7 @@ export default function Calendar() {
   const updatePostDate   = useAppStore((s) => s.updatePostDate)
   const removePost       = useAppStore((s) => s.removePost)
   const toast = useToastStore((s) => s.toast)
+  const [publishingId, setPublishingId] = useState(null)
 
   const [viewYear, setViewYear]         = useState(today.getFullYear())
   const [viewMonth, setViewMonth]       = useState(today.getMonth())
@@ -136,6 +139,61 @@ export default function Calendar() {
     removePost(id)
     setExpandedPost(null)
     toast('Post supprimé')
+  }
+
+  // ── Publish ───────────────────────────────────────────────────────────────
+  const handlePublish = async (post) => {
+    if (publishingId) return
+    if (!supabase) { toast('Supabase non configuré'); return }
+
+    setPublishingId(post.id)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.access_token) {
+        toast('Session expirée — reconnecte-toi')
+        return
+      }
+
+      const platforms = (post.plateformes || []).map((p) => p.toLowerCase())
+      if (platforms.length === 0) {
+        toast('Aucune plateforme sélectionnée')
+        return
+      }
+
+      const res = await fetch('/api/ayrshare/publish', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          postId:      post.id,
+          platforms,
+          caption:     post.legende || post.hook || post.description || post.type || '',
+          scheduledAt: post.scheduledAt || null,
+          mediaUrl:    post.mediaUrl || null,
+        }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) {
+        const msg = data?.error?.message || 'Erreur lors de la publication'
+        if (data?.error?.code === 'NOT_CONNECTED') {
+          toast('Connecte d\'abord tes réseaux dans Compte → Réseaux sociaux')
+        } else {
+          toast(msg)
+        }
+        return
+      }
+
+      updatePostStatus(post.id, 'publie')
+      toast('Post publié avec succès ✓')
+    } catch (err) {
+      console.error('[Calendar] publish error', err)
+      toast('Erreur réseau — réessaie')
+    } finally {
+      setPublishingId(null)
+    }
   }
 
   // ── Drag & drop ───────────────────────────────────────────────────────────
@@ -300,6 +358,7 @@ export default function Calendar() {
                 storePostIds={storePostIds}
                 onStatusChange={handleStatusChange}
                 onDelete={handleDelete}
+                onPublish={handlePublish}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 toast={toast}
@@ -326,6 +385,7 @@ export default function Calendar() {
               storePostIds={storePostIds}
               onStatusChange={handleStatusChange}
               onDelete={handleDelete}
+              onPublish={handlePublish}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
               toast={toast}
@@ -354,7 +414,7 @@ export default function Calendar() {
 }
 
 // ── PostList ──────────────────────────────────────────────────────────────────
-function PostList({ posts, expandedPost, setExpandedPost, showDay, storePostIds, onStatusChange, onDelete, onDragStart, onDragEnd, toast, onAdd }) {
+function PostList({ posts, expandedPost, setExpandedPost, showDay, storePostIds, onStatusChange, onDelete, onPublish, onDragStart, onDragEnd, toast, onAdd }) {
   if (posts.length === 0) {
     return (
       <EmptyState
@@ -456,6 +516,21 @@ function PostList({ posts, expandedPost, setExpandedPost, showDay, storePostIds,
                     </button>
                   </div>
                 )}
+                {/* Publier button — posts prêts à publier */}
+                {isEditable && post.status === 'pret-a-publier' && onPublish && (
+                  <div className="pt-1 border-t border-pc-rule">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onPublish(post) }}
+                      className="w-full text-[12px] font-bold text-white bg-pc-green rounded-pill px-3 py-[7px] hover:bg-pc-green-dark transition-colors flex items-center justify-center gap-1"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 1L1 5l4 2 2 4 4-10z"/>
+                      </svg>
+                      Publier maintenant
+                    </button>
+                  </div>
+                )}
+
                 {/* Delete button — store posts only */}
                 {isEditable && (
                   <div className="pt-1 border-t border-pc-rule">

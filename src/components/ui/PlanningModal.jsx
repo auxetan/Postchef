@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import useAppStore from '../../store/useAppStore.js'
 import useToastStore from '../../store/useToastStore.js'
 import { getFeature } from '../../utils/plans.js'
+import OptimalTimeSuggest from '../features/OptimalTimeSuggest.jsx'
 
 const PLATFORMS = ['Instagram', 'TikTok', 'Facebook']
 
@@ -43,9 +44,11 @@ export default function PlanningModal({ idea, defaultDate, onClose }) {
   const addPost   = useAppStore((s) => s.addPost)
   const posts     = useAppStore((s) => s.posts)
   const plan      = useAppStore((s) => s.user.plan)
+  const cuisineTypes = useAppStore((s) => s.onboarding?.restaurant?.cuisineTypes || [])
   const toast     = useToastStore((s) => s.toast)
 
-  const [date, setDate]                         = useState(defaultDate || todayISO())
+  const [date, setDate]                           = useState(defaultDate || todayISO())
+  const [time, setTime]                           = useState('12:00')
   const [selectedPlatforms, setSelectedPlatforms] = useState(
     idea?.plateforme ? [idea.plateforme] : ['Instagram']
   )
@@ -75,23 +78,30 @@ export default function PlanningModal({ idea, defaultDate, onClose }) {
     if (selectedPlatforms.length === 0) return
     if (weekQuotaReached) return
 
+    // Construire le scheduledAt ISO avec la date + heure choisies
+    const scheduledAt = `${date}T${time}:00.000Z`
+
     addPost({
-      id: `post-${Date.now()}`,
+      id:          `post-${Date.now()}`,
       date,
-      day:        isoToFrDay(date),
-      dayShort:   isoToFrDayShort(date),
-      type:       title,
+      scheduledAt,
+      day:         isoToFrDay(date),
+      dayShort:    isoToFrDayShort(date),
+      type:        title,
       description: idea?.hook || '',
-      hook:       idea?.hook || '',
-      brief:      idea?.brief || '',
-      legende:    idea?.legende || '',
+      hook:        idea?.hook || '',
+      brief:       idea?.brief || '',
+      legende:     idea?.legende || '',
       plateformes: selectedPlatforms,
-      status:     'idee',
+      status:      'idee',
     })
 
     toast('Post ajouté au calendrier ✓')
     onClose()
   }
+
+  // La première plateforme sélectionnée (lowercase) pour les créneaux optimaux
+  const primaryPlatform = selectedPlatforms[0]?.toLowerCase() || 'instagram'
 
   return (
     <div
@@ -99,7 +109,7 @@ export default function PlanningModal({ idea, defaultDate, onClose }) {
       onClick={onClose}
     >
       <div
-        className="bg-pc-surface w-full sm:max-w-sm rounded-t-[24px] sm:rounded-card p-5 pb-8 sm:pb-5"
+        className="bg-pc-surface w-full sm:max-w-sm rounded-t-[24px] sm:rounded-card p-5 pb-8 sm:pb-5 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Handle */}
@@ -140,6 +150,29 @@ export default function PlanningModal({ idea, defaultDate, onClose }) {
             min={todayISO()}
             onChange={(e) => setDate(e.target.value)}
             className="w-full border border-pc-border rounded-elem px-4 py-[10px] text-[14px] text-pc-ink focus:outline-none focus:border-pc-green focus:ring-2 focus:ring-pc-green/20 transition-all"
+          />
+        </div>
+
+        {/* Heure */}
+        <div className="mb-3">
+          <label className="text-[11px] font-semibold text-pc-ink-4 uppercase tracking-caps mb-1 block">
+            Heure de publication
+          </label>
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            className="w-full border border-pc-border rounded-elem px-4 py-[10px] text-[14px] text-pc-ink focus:outline-none focus:border-pc-green focus:ring-2 focus:ring-pc-green/20 transition-all"
+          />
+        </div>
+
+        {/* Créneaux optimaux */}
+        <div className="mb-4">
+          <OptimalTimeSuggest
+            cuisineTypes={cuisineTypes}
+            platform={primaryPlatform}
+            selectedTime={time}
+            onSelect={setTime}
           />
         </div>
 

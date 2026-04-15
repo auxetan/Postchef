@@ -25,6 +25,7 @@ const Account        = lazy(() => import('./pages/Account.jsx'))
 const Trends         = lazy(() => import('./pages/Trends.jsx'))
 const Studio         = lazy(() => import('./pages/Studio.jsx'))
 const AiChat         = lazy(() => import('./pages/AiChat.jsx'))
+const ConnectSocials = lazy(() => import('./pages/ConnectSocials.jsx'))
 const Login          = lazy(() => import('./pages/auth/Login.jsx'))
 const Signup         = lazy(() => import('./pages/auth/Signup.jsx'))
 const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword.jsx'))
@@ -72,6 +73,7 @@ export default function App() {
                   <Route path="analytics" element={<Analytics />} />
                   <Route path="account" element={<Account />} />
                   <Route path="chef-ia" element={<AiChat />} />
+                  <Route path="connect-socials" element={<ConnectSocials />} />
                 </Route>
               </Route>
             </Route>
