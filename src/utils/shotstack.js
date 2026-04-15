@@ -10,6 +10,16 @@ const FONT_TO_STYLE = {
   display: 'blockbuster',
 }
 
+// Transitions par style de caption pour plus de variété
+const CAPTION_TRANSITIONS = {
+  kinetic:     { in: 'zoom',      out: 'fade' },
+  neon:        { in: 'slideUp',   out: 'fade' },
+  bold_impact: { in: 'zoom',      out: 'zoom' },
+  karaoke:     { in: 'slideLeft', out: 'fade' },
+  classic:     {},
+  minimal:     {},
+}
+
 /**
  * Construit une edit Shotstack 9:16 à partir d'une directive PostChef.
  */
@@ -99,10 +109,12 @@ export function buildShotstackEdit({ directive, clips, wordTimings = [], brollVi
 function buildCaptionTrack({ style, wordTimings, textOverlays, brandKit }) {
   const primary   = brandKit?.primaryColor || '#1D9E75'
   const fontStyle = FONT_TO_STYLE[brandKit?.fontFamily] || 'future'
+  const hasTiming = wordTimings.length > 0
 
   if (style === 'none') return []
 
-  if (style === 'kinetic' && wordTimings.length > 0) {
+  // ── Kinetic : mot par mot, gros, centré, couleur de marque ──
+  if (style === 'kinetic' && hasTiming) {
     return wordTimings.map((w) => ({
       asset: {
         type:       'title',
@@ -115,11 +127,85 @@ function buildCaptionTrack({ style, wordTimings, textOverlays, brandKit }) {
       },
       start:  w.start,
       length: Math.max(0.15, w.end - w.start),
-      transition: { in: 'zoom', out: 'fade' },
+      transition: CAPTION_TRANSITIONS.kinetic,
     }))
   }
 
-  if (style === 'classic' && wordTimings.length > 0) {
+  // ── Neon : mot par mot, style sketchy, couleur fluo, fond sombre ──
+  if (style === 'neon' && hasTiming) {
+    const neonColor = primary.toUpperCase() === '#1D9E75' ? '#39FF14' : primary
+    return wordTimings.map((w) => ({
+      asset: {
+        type:       'title',
+        text:       w.word.toUpperCase(),
+        style:      'sketchy',
+        color:      neonColor,
+        background: 'rgba(0,0,0,0.7)',
+        size:       'large',
+        position:   'bottom',
+      },
+      start:  w.start,
+      length: Math.max(0.15, w.end - w.start),
+      transition: CAPTION_TRANSITIONS.neon,
+    }))
+  }
+
+  // ── Bold Impact : blocs de 2 mots, style blockbuster, gros plan centré ──
+  if (style === 'bold_impact' && hasTiming) {
+    const blocks = []
+    for (let i = 0; i < wordTimings.length; i += 2) {
+      const chunk = wordTimings.slice(i, i + 2)
+      blocks.push({
+        text:   chunk.map((w) => w.word.toUpperCase()).join(' '),
+        start:  chunk[0].start,
+        length: Math.max(0.3, chunk[chunk.length - 1].end - chunk[0].start),
+      })
+    }
+    return blocks.map((b) => ({
+      asset: {
+        type:     'title',
+        text:     b.text,
+        style:    'blockbuster',
+        color:    '#ffffff',
+        size:     'large',
+        position: 'center',
+      },
+      start:  b.start,
+      length: b.length,
+      transition: CAPTION_TRANSITIONS.bold_impact,
+    }))
+  }
+
+  // ── Karaoke : blocs de 3-4 mots, style chunk, bas de l'écran ──
+  if (style === 'karaoke' && hasTiming) {
+    const BLOCK = 4
+    const blocks = []
+    for (let i = 0; i < wordTimings.length; i += BLOCK) {
+      const chunk = wordTimings.slice(i, i + BLOCK)
+      blocks.push({
+        text:   chunk.map((w) => w.word).join(' '),
+        start:  chunk[0].start,
+        length: Math.max(0.4, chunk[chunk.length - 1].end - chunk[0].start),
+      })
+    }
+    return blocks.map((b) => ({
+      asset: {
+        type:       'title',
+        text:       b.text,
+        style:      'chunk',
+        color:      '#ffffff',
+        background: 'rgba(0,0,0,0.55)',
+        size:       'medium',
+        position:   'bottom',
+      },
+      start:  b.start,
+      length: b.length,
+      transition: CAPTION_TRANSITIONS.karaoke,
+    }))
+  }
+
+  // ── Classic : blocs de 3 mots, bas de l'écran, style minimal ──
+  if (style === 'classic' && hasTiming) {
     const BLOCK = 3
     const blocks = []
     for (let i = 0; i < wordTimings.length; i += BLOCK) {
@@ -144,7 +230,7 @@ function buildCaptionTrack({ style, wordTimings, textOverlays, brandKit }) {
     }))
   }
 
-  // minimal ou pas de wordTimings → overlays Claude seulement
+  // ── Minimal ou pas de wordTimings → overlays Claude seulement ──
   return (textOverlays || []).map((o) => ({
     asset: {
       type:     'title',

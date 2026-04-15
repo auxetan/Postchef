@@ -61,6 +61,7 @@ export function createDefaultUsage() {
 export function createDefaultStudio() {
   return {
     clips: [],
+    selectedTemplate: null,  // id du template choisi (shotstackTemplates.js)
     directive: null,
     renderStatus: null,
     renderUrl: null,

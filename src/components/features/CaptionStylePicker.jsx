@@ -1,6 +1,5 @@
 /**
- * CaptionStylePicker — choix du style et de la langue des sous-titres animés
- * Kinetic (mot par mot) / Classic / Minimaliste / Aucun + 10 langues
+ * CaptionStylePicker — 7 styles de sous-titres animés + 10 langues
  */
 
 const STYLES = [
@@ -8,29 +7,86 @@ const STYLES = [
     id: 'kinetic',
     label: 'Kinetic',
     badge: 'VIRAL',
-    preview: ['UN', 'MOT', 'À', 'LA', 'FOIS'],
-    description: 'Mot par mot, 97% de rétention',
+    description: 'Mot par mot, centré, punch',
+    preview: (color) => (
+      <div className="flex gap-1 flex-wrap justify-center">
+        {['UN', 'MOT'].map((w, i) => (
+          <span
+            key={i}
+            className="text-[9px] font-black text-white px-1.5 py-px rounded-[3px]"
+            style={{ backgroundColor: color }}
+          >
+            {w}
+          </span>
+        ))}
+      </div>
+    ),
+  },
+  {
+    id: 'bold_impact',
+    label: 'Bold Impact',
+    badge: 'TIKTOK',
+    description: '2 mots, énorme, blockbuster',
+    preview: () => (
+      <span className="text-[11px] font-black text-white uppercase tracking-tight drop-shadow"
+            style={{ textShadow: '1px 1px 0 #000, -1px -1px 0 #000' }}>
+        GOÛTEZ ÇA
+      </span>
+    ),
+  },
+  {
+    id: 'neon',
+    label: 'Neon',
+    badge: null,
+    description: 'Mot par mot, style fluo glowing',
+    preview: () => (
+      <span className="text-[11px] font-black uppercase"
+            style={{ color: '#39FF14', textShadow: '0 0 6px #39FF14' }}>
+        CUISINE
+      </span>
+    ),
+  },
+  {
+    id: 'karaoke',
+    label: 'Karaoke',
+    badge: null,
+    description: 'Blocs de 4 mots, fond semi-transparent',
+    preview: () => (
+      <span className="text-[10px] font-bold text-white bg-black/55 px-2 py-0.5 rounded">
+        venez découvrir notre…
+      </span>
+    ),
   },
   {
     id: 'classic',
     label: 'Classic',
     badge: null,
-    preview: ['Texte en bloc centré'],
-    description: 'Sous-titres standard',
+    description: 'Sous-titres standard, bas d\'écran',
+    preview: () => (
+      <span className="text-[10px] font-semibold text-white self-end">
+        Texte en bas d'écran
+      </span>
+    ),
   },
   {
     id: 'minimal',
     label: 'Minimal',
     badge: null,
-    preview: ['texte en bas'],
-    description: "Discret, en bas d'écran",
+    description: 'Discret, en bas, petite taille',
+    preview: () => (
+      <span className="text-[9px] font-medium text-pc-ink-3 self-end">
+        texte discret en bas
+      </span>
+    ),
   },
   {
     id: 'none',
     label: 'Aucun',
     badge: null,
-    preview: [],
     description: 'Sans captions',
+    preview: () => (
+      <span className="text-[11px] text-pc-ink-4">—</span>
+    ),
   },
 ]
 
@@ -52,18 +108,19 @@ export default function CaptionStylePicker({
   onSelect,
   language = 'fr',
   onLanguageChange,
+  primaryColor = '#1D9E75',
 }) {
   return (
     <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-5">
       <div className="flex items-center justify-between mb-3">
         <div className="pc-section-label">Style des captions</div>
         <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-pc-green">
-          Auto IA · 97% accuracy
+          Auto IA · Whisper
         </span>
       </div>
 
       {/* Langue */}
-      <div className="mb-3">
+      <div className="mb-4">
         <div className="text-[11px] font-semibold text-pc-ink-4 uppercase tracking-caps mb-1.5">
           Langue
         </div>
@@ -81,7 +138,7 @@ export default function CaptionStylePicker({
         </select>
       </div>
 
-      {/* Styles */}
+      {/* Styles — 2 colonnes */}
       <div className="grid grid-cols-2 gap-2">
         {STYLES.map((s) => {
           const active = selected === s.id
@@ -100,31 +157,12 @@ export default function CaptionStylePicker({
                   {s.badge}
                 </span>
               )}
+
               {/* Mini preview */}
-              <div className="h-8 flex items-center justify-center mb-2 overflow-hidden">
-                {s.id === 'kinetic' ? (
-                  <div className="flex gap-1">
-                    {s.preview.map((w, i) => (
-                      <span
-                        key={i}
-                        className="text-[9px] font-black text-pc-ink bg-pc-border px-1 py-px rounded-[3px]"
-                      >
-                        {w}
-                      </span>
-                    ))}
-                  </div>
-                ) : s.id === 'none' ? (
-                  <span className="text-[11px] text-pc-ink-4">—</span>
-                ) : (
-                  <span
-                    className={`text-[10px] font-semibold text-pc-ink ${
-                      s.id === 'minimal' ? 'self-end' : ''
-                    }`}
-                  >
-                    {s.preview[0]}
-                  </span>
-                )}
+              <div className="h-9 flex items-center justify-center mb-2 overflow-hidden">
+                {s.preview(primaryColor)}
               </div>
+
               <div className="text-[12px] font-bold text-pc-ink">{s.label}</div>
               <div className="text-[10px] text-pc-ink-4 mt-0.5 leading-tight">
                 {s.description}

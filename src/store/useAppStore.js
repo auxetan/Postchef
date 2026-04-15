@@ -189,6 +189,8 @@ const useAppStore = create(
         set((s) => ({ studio: { ...s.studio, clips: [...s.studio.clips, clip] } })),
       removeClip: (id) =>
         set((s) => ({ studio: { ...s.studio, clips: s.studio.clips.filter((c) => c.id !== id) } })),
+      setSelectedTemplate: (templateId) =>
+        set((s) => ({ studio: { ...s.studio, selectedTemplate: templateId } })),
       setDirective: (directive) =>
         set((s) => ({ studio: { ...s.studio, directive } })),
       setRenderStatus: (status) =>

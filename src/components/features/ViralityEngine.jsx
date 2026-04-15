@@ -3,6 +3,7 @@ import { motion, AnimatePresence, Reorder } from 'framer-motion'
 import useAppStore from '../../store/useAppStore'
 import useToastStore from '../../store/useToastStore'
 import { buildViralityPrompt } from '../../utils/viralityPrompt'
+import { getTemplate, MOOD_TO_TRACK_URL } from '../../utils/shotstackTemplates'
 import { uploadClip } from '../../utils/uploadClip'
 import { uploadToCdn } from '../../utils/ingestAsset'
 import { transcribeClipSequence } from '../../utils/whisper'
@@ -15,6 +16,7 @@ import CaptionStylePicker from './CaptionStylePicker'
 import BrandKitPicker from './BrandKitPicker'
 import BRollSlots from './BRollSlots'
 import ViralityTips from './ViralityTips'
+import VoiceNarrator from './VoiceNarrator'
 import { requestClaude } from '../../utils/serverApi'
 
 const PLATFORMS = ['TikTok', 'Instagram']
@@ -88,6 +90,7 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
   const restaurant = useAppStore((s) => s.onboarding.restaurant)
   const clientele = useAppStore((s) => s.onboarding.clientele)
   const brandKit = useAppStore((s) => s.brandKit)
+  const selectedTemplate = useAppStore((s) => s.studio.selectedTemplate)
   const toast = useToastStore((s) => s.toast)
   const { startRender } = useShotstack()
 
@@ -122,12 +125,15 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
   // Initialisation des champs éditables quand la directive arrive
   useEffect(() => {
     if (!directive) return
+    const tpl = selectedTemplate ? getTemplate(selectedTemplate) : null
     setEditHook(directive.hook_text || '')
     setEditCaption(directive.caption || '')
     setEditHashtags(directive.hashtags?.join(' ') || '')
     setClipOrder(directive.clip_order || clips.map((_, i) => i + 1))
-    setSelectedMusicMood(directive.music_mood || null)
-    setCaptionStyle(directive.caption_style || 'kinetic')
+    // Template prend la priorité sur la recommandation Claude pour la musique
+    setSelectedMusicMood(tpl?.musicMood || directive.music_mood || null)
+    // Template prend la priorité sur la recommendation Claude pour les captions
+    setCaptionStyle(tpl?.captionStyle || directive.caption_style || 'kinetic')
     setCaptionLanguage(directive.caption_language || 'fr')
     // Sélectionner le meilleur highlight pour chaque clip par défaut
     if (directive.clip_highlights?.length > 0) {
@@ -146,6 +152,7 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
     setError(null)
 
     try {
+      const tplConfig = selectedTemplate ? getTemplate(selectedTemplate) : null
       const prompt = buildViralityPrompt({
         restaurant: { ...restaurant, clientele },
         clips,
@@ -154,6 +161,9 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
         clipAnything: clipAnything.trim() || null,
         captionLanguage,
         brandKit,
+        templateHint: tplConfig
+          ? `Format vidéo choisi par l'utilisateur : "${tplConfig.name}" (${tplConfig.duration}, style "${tplConfig.captionStyle}"). Adapte le montage à ce format.`
+          : null,
       })
 
       const data = await requestClaude({
@@ -208,14 +218,30 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
         })
         .filter(Boolean)
 
+      // Résoudre l'URL de la piste musicale depuis le mood sélectionné
+      const resolvedMood = selectedMusicMood || directive.music_mood
+      const resolvedMusicUrl = resolvedMood
+        ? (MOOD_TO_TRACK_URL[resolvedMood] ?? null)
+        : null
+
+      // Appliquer les overrides du template sélectionné (text_overlays, clip_trims)
+      const tplForRender = selectedTemplate ? getTemplate(selectedTemplate) : null
+      const tplOverrides = tplForRender
+        ? tplForRender.buildDirectiveOverrides(clips, restaurant)
+        : {}
+
       const finalDirective = {
         ...directive,
+        ...(tplOverrides.text_overlays && !directive.text_overlays?.length
+          ? { text_overlays: tplOverrides.text_overlays }
+          : {}),
         hook_text: editHook,
         caption: editCaption,
         hashtags: editHashtags.split(/\s+/).filter(Boolean),
         clip_order: clipOrder,
         clip_trims: finalTrims,
-        music_mood: selectedMusicMood || directive.music_mood,
+        music_mood: resolvedMood,
+        music_track_url: resolvedMusicUrl,
         caption_style: captionStyle,
         caption_language: captionLanguage,
         brand_kit: brandKit,
@@ -484,6 +510,14 @@ export default function ViralityEngine({ onBack, onRenderStart }) {
 
         {/* Brand Kit — logo, couleurs, police */}
         <BrandKitPicker />
+
+        {/* Script narration voix off (Web Speech API gratuit) */}
+        {directive.narration_script && (
+          <VoiceNarrator
+            script={directive.narration_script}
+            lang={captionLanguage}
+          />
+        )}
 
         {/* Overlays texte */}
         <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-5 space-y-3">

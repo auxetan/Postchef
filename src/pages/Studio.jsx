@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ClipUploader from '../components/features/ClipUploader'
+import TemplateSelector from '../components/features/TemplateSelector'
 import ViralityEngine from '../components/features/ViralityEngine'
 import VideoRenderStatus from '../components/features/VideoRenderStatus'
 import ReelHistory from '../components/features/ReelHistory'
@@ -16,6 +17,8 @@ export default function Studio() {
   const reelMax = getFeature(plan, 'videoReelPerMonth')
   const reelsCount = useAppStore((s) => s.reels.length)
   const resetStudio = useAppStore((s) => s.resetStudio)
+  const selectedTemplate = useAppStore((s) => s.studio.selectedTemplate)
+  const setSelectedTemplate = useAppStore((s) => s.setSelectedTemplate)
   const quotaReached = reelMax !== Infinity && reelUsed >= reelMax
 
   // Gating pour le plan starter
@@ -130,6 +133,22 @@ export default function Studio() {
                   )}
                   {step === 2 && (
                     <motion.div
+                      key="template"
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -12 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <TemplateSelector
+                        selected={selectedTemplate}
+                        onSelect={setSelectedTemplate}
+                        onBack={() => setStep(1)}
+                        onContinue={() => setStep(3)}
+                      />
+                    </motion.div>
+                  )}
+                  {step === 3 && (
+                    <motion.div
                       key="directive"
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -137,12 +156,12 @@ export default function Studio() {
                       transition={{ duration: 0.2 }}
                     >
                       <ViralityEngine
-                        onBack={() => setStep(1)}
-                        onRenderStart={() => setStep(3)}
+                        onBack={() => setStep(2)}
+                        onRenderStart={() => setStep(4)}
                       />
                     </motion.div>
                   )}
-                  {step === 3 && (
+                  {step === 4 && (
                     <motion.div
                       key="render"
                       initial={{ opacity: 0, y: 12 }}
@@ -165,17 +184,22 @@ export default function Studio() {
 
 const STEPS = [
   {
-    label: 'Tes clips',
+    label: 'Clips',
     desc: 'Importe ta vidéo brute — même filmée à la main',
     time: null,
   },
   {
+    label: 'Format',
+    desc: 'Choisis le style de montage adapté à ton contenu',
+    time: null,
+  },
+  {
     label: 'Brief IA',
-    desc: "Chef analyse ton clip et choisit le meilleur angle pour l'accrocher",
+    desc: "Chef analyse ton clip et construit le montage optimal selon le format",
     time: '~10 sec',
   },
   {
-    label: 'Ton Reel',
+    label: 'Reel',
     desc: "Résultat prêt à publier sur TikTok et Instagram",
     time: '~30 sec',
   },
@@ -185,16 +209,16 @@ function StepIndicator({ currentStep }) {
   const activeStep = STEPS[currentStep - 1]
   return (
     <div>
-      {/* Pill row */}
-      <div className="flex items-center justify-center gap-3">
+      {/* Pill row — compact pour tenir 4 étapes */}
+      <div className="flex items-center justify-center gap-1.5">
         {STEPS.map((s, i) => {
           const n = i + 1
           const active = n === currentStep
           const done = n < currentStep
           return (
-            <div key={n} className="flex items-center gap-2">
+            <div key={n} className="flex items-center gap-1">
               <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-colors ${
+                className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-colors ${
                   done
                     ? 'bg-pc-green text-white'
                     : active
@@ -204,11 +228,15 @@ function StepIndicator({ currentStep }) {
               >
                 {done ? '✓' : n}
               </div>
-              <span className={`text-[12px] font-medium ${active ? 'text-pc-ink' : 'text-pc-ink-4'}`}>
+              <span
+                className={`text-[11px] font-medium hidden xs:inline ${
+                  active ? 'text-pc-ink' : 'text-pc-ink-4'
+                }`}
+              >
                 {s.label}
               </span>
               {i < STEPS.length - 1 && (
-                <div className="w-8 h-px bg-pc-border mx-1" />
+                <div className="w-5 h-px bg-pc-border ml-1" />
               )}
             </div>
           )
