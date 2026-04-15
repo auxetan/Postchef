@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import useAppStore from '../store/useAppStore.js'
 import useToastStore from '../store/useToastStore.js'
 import PlanningModal from '../components/ui/PlanningModal.jsx'
+import PublishModal from '../components/ui/PublishModal.jsx'
 import EmptyState from '../components/ui/EmptyState.jsx'
 
 const DAY_HEADERS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
@@ -13,6 +14,7 @@ const STATUS_COLOR = {
   'a-tourner':      'bg-[#fef3c7] text-[#92400e] border-[#fde68a]',
   'pret-a-publier': 'bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]',
   publie:           'bg-pc-green-light text-pc-green-dark border-pc-green-mid',
+  programme:        'bg-[#f3e8ff] text-[#6d28d9] border-[#ddd6fe]',
   brouillon:        'bg-[#f3f4f6] text-[#374151] border-[#e5e7eb]',
 }
 const STATUS_LABEL = {
@@ -20,6 +22,7 @@ const STATUS_LABEL = {
   'a-tourner':      'À tourner',
   'pret-a-publier': 'Prêt à publier',
   publie:           'Publié',
+  programme:        'Programmé',
   brouillon:        'Brouillon',
 }
 const STATUS_NEXT  = {
@@ -27,6 +30,7 @@ const STATUS_NEXT  = {
   'a-tourner':      'pret-a-publier',
   'pret-a-publier': 'publie',
   publie:           'idee',
+  programme:        'publie',
   brouillon:        'a-tourner',
 }
 
@@ -36,8 +40,8 @@ const PLATFORM_PILL = {
   Facebook:  'bg-[#eff6ff] text-[#1d4ed8]',
 }
 
-const STATUS_FILTERS = ['Tous', 'Idée', 'À tourner', 'Prêt', 'Publié']
-const STATUS_FILTER_MAP = { 'Idée': 'idee', 'À tourner': 'a-tourner', 'Prêt': 'pret-a-publier', 'Publié': 'publie' }
+const STATUS_FILTERS = ['Tous', 'Idée', 'À tourner', 'Prêt', 'Programmé', 'Publié']
+const STATUS_FILTER_MAP = { 'Idée': 'idee', 'À tourner': 'a-tourner', 'Prêt': 'pret-a-publier', 'Programmé': 'programme', 'Publié': 'publie' }
 
 function buildMonthGrid(year, month) {
   const firstDay = new Date(year, month, 1)
@@ -62,6 +66,7 @@ export default function Calendar() {
   const [selectedDate, setSelectedDate] = useState(today.getDate())
   const [expandedPost, setExpandedPost] = useState(null)
   const [showPlanningModal, setShowPlanningModal] = useState(false)
+  const [publishPost, setPublishPost]   = useState(null) // post à publier via PublishModal
   const [statusFilter, setStatusFilter] = useState('Tous')
   const [dragOverDay, setDragOverDay]   = useState(null)
 
@@ -301,6 +306,7 @@ export default function Calendar() {
                 onDelete={handleDelete}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
+                onPublish={setPublishPost}
                 toast={toast}
               />
             )}
@@ -327,6 +333,7 @@ export default function Calendar() {
               onDelete={handleDelete}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
+              onPublish={setPublishPost}
               toast={toast}
               onAdd={() => setShowPlanningModal(true)}
             />
@@ -348,12 +355,20 @@ export default function Calendar() {
           onClose={() => setShowPlanningModal(false)}
         />
       )}
+
+      {/* Publish modal */}
+      {publishPost && (
+        <PublishModal
+          post={publishPost}
+          onClose={() => setPublishPost(null)}
+        />
+      )}
     </div>
   )
 }
 
 // ── PostList ──────────────────────────────────────────────────────────────────
-function PostList({ posts, expandedPost, setExpandedPost, showDay, storePostIds, onStatusChange, onDelete, onDragStart, onDragEnd, toast, onAdd }) {
+function PostList({ posts, expandedPost, setExpandedPost, showDay, storePostIds, onStatusChange, onDelete, onDragStart, onDragEnd, onPublish, toast, onAdd }) {
   if (posts.length === 0) {
     return (
       <EmptyState
@@ -455,9 +470,25 @@ function PostList({ posts, expandedPost, setExpandedPost, showDay, storePostIds,
                     </button>
                   </div>
                 )}
+
+                {/* Bouton Publier — disponible quand statut pret-a-publier ou programme */}
+                {isEditable && (post.status === 'pret-a-publier' || post.status === 'programme') && onPublish && (
+                  <div className="pt-1 border-t border-pc-rule">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onPublish(post) }}
+                      className="w-full text-[13px] font-bold text-white bg-pc-green rounded-btn px-4 py-[9px] hover:bg-pc-green-dark transition-colors flex items-center justify-center gap-2"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/>
+                      </svg>
+                      Publier sur les réseaux
+                    </button>
+                  </div>
+                )}
+
                 {/* Delete button — store posts only */}
                 {isEditable && (
-                  <div className="pt-1 border-t border-pc-rule">
+                  <div className={`pt-1 ${(post.status === 'pret-a-publier' || post.status === 'programme') && onPublish ? '' : 'border-t border-pc-rule'}`}>
                     <button
                       onClick={(e) => { e.stopPropagation(); onDelete(post.id) }}
                       className="text-[12px] font-semibold text-[#ef4444] border border-[#fecaca] rounded-pill px-3 py-[5px] hover:bg-[#fef2f2] transition-colors flex items-center gap-1"

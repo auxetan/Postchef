@@ -4,6 +4,7 @@ import useAppStore from '../store/useAppStore.js'
 import useToastStore from '../store/useToastStore.js'
 import { PLANS, PLAN_DISPLAY_NAMES, getFeature } from '../utils/plans.js'
 import useAuth from '../hooks/useAuth.js'
+import { supabase } from '../lib/supabaseClient.js'
 
 const PRO_FEATURES = [
   'Idées IA illimitées · toutes plateformes',
@@ -70,6 +71,17 @@ export default function Account() {
   const [logoutLoading, setLogoutLoading] = useState(false)
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
 
+  // Réseaux sociaux
+  const socialConnections  = useAppStore((s) => s.socialConnections)
+  const setSocialProfileKey = useAppStore((s) => s.setSocialProfileKey)
+  const setSocialConnected  = useAppStore((s) => s.setSocialConnected)
+  const [connectingPlatform, setConnectingPlatform] = useState(null)
+  const [checkingStatus, setCheckingStatus] = useState(false)
+
+  const profileKey    = socialConnections?.profileKey
+  const connectedList = socialConnections?.connected || []
+  const lastChecked   = socialConnections?.lastChecked
+
   const currentPlan = user.plan || 'starter'
   const usage       = useAppStore((s) => s.usage)
 
@@ -128,6 +140,68 @@ export default function Account() {
   // B2 — Upgrade plan : bloqué côté client jusqu'à intégration Stripe
   const handleUpgradePlan = () => {
     toast('Paiement bientôt disponible — contacte-nous à contact@postchef.fr pour activer ton plan')
+  }
+
+  async function getAuthToken() {
+    const { data: { session } } = await supabase.auth.getSession()
+    return session?.access_token || null
+  }
+
+  const handleConnectPlatform = async () => {
+    setConnectingPlatform('loading')
+    try {
+      const token = await getAuthToken()
+      const res = await fetch('/api/ayrshare-connect', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ profileKey: profileKey || undefined }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.error?.message || 'Erreur de connexion')
+
+      setSocialProfileKey(data.profileKey)
+      window.open(data.socialManagerUrl, '_blank', 'noopener,noreferrer')
+      toast('Page de connexion ouverte — connecte tes réseaux puis clique "Vérifier" ici')
+    } catch (err) {
+      toast(`Erreur : ${err.message}`)
+    } finally {
+      setConnectingPlatform(null)
+    }
+  }
+
+  const handleCheckStatus = async () => {
+    if (!profileKey) {
+      toast('Commence par cliquer "Connecter mes réseaux"')
+      return
+    }
+    setCheckingStatus(true)
+    try {
+      const token = await getAuthToken()
+      const res = await fetch('/api/ayrshare-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ profileKey }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.error?.message || 'Erreur de vérification')
+
+      setSocialConnected(data.connected || [])
+      if (data.connected?.length) {
+        toast(`Connecté : ${data.connected.join(', ')} ✓`)
+      } else {
+        toast('Aucun réseau connecté pour l\'instant — connecte-les depuis la page Ayrshare')
+      }
+    } catch (err) {
+      toast(`Erreur : ${err.message}`)
+    } finally {
+      setCheckingStatus(false)
+    }
   }
 
   const handleDeleteAccount = async () => {
@@ -475,27 +549,77 @@ export default function Account() {
         {/* Plateformes */}
         <section>
           <Rule>Plateformes</Rule>
-          <div className="bg-pc-surface border border-pc-border rounded-card divide-y divide-pc-rule">
-            {PLATFORMS_CONNECT.map((p) => (
-              <div key={p.name} className="flex items-center justify-between px-5 py-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-[8px] bg-pc-bg border border-pc-rule flex items-center justify-center text-pc-ink-2">
-                    {p.icon}
-                  </div>
-                  <div>
-                    <p className="text-[13px] font-semibold text-pc-ink">{p.name}</p>
-                    <p className="text-[11px] text-pc-ink-4">{p.soon ? 'Bientôt disponible' : 'Non connecté'}</p>
-                  </div>
-                </div>
-                {p.soon ? (
-                  <span className="text-[10px] font-bold bg-[#fef3c7] text-[#92400e] px-[10px] py-[4px] rounded-[6px]">Bientôt</span>
+
+          {/* Bouton principal de connexion + vérification */}
+          <div className="bg-pc-surface border border-pc-border rounded-card px-5 py-4 mb-3">
+            <p className="text-[13px] font-semibold text-pc-ink mb-1">Connexion des réseaux sociaux</p>
+            <p className="text-[11px] text-pc-ink-4 leading-relaxed mb-4">
+              Connecte tes comptes Instagram, TikTok ou Facebook pour pouvoir publier directement depuis PostChef.
+            </p>
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={handleConnectPlatform}
+                disabled={connectingPlatform === 'loading'}
+                className="text-[12px] font-bold text-white bg-pc-ink px-4 py-[9px] rounded-btn hover:bg-pc-ink-2 transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {connectingPlatform === 'loading' ? (
+                  <>
+                    <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" strokeLinecap="round"/>
+                    </svg>
+                    Connexion…
+                  </>
+                ) : profileKey ? (
+                  'Gérer mes réseaux'
                 ) : (
-                  <button className="text-[12px] font-bold text-pc-ink border border-pc-border rounded-btn px-4 py-[6px] hover:bg-pc-bg transition-colors">
-                    Connecter
-                  </button>
+                  'Connecter mes réseaux'
                 )}
-              </div>
-            ))}
+              </button>
+              {profileKey && (
+                <button
+                  onClick={handleCheckStatus}
+                  disabled={checkingStatus}
+                  className="text-[12px] font-bold text-pc-ink border border-pc-border px-4 py-[9px] rounded-btn hover:bg-pc-bg transition-colors disabled:opacity-50"
+                >
+                  {checkingStatus ? 'Vérification…' : 'Vérifier la connexion'}
+                </button>
+              )}
+            </div>
+            {lastChecked && (
+              <p className="text-[10px] text-pc-ink-4 mt-2">
+                Dernière vérification : {new Date(lastChecked).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+              </p>
+            )}
+          </div>
+
+          {/* Liste des plateformes avec statut */}
+          <div className="bg-pc-surface border border-pc-border rounded-card divide-y divide-pc-rule">
+            {PLATFORMS_CONNECT.map((p) => {
+              const isConnected = connectedList.includes(p.name)
+              return (
+                <div key={p.name} className="flex items-center justify-between px-5 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-[8px] border flex items-center justify-center
+                      ${isConnected ? 'bg-pc-green-light border-pc-green/30 text-pc-green' : 'bg-pc-bg border-pc-rule text-pc-ink-2'}`}>
+                      {p.icon}
+                    </div>
+                    <div>
+                      <p className="text-[13px] font-semibold text-pc-ink">{p.name}</p>
+                      <p className={`text-[11px] ${isConnected ? 'text-pc-green font-medium' : 'text-pc-ink-4'}`}>
+                        {p.soon ? 'Bientôt disponible' : isConnected ? 'Connecté ✓' : 'Non connecté'}
+                      </p>
+                    </div>
+                  </div>
+                  {p.soon ? (
+                    <span className="text-[10px] font-bold bg-[#fef3c7] text-[#92400e] px-[10px] py-[4px] rounded-[6px]">Bientôt</span>
+                  ) : isConnected ? (
+                    <span className="text-[10px] font-bold bg-pc-green-light text-pc-green px-[10px] py-[4px] rounded-[6px] border border-pc-green/20">Actif</span>
+                  ) : (
+                    <span className="text-[10px] font-medium text-pc-ink-4">Non configuré</span>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </section>
 

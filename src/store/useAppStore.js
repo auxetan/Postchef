@@ -5,6 +5,7 @@ import {
   createDefaultBrandKit,
   createDefaultStudio,
   createDefaultUsage,
+  createDefaultSocialConnections,
   getThisMonday,
   getThisMonth,
 } from '../lib/appStateDefaults.js'
@@ -229,23 +230,58 @@ const useAppStore = create(
             ? s.savedIdeas.filter((i) => i.id !== idea.id)
             : [...s.savedIdeas, idea],
         })),
+
+      // ── Actions posts (extension) ──
+      updatePost: (id, data) =>
+        set((s) => ({
+          posts: s.posts.map((p) => (p.id === id ? { ...p, ...data } : p)),
+        })),
+
+      // ── Actions réseaux sociaux ──
+      setSocialConnections: (data) =>
+        set((s) => ({
+          socialConnections: { ...s.socialConnections, ...data },
+        })),
+
+      setSocialProfileKey: (profileKey) =>
+        set((s) => ({
+          socialConnections: { ...s.socialConnections, profileKey },
+        })),
+
+      setSocialConnected: (connected) =>
+        set((s) => ({
+          socialConnections: {
+            ...s.socialConnections,
+            connected,
+            lastChecked: new Date().toISOString(),
+          },
+        })),
+
+      resetSocialConnections: () =>
+        set(() => ({ socialConnections: createDefaultSocialConnections() })),
     }),
     {
       name: 'postchef-store',
       partialize: (state) => ({
-        onboarding: state.onboarding,
-        user:       state.user,
-        usage:      state.usage,
-        posts:      state.posts,
-        ideas:      state.ideas,
-        savedIdeas: state.savedIdeas,
-        reels:      state.reels,
-        brandKit:   state.brandKit,
-        menuPhoto:  state.menuPhoto,
+        onboarding:        state.onboarding,
+        user:              state.user,
+        usage:             state.usage,
+        posts:             state.posts,
+        ideas:             state.ideas,
+        savedIdeas:        state.savedIdeas,
+        reels:             state.reels,
+        brandKit:          state.brandKit,
+        menuPhoto:         state.menuPhoto,
+        socialConnections: state.socialConnections,
       }),
       // Migrations au rehydrate
       onRehydrateStorage: () => (state) => {
         if (!state) return
+
+        // Initialiser socialConnections si absent (migration stores anciens)
+        if (!state.socialConnections) {
+          state.socialConnections = createDefaultSocialConnections()
+        }
 
         // Corriger user.id manquant ou prenom démo
         if (!state.user?.id) {

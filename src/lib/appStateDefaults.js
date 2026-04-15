@@ -78,19 +78,28 @@ export function createDefaultBrandKit() {
   }
 }
 
+export function createDefaultSocialConnections() {
+  return {
+    profileKey: null,   // Clé de profil Ayrshare
+    connected:  [],     // Ex: ['Instagram', 'TikTok']
+    lastChecked: null,  // ISO timestamp de la dernière vérification
+  }
+}
+
 export function createDefaultStoreData() {
   return {
-    onboarding: createDefaultOnboarding(),
-    user: createDefaultUser(),
-    usage: createDefaultUsage(),
-    menuPhoto: null,
-    posts: [],
-    ideas: [],
-    ideasLoading: false,
-    savedIdeas: [],
-    studio: createDefaultStudio(),
-    reels: [],
-    brandKit: createDefaultBrandKit(),
+    onboarding:        createDefaultOnboarding(),
+    user:              createDefaultUser(),
+    usage:             createDefaultUsage(),
+    menuPhoto:         null,
+    posts:             [],
+    ideas:             [],
+    ideasLoading:      false,
+    savedIdeas:        [],
+    studio:            createDefaultStudio(),
+    reels:             [],
+    brandKit:          createDefaultBrandKit(),
+    socialConnections: createDefaultSocialConnections(),
   }
 }
 
