@@ -44,7 +44,7 @@ export default createApiHandler({
     // ── Récupérer le profil utilisateur ───────────────────────────────────────
     const { data: profile, error: profileErr } = await userClient
       .from('profiles')
-      .select('ayrshare_profile_key, display_name')
+      .select('ayrshare_profile_key, first_name')
       .eq('user_id', user.id)
       .single()
 
@@ -57,7 +57,7 @@ export default createApiHandler({
 
     // ── Créer le profil Ayrshare si inexistant ────────────────────────────────
     if (!profileKey) {
-      const title = profile?.display_name || `postchef-${user.id.slice(0, 8)}`
+      const title = profile?.first_name || `postchef-${user.id.slice(0, 8)}`
 
       const createRes = await fetch('https://app.ayrshare.com/api/profiles/profile', {
         method: 'POST',

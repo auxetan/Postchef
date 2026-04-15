@@ -211,6 +211,18 @@ export function AuthProvider({ children }) {
           needsEmailConfirmation: Boolean(data.user && !data.session),
         }
       },
+      async signInWithOAuth({ provider }) {
+        if (!isSupabaseConfigured) {
+          return { error: new Error('OAuth non disponible en mode démo.') }
+        }
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider,
+          options: {
+            redirectTo: `${window.location.origin}/app`,
+          },
+        })
+        return { error }
+      },
       async resetPassword(email) {
         if (!isSupabaseConfigured) {
           return { error: new Error('Supabase n’est pas configuré pour le reset email.') }

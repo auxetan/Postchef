@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import AuthShell from '../../components/auth/AuthShell.jsx'
+import OAuthButtons from '../../components/auth/OAuthButtons.jsx'
 import useAuth from '../../hooks/useAuth.js'
 
 const inputClass = 'w-full bg-pc-bg border border-pc-border rounded-btn px-4 py-[12px] text-[14px] text-pc-ink placeholder:text-pc-ink-4 focus:outline-none focus:border-pc-green focus:ring-2 focus:ring-pc-green/10 transition-all'
@@ -94,6 +95,8 @@ export default function Login() {
           {loading ? 'Connexion...' : 'Se connecter'}
         </button>
       </form>
+
+      <OAuthButtons />
     </AuthShell>
   )
 }
