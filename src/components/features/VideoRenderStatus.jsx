@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import useAppStore from '../../store/useAppStore'
 import useToastStore from '../../store/useToastStore'
+import PublishModal from '../ui/PublishModal'
 
 export default function VideoRenderStatus({ onNewVideo }) {
   const renderStatus = useAppStore((s) => s.studio.renderStatus)
@@ -11,6 +12,7 @@ export default function VideoRenderStatus({ onNewVideo }) {
   const addReel      = useAppStore((s) => s.addReel)
   const toast        = useToastStore((s) => s.toast)
   const reelSavedRef = useRef(false)
+  const [publishPost, setPublishPost] = useState(null) // post à passer à PublishModal
   // Polling géré dans useShotstack — rien à faire ici.
 
   // Sauvegarde automatique dans l'historique quand le render est terminé
@@ -34,24 +36,42 @@ export default function VideoRenderStatus({ onNewVideo }) {
     }
   }, [renderStatus, renderUrl, directive, addReel])
 
-  const handleAddToCalendar = () => {
-    if (!directive) return
+  /** Construit un objet post PostChef à partir du reel rendu */
+  const buildReelPost = () => {
     const today = new Date()
     const FR_DAYS = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
     const FR_SHORT = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM']
-    addPost({
+    return {
       id: crypto.randomUUID(),
       date: today.toISOString().split('T')[0],
       day: FR_DAYS[today.getDay()],
       dayShort: FR_SHORT[today.getDay()],
       type: 'Reel IA',
-      description: directive.hook_text || directive.caption || 'Reel prêt à publier',
-      caption: directive.caption,
-      plateformes: ['Instagram'],
+      description: directive?.hook_text || directive?.caption || 'Reel prêt à publier',
+      caption: directive?.caption || '',
+      hashtags: directive?.hashtags || [],
+      plateformes: ['Instagram', 'TikTok'],
       status: 'pret-a-publier',
       videoUrl: renderUrl,
-    })
+    }
+  }
+
+  const handleAddToCalendar = () => {
+    if (!directive) return
+    addPost(buildReelPost())
     toast('Ajouté au calendrier')
+  }
+
+  const handlePublishNow = () => {
+    const post = buildReelPost()
+    addPost(post)
+    setPublishPost(post)
+  }
+
+  const handleSchedule = () => {
+    const post = buildReelPost()
+    addPost(post)
+    setPublishPost({ ...post, scheduleMode: true })
   }
 
   const handleShare = async () => {
@@ -138,6 +158,7 @@ export default function VideoRenderStatus({ onNewVideo }) {
   // ─── Terminé ───
   if (renderStatus === 'done' && renderUrl) {
     return (
+      <>
       <div className="space-y-3">
         {/* Lecteur vidéo */}
         <div className="bg-pc-surface border border-pc-border rounded-card overflow-hidden">
@@ -173,21 +194,47 @@ export default function VideoRenderStatus({ onNewVideo }) {
           </div>
         )}
 
-        {/* Boutons d'action */}
-        <div className="space-y-2">
+        {/* Boutons principaux — Publier / Programmer */}
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={handlePublishNow}
+            className="py-[13px] rounded-btn text-[13px] font-bold text-white bg-pc-green hover:bg-pc-green-dark transition-colors flex items-center justify-center gap-1.5"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+            Publier
+          </button>
+          <button
+            onClick={handleSchedule}
+            className="py-[13px] rounded-btn text-[13px] font-bold text-pc-ink bg-pc-surface border border-pc-border hover:bg-pc-bg transition-colors flex items-center justify-center gap-1.5"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Programmer
+          </button>
+        </div>
+
+        {/* Boutons secondaires */}
+        <div className="space-y-2 mt-2">
           <a
             href={renderUrl}
             download="postchef-reel.mp4"
-            className="block w-full py-[11px] rounded-btn text-[13px] font-bold text-white bg-pc-green hover:bg-pc-green-dark text-center transition-colors"
+            className="block w-full py-[11px] rounded-btn text-[13px] font-bold text-pc-ink bg-pc-surface border border-pc-border hover:bg-pc-bg text-center transition-colors"
           >
             Télécharger le Reel
           </a>
 
           <button
             onClick={handleShare}
-            className="w-full py-[11px] rounded-btn text-[13px] font-bold text-white bg-pc-ink hover:bg-pc-ink-2 transition-colors"
+            className="w-full py-[11px] rounded-btn text-[13px] font-semibold text-pc-ink bg-pc-surface border border-pc-border hover:bg-pc-bg transition-colors"
           >
-            Partager
+            Partager via…
           </button>
 
           {directive?.caption && (
@@ -196,7 +243,7 @@ export default function VideoRenderStatus({ onNewVideo }) {
                 navigator.clipboard?.writeText(directive.caption)
                 toast('Caption copié')
               }}
-              className="w-full py-[11px] rounded-btn text-[13px] font-bold text-pc-ink bg-pc-surface border border-pc-border hover:bg-pc-bg transition-colors"
+              className="w-full py-[11px] rounded-btn text-[13px] font-semibold text-pc-ink bg-pc-surface border border-pc-border hover:bg-pc-bg transition-colors"
             >
               Copier la caption
             </button>
@@ -208,18 +255,11 @@ export default function VideoRenderStatus({ onNewVideo }) {
                 navigator.clipboard?.writeText(directive.hashtags.join(' '))
                 toast('Hashtags copiés')
               }}
-              className="w-full py-[11px] rounded-btn text-[13px] font-bold text-pc-ink bg-pc-surface border border-pc-border hover:bg-pc-bg transition-colors"
+              className="w-full py-[11px] rounded-btn text-[13px] font-semibold text-pc-ink bg-pc-surface border border-pc-border hover:bg-pc-bg transition-colors"
             >
               Copier les hashtags
             </button>
           )}
-
-          <button
-            onClick={handleAddToCalendar}
-            className="w-full py-[11px] rounded-btn text-[13px] font-bold text-pc-green bg-pc-green-light hover:bg-pc-green/15 transition-colors"
-          >
-            Ajouter au calendrier
-          </button>
 
           <button
             onClick={onNewVideo}
@@ -229,6 +269,15 @@ export default function VideoRenderStatus({ onNewVideo }) {
           </button>
         </div>
       </div>
+
+      {/* Modale de publication / programmation */}
+      {publishPost && (
+        <PublishModal
+          post={publishPost}
+          onClose={() => setPublishPost(null)}
+        />
+      )}
+      </>
     )
   }
 

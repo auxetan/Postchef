@@ -13,7 +13,7 @@ function extractBase64(dataUrl) {
   return dataUrl.split(',')[1]
 }
 
-export function buildViralityPrompt({ restaurant, clips, platform, objective, clipAnything, captionLanguage, brandKit }) {
+export function buildViralityPrompt({ restaurant, clips, platform, objective, clipAnything, captionLanguage, brandKit, templateHint }) {
   const content = []
 
   // Injection des frames de chaque clip (Vision multimodal)
@@ -50,7 +50,7 @@ CONTEXTE RESTAURANT :
 
 PLATEFORME CIBLE : ${platform}
 LANGUE DES CAPTIONS : ${captionLanguage || 'fr'} (écris les captions et overlays dans cette langue)
-${brandKit?.primaryColor ? `COULEUR DE MARQUE : ${brandKit.primaryColor}\n` : ''}${brandKit?.logoDataUrl ? 'LOGO : disponible, intégrer en bas à droite discrètement\n' : ''}${clipAnything ? `\nDIRECTIVE CRÉATEUR (priorité maximale) : "${clipAnything}"\n` : ''}
+${brandKit?.primaryColor ? `COULEUR DE MARQUE : ${brandKit.primaryColor}\n` : ''}${brandKit?.logoDataUrl ? 'LOGO : disponible, intégrer en bas à droite discrètement\n' : ''}${templateHint ? `\nFORMAT VIDÉO (priorité haute) : ${templateHint}\n` : ''}${clipAnything ? `\nDIRECTIVE CRÉATEUR (priorité maximale) : "${clipAnything}"\n` : ''}
 MISSION : Génère un "ViralityDirective" JSON optimisé pour la viralité maximale.
 Les règles de viralité restaurant 2025 que tu dois appliquer :
 1. Les 2 premières secondes doivent être un "pattern interrupt" visuel ou textuel
@@ -145,7 +145,8 @@ Réponds UNIQUEMENT avec ce JSON valide, sans commentaires :
   "music_bpm_range": "slow_60-80|medium_90-110|fast_120-140",
   "total_duration": 12,
   "caption": "Caption complète prête à publier (150 chars max, avec emojis)",
-  "hashtags": ["#hashtag1", "#hashtag2", "#hashtag3"]
+  "hashtags": ["#hashtag1", "#hashtag2", "#hashtag3"],
+  "narration_script": "Script de 2-3 phrases à lire pendant le tournage (voix off, max 30 mots)"
 }`,
   })
 
